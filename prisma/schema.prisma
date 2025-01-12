@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  modelFY     String
+  modelName   String
+  author      String
+  evaluations Evaluation[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model TestCase {
+  id         String      @id @default(uuid())
+  name       String
+  procedures String
+  checkItems CheckItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model CheckItem {
+  id             String       @id @default(uuid())
+  expectedTarget String
+  settings       Setting[]
+  testCaseId     String?
+  testCase       TestCase?    @relation(fields: [testCaseId], references: [id])
+  evaluations    Evaluation[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Setting {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  constraints String
+  checkItems  CheckItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Evaluation {
+  id         String      @id @default(uuid())
+  status     String
+  judgement  String
+  remarks    String?
+  projectId  String?
+  project    Project?    @relation(fields: [projectId], references: [id])
+  checkItems CheckItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
