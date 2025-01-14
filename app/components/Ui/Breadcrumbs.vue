@@ -63,7 +63,7 @@
       class?: any;
     }>(),
     {
-      separator: "heroicons:chevron-right",
+      separator: "lucide:chevron-right",
       items: () => [],
       class: undefined,
     }

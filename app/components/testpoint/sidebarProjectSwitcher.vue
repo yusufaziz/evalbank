@@ -1,5 +1,5 @@
 <template>
-  <UiSidebarHeader>
+  <UiSidebarHeader v-if="isHasProject">
     <UiSidebarMenu>
       <UiSidebarMenuItem>
         <UiDropdownMenu>
@@ -24,8 +24,8 @@
             <template v-for="(project, index) in getGroupedProjects()" :key="index">
               <UiDropdownMenuItem
                 class="cursor-pointer gap-2 p-2"
-                :class="[currentStore.activeProjectsId === project.id && 'bg-muted']"
-                @click="currentStore.activeProjectsId = project.id"
+                :class="[route.query.projectId === project.id && 'bg-muted']"
+                @click="route.query.projectId = project.id"
               >
                 {{ project.name }}
               </UiDropdownMenuItem>
@@ -61,16 +61,10 @@
 
 <script setup lang="ts">
   import type { Project } from "@prisma/client";
-
-  const currentStore = useCurrentStore();
+  const route = useRoute()
+  const isHasProject = !!route.query.projectId
   const { data: projects } = await useFetch<Project[]>("/api/projects");
-  const { data: project, status: projectStatus } = useFetch<Project>(
-    () => `api/projects/${currentStore.activeProjectsId}`,
-    {
-      watch: [currentStore],
-      cache: "no-cache",
-    }
-  );
+  const { data: project, status: projectStatus } = useFetch<Project>(`api/projects/${route.query.projectId}`);
   interface IGroupedSubProjects {
     title: string;
     item: Project[];

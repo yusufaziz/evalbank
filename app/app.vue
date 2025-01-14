@@ -3,6 +3,7 @@
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />
+      <UiVueSonner />
     </NuxtLayout>
   </div>
 </template>

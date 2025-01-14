@@ -10,7 +10,8 @@ datasource db {
 model Project {
   id          String       @id @default(uuid())
   name        String       @unique
-  modelFY     String
+  modelFY     Int
+  modelSeries   String
   modelName   String
   author      String
   evaluations Evaluation[]
