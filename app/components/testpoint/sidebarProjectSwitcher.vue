@@ -61,10 +61,13 @@
 
 <script setup lang="ts">
   import type { Project } from "@prisma/client";
-  const route = useRoute()
-  const isHasProject = !!route.query.projectId
+
+  const route = useRoute();
+  const isHasProject = !!route.query.projectId;
   const { data: projects } = await useFetch<Project[]>("/api/projects");
-  const { data: project, status: projectStatus } = useFetch<Project>(`api/projects/${route.query.projectId}`);
+  const { data: project, status: projectStatus } = useFetch<Project>(
+    `api/projects/${route.query.projectId}`
+  );
   interface IGroupedSubProjects {
     title: string;
     item: Project[];

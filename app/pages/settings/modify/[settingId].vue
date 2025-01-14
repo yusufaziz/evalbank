@@ -9,26 +9,14 @@
         <template #content>
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
-              <UiVeeInput label="Project Name" name="name" :model-value="project?.name" />
-              <UiVeeInput
-                label="Model FY"
-                name="modelFY"
-                type="number"
-                :model-value="project?.modelFY"
-              />
-              <UiVeeInput
-                label="Model Series"
-                name="modelSeries"
-                :model-value="project?.modelSeries"
-              />
-              <UiVeeInput label="Model Name" name="modelName" :model-value="project?.modelName" />
+              <UiVeeInput label="Setting Name" name="name" :model-value="setting?.name" />
             </fieldset>
           </UiCardContent>
         </template>
         <template #footer>
           <UiCardFooter class="flex justify-between">
             <UiButton type="reset" variant="outline">Cancel</UiButton>
-            <UiButton type="submit"> Modify </UiButton>
+            <UiButton type="submit">Modify</UiButton>
           </UiCardFooter>
         </template>
       </UiCard>
@@ -37,13 +25,13 @@
 </template>
 
 <script lang="ts" setup>
-  import { zodProjectSchema } from "~~/shared/schema/project";
-  import type { Project } from "@prisma/client";
+  import { zodSettingSchema } from "~~/shared/schema/setting";
+  import type { Setting } from "@prisma/client";
 
-  const { data: project } = useFetch<Project>(`/api/projects/${useRoute().params.projectId}`);
+  const { data: setting } = useFetch<Setting>(`/api/settings/${useRoute().params.settingId}`);
 
   const { handleSubmit, isSubmitting } = useForm({
-    validationSchema: toTypedSchema(zodProjectSchema),
+    validationSchema: toTypedSchema(zodSettingSchema),
   });
 
   const onSubmit = handleSubmit(async (data) => {

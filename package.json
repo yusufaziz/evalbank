@@ -8,7 +8,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "seed": "esno prisma/seed.ts"
+    "seed": "esno prisma/seed.ts",
+    "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore --fix src",
+    "format": "prettier .  --write"
   },
   "dependencies": {
     "@faker-js/faker": "^9.3.0",
@@ -48,6 +50,12 @@
     "@iconify-json/heroicons": "^1.2.2",
     "@iconify-json/lucide": "^1.2.22",
     "@vueuse/core": "^12.4.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-vue": "^9.32.0",
     "esno": "^4.8.0",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",

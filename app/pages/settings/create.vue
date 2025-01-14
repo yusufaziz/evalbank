@@ -1,20 +1,18 @@
 <template>
   <div class="flex items-center justify-center">
     <form class="mx-auto max-w-md" @submit="onSubmit">
-      <UiCard class="w-[360px] max-w-sm" title="Create project" description="Create a new project.">
+      <UiCard class="w-[360px] max-w-sm" title="Create setting" description="Create new setting.">
         <template #content>
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
-              <UiVeeInput label="Project Name" name="name" />
-              <UiVeeInput label="Model FY" name="modelFY" type="number" />
-              <UiVeeInput label="Model Name" name="modelName" />
+              <UiVeeInput label="Setting Name" name="name" />
             </fieldset>
           </UiCardContent>
         </template>
         <template #footer>
           <UiCardFooter class="flex justify-between">
             <UiButton type="reset" variant="outline">Cancel</UiButton>
-            <UiButton type="submit"> Create </UiButton>
+            <UiButton type="submit">Create</UiButton>
           </UiCardFooter>
         </template>
       </UiCard>
@@ -23,10 +21,10 @@
 </template>
 
 <script lang="ts" setup>
-  import { zodProjectSchema } from "~~/shared/schema/project";
+  import { zodSettingSchema } from "~~/shared/schema/setting";
 
   const { handleSubmit, isSubmitting } = useForm({
-    validationSchema: toTypedSchema(zodProjectSchema),
+    validationSchema: toTypedSchema(zodSettingSchema),
   });
 
   const onSubmit = handleSubmit(async (_) => {

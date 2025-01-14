@@ -23,10 +23,11 @@
 </template>
 
 <script lang="ts" setup>
-  import SidebarProjectSwitcher from '~/components/testpoint/sidebarProjectSwitcher.vue';
-  import SidebarContent from '~/components/testpoint/sidebarContent.vue';
-  import SidebarFooter from '~/components/testpoint/sidebarFooter.vue';
-  const breadcrumbsItems = useBreadcrumbItems()
+  import SidebarContent from "~/components/testpoint/sidebarContent.vue";
+  import SidebarFooter from "~/components/testpoint/sidebarFooter.vue";
+  import SidebarProjectSwitcher from "~/components/testpoint/sidebarProjectSwitcher.vue";
+
+  const breadcrumbsItems = useBreadcrumbItems();
   const { data: projects } = useFetch("/api/projects");
 
   // This is sample data.

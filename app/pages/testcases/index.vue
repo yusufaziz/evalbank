@@ -30,7 +30,7 @@
       ref="tableRef"
       show-select
       :search="search"
-      :data="projects"
+      :data="testcases"
       :columns="columns"
       class="mt-5 rounded-md border"
       @ready="table = $event"
@@ -46,20 +46,18 @@
 </template>
 
 <script lang="ts" setup>
-  import type { Project } from "@prisma/client";
+  import type { TestCase } from "@prisma/client";
   import type { ColumnDef, Table } from "@tanstack/vue-table";
 
   const tableRef = ref();
-  const table = ref<Table<Project> | null>(null);
+  const table = ref<Table<TestCase> | null>(null);
   const search = ref("");
 
-  const { data: projects } = useFetch("/api/projects");
+  const { data: testcases } = useFetch<TestCase[]>("/api/testCases");
 
-  const columns: ColumnDef<Project>[] = [
+  const columns: ColumnDef<TestCase>[] = [
     { accessorKey: "id", header: "ID", enableHiding: true },
-    { accessorKey: "name", header: "Project Name", enableHiding: true },
-    { accessorKey: "modelFY", header: "FY", enableHiding: true },
-    { accessorKey: "modelName", header: "Model Name", enableHiding: true },
+    { accessorKey: "name", header: "Testcase Name", enableHiding: true },
     {
       accessorKey: "actions",
       header: "",
@@ -72,7 +70,7 @@
             variant: "ghost",
             size: "icon",
             class: "w-9 h-9",
-            onClick: () => navigateTo(`/projects/modify/${value.row.original.id}`),
+            onClick: () => navigateTo(`/testcases/modify/${value.row.original.id}`),
           },
           () => [h(resolveComponent("Icon"), { name: "lucide:pen", class: "h-4 w-4" })]
         );
