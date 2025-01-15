@@ -1,3 +1,101 @@
+<script lang="ts" setup>
+import type { Project } from "@prisma/client"
+import type { ColumnDef, Table } from "@tanstack/vue-table"
+
+const tableRef = ref()
+const table = ref<Table<Project> | null>(null)
+const search = ref("")
+
+const { data: projects } = useFetch("/api/projects")
+
+const columns: ColumnDef<Project>[] = [
+  { accessorKey: "id", header: "ID", enableHiding: true, maxSize: 100 },
+  { accessorKey: "name", header: "Project Name", enableHiding: true },
+  { accessorKey: "modelFY", header: "FY", enableHiding: true },
+  { accessorKey: "modelName", header: "Model Name", enableHiding: true },
+  {
+    accessorKey: "actions",
+    header: "",
+    enableSorting: false,
+    enableHiding: false,
+    cell: (value) => {
+      return h(
+        resolveComponent("UiButton"),
+        {
+          variant: "outline",
+          size: "icon",
+          class: "w-9 h-9",
+          onClick: () => navigateTo(`/projects/${value.row.original.id}`),
+        },
+        () => [h(resolveComponent("Icon"), { name: "lucide:eye", class: "h-4 w-4" })],
+      )
+    },
+  },
+  {
+    accessorKey: "actions",
+    header: "",
+    enableSorting: false,
+    enableHiding: false,
+    cell: (value) => {
+      return h(
+        resolveComponent("UiButton"),
+        {
+          variant: "ghost",
+          size: "icon",
+          class: "w-9 h-9",
+          onClick: () => {
+            useSonner(`TODO: Duplicate Projects: ${value.row.original.id}`, {
+              duration: 3000,
+            })
+          },
+        },
+        () => [h(resolveComponent("Icon"), { name: "lucide:copy", class: "h-4 w-4" })],
+      )
+    },
+  },
+  {
+    accessorKey: "actions",
+    header: "",
+    enableSorting: false,
+    enableHiding: false,
+    cell: (value) => {
+      return h(
+        resolveComponent("UiButton"),
+        {
+          variant: "outline",
+          size: "icon",
+          class: "w-9 h-9",
+          onClick: () => navigateTo(`/projects/modify/${value.row.original.id}`),
+        },
+        () => [h(resolveComponent("Icon"), { name: "lucide:pen", class: "h-4 w-4" })],
+      )
+    },
+  },
+  {
+    accessorKey: "actions",
+    header: "",
+    enableSorting: false,
+    enableHiding: false,
+    cell: (value) => {
+      return h(
+        resolveComponent("UiButton"),
+        {
+          variant: "destructive",
+          size: "icon",
+          class: "w-9 h-9",
+          onClick: () => {
+            useSonner(`TODO: Delete Projects: ${value.row.original.id}`, {
+              duration: 3000,
+            })
+          },
+        },
+        () => [h(resolveComponent("Icon"), { name: "lucide:trash", class: "h-4 w-4" })],
+      )
+    },
+  },
+]
+</script>
+
 <template>
   <div style="width: max-content">
     <div class="flex flex-col justify-between gap-5 md:flex-row md:items-center">
@@ -44,39 +142,3 @@
     </UiTanStackTable>
   </div>
 </template>
-
-<script lang="ts" setup>
-  import type { Project } from "@prisma/client";
-  import type { ColumnDef, Table } from "@tanstack/vue-table";
-
-  const tableRef = ref();
-  const table = ref<Table<Project> | null>(null);
-  const search = ref("");
-
-  const { data: projects } = useFetch("/api/projects");
-
-  const columns: ColumnDef<Project>[] = [
-    { accessorKey: "id", header: "ID", enableHiding: true },
-    { accessorKey: "name", header: "Project Name", enableHiding: true },
-    { accessorKey: "modelFY", header: "FY", enableHiding: true },
-    { accessorKey: "modelName", header: "Model Name", enableHiding: true },
-    {
-      accessorKey: "actions",
-      header: "",
-      enableSorting: false,
-      enableHiding: false,
-      cell: (value) => {
-        return h(
-          resolveComponent("UiButton"),
-          {
-            variant: "ghost",
-            size: "icon",
-            class: "w-9 h-9",
-            onClick: () => navigateTo(`/projects/modify/${value.row.original.id}`),
-          },
-          () => [h(resolveComponent("Icon"), { name: "lucide:pen", class: "h-4 w-4" })]
-        );
-      },
-    },
-  ];
-</script>

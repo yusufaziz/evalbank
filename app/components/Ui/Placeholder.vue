@@ -1,3 +1,28 @@
+<script lang="ts">
+import type { PrimitiveProps } from "radix-vue"
+import type { HTMLAttributes } from "vue"
+import { Primitive } from "radix-vue"
+
+export const placeHolderStyles = tv({
+  slots: {
+    wrapper:
+        "relative flex items-center justify-center overflow-hidden rounded-md border border-dashed px-4 opacity-75",
+    svg: "absolute inset-0 size-full stroke-foreground/10",
+  },
+})
+</script>
+
+<script lang="ts" setup>
+const props = defineProps<
+  PrimitiveProps & {
+    /**
+     * Additional classes to add to the parent element.
+     */
+    class?: HTMLAttributes["class"]
+  }
+>()
+</script>
+
 <template>
   <Primitive :as :as-child :class="placeHolderStyles().wrapper({ class: props.class })">
     <svg :class="placeHolderStyles().svg()" fill="none">
@@ -24,28 +49,3 @@
     <slot />
   </Primitive>
 </template>
-
-<script lang="ts">
-  import { Primitive } from "radix-vue";
-  import type { PrimitiveProps } from "radix-vue";
-  import type { HTMLAttributes } from "vue";
-
-  export const placeHolderStyles = tv({
-    slots: {
-      wrapper:
-        "relative flex items-center justify-center overflow-hidden rounded-md border border-dashed px-4 opacity-75",
-      svg: "absolute inset-0 size-full stroke-foreground/10",
-    },
-  });
-</script>
-
-<script lang="ts" setup>
-  const props = defineProps<
-    PrimitiveProps & {
-      /**
-       * Additional classes to add to the parent element.
-       */
-      class?: HTMLAttributes["class"];
-    }
-  >();
-</script>

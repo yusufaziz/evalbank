@@ -1,3 +1,7 @@
+<script lang="ts" setup>
+const { data: projects } = useFetch("/api/projects")
+</script>
+
 <template>
   <div>
     <h1>Projects</h1>
@@ -8,7 +12,3 @@
     </ul>
   </div>
 </template>
-
-<script lang="ts" setup>
-  const { data: projects } = useFetch("/api/projects");
-</script>

@@ -1,3 +1,16 @@
+<script lang="ts" setup>
+import type { SelectScrollUpButtonProps } from "radix-vue"
+import { SelectScrollUpButton } from "radix-vue"
+
+const props = defineProps<
+  SelectScrollUpButtonProps & {
+    /** Icon to render */
+    icon?: string
+  }
+>()
+const forwarded = reactiveOmit(props, "icon")
+</script>
+
 <template>
   <SelectScrollUpButton v-bind="forwarded">
     <slot>
@@ -5,16 +18,3 @@
     </slot>
   </SelectScrollUpButton>
 </template>
-
-<script lang="ts" setup>
-  import { SelectScrollUpButton } from "radix-vue";
-  import type { SelectScrollUpButtonProps } from "radix-vue";
-
-  const props = defineProps<
-    SelectScrollUpButtonProps & {
-      /** Icon to render */
-      icon?: string;
-    }
-  >();
-  const forwarded = reactiveOmit(props, "icon");
-</script>

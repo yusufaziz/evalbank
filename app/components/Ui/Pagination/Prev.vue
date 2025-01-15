@@ -1,3 +1,18 @@
+<script lang="ts" setup>
+import type { PaginationPrevProps } from "radix-vue"
+import { reactiveOmit } from "@vueuse/core"
+import { PaginationPrev } from "radix-vue"
+
+const props = defineProps<
+  PaginationPrevProps & {
+    /** Icon to show */
+    icon?: string
+  }
+>()
+
+const forwarded = reactiveOmit(props, "icon")
+</script>
+
 <template>
   <PaginationPrev v-bind="forwarded">
     <slot>
@@ -7,18 +22,3 @@
     </slot>
   </PaginationPrev>
 </template>
-
-<script lang="ts" setup>
-  import { reactiveOmit } from "@vueuse/core";
-  import { PaginationPrev } from "radix-vue";
-  import type { PaginationPrevProps } from "radix-vue";
-
-  const props = defineProps<
-    PaginationPrevProps & {
-      /** Icon to show */
-      icon?: string;
-    }
-  >();
-
-  const forwarded = reactiveOmit(props, "icon");
-</script>

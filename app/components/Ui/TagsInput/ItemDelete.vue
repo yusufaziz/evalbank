@@ -1,3 +1,19 @@
+<script lang="ts" setup>
+import type { TagsInputItemDeleteProps } from "radix-vue"
+import { TagsInputItemDelete } from "radix-vue"
+
+const props = withDefaults(
+  defineProps<TagsInputItemDeleteProps & { icon?: string, class?: any }>(),
+  {
+    icon: "lucide:x",
+  },
+)
+const forwarded = reactiveOmit(props, "class", "icon")
+const styles = tv({
+  base: "flex items-center justify-center rounded bg-transparent opacity-40 transition hover:bg-muted-foreground hover:opacity-100 focus:opacity-100 focus-visible:outline-none",
+})
+</script>
+
 <template>
   <TagsInputItemDelete v-bind="forwarded" :class="styles({ class: props.class })">
     <slot>
@@ -5,19 +21,3 @@
     </slot>
   </TagsInputItemDelete>
 </template>
-
-<script lang="ts" setup>
-  import { TagsInputItemDelete } from "radix-vue";
-  import type { TagsInputItemDeleteProps } from "radix-vue";
-
-  const props = withDefaults(
-    defineProps<TagsInputItemDeleteProps & { icon?: string; class?: any }>(),
-    {
-      icon: "lucide:x",
-    }
-  );
-  const forwarded = reactiveOmit(props, "class", "icon");
-  const styles = tv({
-    base: "flex items-center justify-center rounded bg-transparent opacity-40 transition hover:bg-muted-foreground hover:opacity-100 focus:opacity-100 focus-visible:outline-none",
-  });
-</script>

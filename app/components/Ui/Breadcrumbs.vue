@@ -1,3 +1,41 @@
+<script setup lang="ts">
+export interface Crumbs {
+  label?: string
+  icon?: string
+  link?: string
+  disabled?: boolean
+  slot?: string
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  click?: Function
+}
+const props = withDefaults(
+  defineProps<{
+    /**
+     * The items to display in the breadcrumbs.
+     */
+    items?: Crumbs[]
+    /**
+     * The separator to use between each breadcrumb.
+     */
+    separator?: string
+    class?: any
+  }>(),
+  {
+    separator: "lucide:chevron-right",
+    items: () => [],
+    class: undefined,
+  },
+)
+
+function isNotLastItem(index: number) {
+  return index !== props?.items?.length - 1
+}
+
+const styles = tv({
+  base: "flex w-full items-center gap-4",
+})
+</script>
+
 <template>
   <div :class="styles({ class: props.class })">
     <template v-for="(item, i) in items" :key="i">
@@ -27,8 +65,9 @@
                 ]"
                 class="text-sm text-foreground transition-colors"
                 @click="item?.click?.()"
-                >{{ item.label }}</NuxtLink
               >
+                {{ item.label }}
+              </NuxtLink>
             </slot>
           </div>
         </div>
@@ -39,41 +78,3 @@
     </template>
   </div>
 </template>
-
-<script setup lang="ts">
-  export interface Crumbs {
-    label?: string;
-    icon?: string;
-    link?: string;
-    disabled?: boolean;
-    slot?: string;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    click?: Function;
-  }
-  const props = withDefaults(
-    defineProps<{
-      /**
-       * The items to display in the breadcrumbs.
-       */
-      items?: Crumbs[];
-      /**
-       * The separator to use between each breadcrumb.
-       */
-      separator?: string;
-      class?: any;
-    }>(),
-    {
-      separator: "lucide:chevron-right",
-      items: () => [],
-      class: undefined,
-    }
-  );
-
-  const isNotLastItem = (index: number) => {
-    return index !== props?.items?.length - 1;
-  };
-
-  const styles = tv({
-    base: "flex w-full items-center gap-4",
-  });
-</script>

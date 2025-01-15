@@ -1,3 +1,22 @@
+<script lang="ts" setup>
+import type { DropdownMenuItemIndicatorProps } from "radix-vue"
+import { DropdownMenuItemIndicator } from "radix-vue"
+
+const props = defineProps<
+  DropdownMenuItemIndicatorProps & {
+    /** The icon to display */
+    icon?: string
+    /** Custom class(es) to add to the parent */
+    class?: any
+  }
+>()
+const forwarded = reactiveOmit(props, "class", "icon")
+
+const styles = tv({
+  base: "flex items-center justify-center",
+})
+</script>
+
 <template>
   <DropdownMenuItemIndicator v-bind="forwarded" :class="styles({ class: props.class })">
     <slot>
@@ -5,22 +24,3 @@
     </slot>
   </DropdownMenuItemIndicator>
 </template>
-
-<script lang="ts" setup>
-  import { DropdownMenuItemIndicator } from "radix-vue";
-  import type { DropdownMenuItemIndicatorProps } from "radix-vue";
-
-  const props = defineProps<
-    DropdownMenuItemIndicatorProps & {
-      /** The icon to display */
-      icon?: string;
-      /** Custom class(es) to add to the parent */
-      class?: any;
-    }
-  >();
-  const forwarded = reactiveOmit(props, "class", "icon");
-
-  const styles = tv({
-    base: "flex items-center justify-center",
-  });
-</script>

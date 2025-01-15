@@ -1,3 +1,83 @@
+<script setup lang="ts">
+const props = defineProps({
+  state: {
+    type: String,
+    required: true,
+  },
+  isMobile: {
+    type: Boolean,
+    required: true,
+  },
+})
+const route = useRoute()
+const isHasProject = !!route.query.projectId
+const navMain = [
+  {
+    title: "Projects",
+    url: "#",
+    icon: "lucide:package",
+    isActive: true,
+    items: [
+      {
+        title: "Add New Project",
+        url: "/projects/create",
+      },
+      {
+        title: "Show Projects",
+        url: "/projects",
+      },
+    ],
+  },
+  {
+    title: "Testcases",
+    url: "#",
+    icon: "lucide:bot",
+    items: [
+      {
+        title: "Add New Testcases",
+        url: "/testcases/create",
+      },
+      {
+        title: "Show Testcases",
+        url: "/testcases",
+      },
+    ],
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: "lucide:settings-2",
+    items: [
+      {
+        title: "Add New Settings",
+        url: "/settings/create",
+      },
+      {
+        title: "Show Settings",
+        url: "/settings",
+      },
+    ],
+  },
+]
+const projectsData = [
+  {
+    name: "Design Engineering",
+    url: "#",
+    icon: "lucide:frame",
+  },
+  {
+    name: "Sales & Marketing",
+    url: "#",
+    icon: "lucide:pie-chart",
+  },
+  {
+    name: "Travel",
+    url: "#",
+    icon: "lucide:map",
+  },
+]
+</script>
+
 <template>
   <UiSidebarContent>
     <!-- Project Menus -->
@@ -90,83 +170,3 @@
     </UiSidebarGroup>
   </UiSidebarContent>
 </template>
-
-<script setup lang="ts">
-  const route = useRoute();
-  const isHasProject = !!route.query.projectId;
-  const props = defineProps({
-    state: {
-      type: String,
-      required: true,
-    },
-    isMobile: {
-      type: Boolean,
-      required: true,
-    },
-  });
-  const navMain = [
-    {
-      title: "Projects",
-      url: "#",
-      icon: "lucide:package",
-      isActive: true,
-      items: [
-        {
-          title: "Add New Project",
-          url: "/projects/create",
-        },
-        {
-          title: "Show Projects",
-          url: "/projects",
-        },
-      ],
-    },
-    {
-      title: "Testcases",
-      url: "#",
-      icon: "lucide:bot",
-      items: [
-        {
-          title: "Add New Testcases",
-          url: "/testcases/create",
-        },
-        {
-          title: "Show Testcases",
-          url: "/testcases",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: "lucide:settings-2",
-      items: [
-        {
-          title: "Add New Settings",
-          url: "/settings/create",
-        },
-        {
-          title: "Show Settings",
-          url: "/settings",
-        },
-      ],
-    },
-  ];
-  const projectsData = [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: "lucide:frame",
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: "lucide:pie-chart",
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: "lucide:map",
-    },
-  ];
-</script>

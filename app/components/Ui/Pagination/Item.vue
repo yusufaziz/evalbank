@@ -1,3 +1,10 @@
+<script lang="ts" setup>
+import type { PaginationListItemProps } from "radix-vue"
+import { PaginationListItem } from "radix-vue"
+
+const props = defineProps<PaginationListItemProps>()
+</script>
+
 <template>
   <PaginationListItem v-bind="props">
     <slot>
@@ -11,10 +18,3 @@
     </slot>
   </PaginationListItem>
 </template>
-
-<script lang="ts" setup>
-  import { PaginationListItem } from "radix-vue";
-  import type { PaginationListItemProps } from "radix-vue";
-
-  const props = defineProps<PaginationListItemProps>();
-</script>

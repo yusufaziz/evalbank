@@ -10,4 +10,4 @@ export default {
   force: true,
   useDefaultFilename: true,
   packageManager: "pnpm",
-};
+}

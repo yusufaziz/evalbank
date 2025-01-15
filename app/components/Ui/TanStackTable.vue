@@ -1,3 +1,169 @@
+<script lang="ts" setup generic="T">
+import type { ColumnDef, SortingState, Table } from "@tanstack/vue-table"
+import CheckBox from "@/components/Ui/Checkbox/Checkbox.vue"
+import {
+  FlexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useVueTable,
+} from "@tanstack/vue-table"
+
+defineOptions({ inheritAttrs: false })
+
+const props = withDefaults(
+  defineProps<{
+    data?: T[]
+    columns?: ColumnDef<T>[]
+    search?: string
+    showSelect?: boolean
+    pageSizes?: number[]
+    pageSize?: number
+    sorting?: SortingState
+    tableClass?: any
+    ascIcon?: string
+    descIcon?: string
+    unsortedIcon?: string
+    class?: any
+    showPagination?: boolean
+    rowsPerPageText?: string
+  }>(),
+  {
+    pageSizes: () => [10, 20, 30, 40, 50, 100],
+    pageSize: () => 10,
+    columns: () => [],
+    data: () => [],
+    sorting: () => [],
+    ascIcon: "lucide:chevron-up",
+    descIcon: "lucide:chevron-down",
+    unsortedIcon: "lucide:chevron-up-down",
+    showPagination: true,
+    rowsPerPageText: "Rows per page:",
+  },
+)
+
+const emit = defineEmits<{
+  ready: [table: Table<T>]
+}>()
+
+const styles = tv({
+  base: "w-full overflow-x-auto",
+})
+
+const checkBoxHeader: ColumnDef<any> = {
+  id: "checkbox",
+  header: ({ table }) => {
+    return h(
+      "div",
+      { class: "flex items-center justify-center" },
+      h(CheckBox, {
+        "checked": table.getIsAllRowsSelected()
+          ? true
+          : table.getIsSomeRowsSelected()
+            ? "indeterminate"
+            : false,
+        "onUpdate:checked": (value: boolean) => table.toggleAllPageRowsSelected(!!value),
+        "ariaLabel": "Select all",
+      }),
+    )
+  },
+  cell: ({ row }) => {
+    return h(
+      "div",
+      { class: "flex items-center justify-center " },
+      h(CheckBox, {
+        "checked": row.getIsSelected(),
+        "onUpdate:checked": value => row.toggleSelected(!!value),
+        "ariaLabel": "Select row",
+      }),
+    )
+  },
+  enableSorting: false,
+  enableHiding: false,
+}
+
+const localColumns: ColumnDef<T>[] = [...props.columns]
+
+if (props.showSelect) {
+  localColumns.unshift(checkBoxHeader)
+}
+
+const localSorting = ref(props.sorting)
+const globalFilter = ref(props.search)
+const columnVisibility = ref({})
+const rowSelection = ref({})
+
+const table = useVueTable({
+  get data() {
+    return props.data
+  },
+  get columns() {
+    return localColumns
+  },
+  initialState: {
+    pagination: {
+      pageSize: props.pageSize,
+    },
+    rowSelection: rowSelection.value,
+    globalFilter: props.search,
+  },
+  state: {
+    get sorting() {
+      return localSorting.value
+    },
+    get globalFilter() {
+      return props.search
+    },
+    get columnVisibility() {
+      return columnVisibility.value
+    },
+    get rowSelection() {
+      return rowSelection.value
+    },
+  },
+  onSortingChange: (updaterOrValue) => {
+    localSorting.value
+        = typeof updaterOrValue === "function" ? updaterOrValue(localSorting.value) : updaterOrValue
+  },
+  onGlobalFilterChange: (updaterOrValue) => {
+    globalFilter.value
+        = typeof updaterOrValue === "function" ? updaterOrValue(globalFilter.value) : updaterOrValue
+  },
+  onRowSelectionChange: (updaterOrValue) => {
+    rowSelection.value
+        = typeof updaterOrValue === "function" ? updaterOrValue(rowSelection.value) : updaterOrValue
+  },
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  getPaginationRowModel: getPaginationRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  enableRowSelection: () => !!props.showSelect,
+})
+
+function toggleColumnVisibility(column: any) {
+  columnVisibility.value = {
+    ...columnVisibility.value,
+    [column.id]: !column.getIsVisible(),
+  }
+}
+
+const pageSize = computed({
+  get() {
+    return table.getState().pagination.pageSize.toString()
+  },
+  set(value) {
+    table.setPageSize(Number(value))
+  },
+})
+
+onMounted(() => {
+  emit("ready", table)
+})
+
+defineExpose({ toggleColumnVisibility })
+</script>
+
 <template>
   <div>
     <div :class="styles({ class: props.class })">
@@ -53,7 +219,9 @@
             v-if="table.getRowModel().rows.length === 0"
             :colspan="table.getAllLeafColumns().length"
           >
-            <slot :table="table" name="empty"> No data available. </slot>
+            <slot :table="table" name="empty">
+              No data available.
+            </slot>
           </UiTableEmpty>
         </UiTableBody>
       </UiTable>
@@ -152,170 +320,3 @@
     </div>
   </div>
 </template>
-
-<script lang="ts" setup generic="T">
-  import CheckBox from "@/components/Ui/Checkbox/Checkbox.vue";
-  import {
-    FlexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useVueTable,
-  } from "@tanstack/vue-table";
-  import type { ColumnDef, SortingState, Table } from "@tanstack/vue-table";
-
-  const props = withDefaults(
-    defineProps<{
-      data?: T[];
-      columns?: ColumnDef<T>[];
-      search?: string;
-      showSelect?: boolean;
-      pageSizes?: number[];
-      pageSize?: number;
-      sorting?: SortingState;
-      tableClass?: any;
-      ascIcon?: string;
-      descIcon?: string;
-      unsortedIcon?: string;
-      class?: any;
-      showPagination?: boolean;
-      rowsPerPageText?: string;
-    }>(),
-    {
-      pageSizes: () => [10, 20, 30, 40, 50, 100],
-      pageSize: () => 10,
-      columns: () => [],
-      data: () => [],
-      sorting: () => [],
-      ascIcon: "lucide:chevron-up",
-      descIcon: "lucide:chevron-down",
-      unsortedIcon: "lucide:chevron-up-down",
-      showPagination: true,
-      rowsPerPageText: "Rows per page:",
-    }
-  );
-
-  defineOptions({ inheritAttrs: false });
-
-  const styles = tv({
-    base: "w-full overflow-x-auto",
-  });
-
-  const checkBoxHeader: ColumnDef<any> = {
-    id: "checkbox",
-    header: ({ table }) => {
-      return h(
-        "div",
-        { class: "flex items-center justify-center" },
-        h(CheckBox, {
-          checked: table.getIsAllRowsSelected()
-            ? true
-            : table.getIsSomeRowsSelected()
-              ? "indeterminate"
-              : false,
-          "onUpdate:checked": (value: boolean) => table.toggleAllPageRowsSelected(!!value),
-          ariaLabel: "Select all",
-        })
-      );
-    },
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "flex items-center justify-center " },
-        h(CheckBox, {
-          checked: row.getIsSelected(),
-          "onUpdate:checked": (value) => row.toggleSelected(!!value),
-          ariaLabel: "Select row",
-        })
-      );
-    },
-    enableSorting: false,
-    enableHiding: false,
-  };
-
-  const localColumns: ColumnDef<T>[] = [...props.columns];
-
-  if (props.showSelect) {
-    localColumns.unshift(checkBoxHeader);
-  }
-
-  const emit = defineEmits<{
-    ready: [table: Table<T>];
-  }>();
-
-  const localSorting = ref(props.sorting);
-  const globalFilter = ref(props.search);
-  const columnVisibility = ref({});
-  const rowSelection = ref({});
-
-  const table = useVueTable({
-    get data() {
-      return props.data;
-    },
-    get columns() {
-      return localColumns;
-    },
-    initialState: {
-      pagination: {
-        pageSize: props.pageSize,
-      },
-      rowSelection: rowSelection.value,
-      globalFilter: props.search,
-    },
-    state: {
-      get sorting() {
-        return localSorting.value;
-      },
-      get globalFilter() {
-        return props.search;
-      },
-      get columnVisibility() {
-        return columnVisibility.value;
-      },
-      get rowSelection() {
-        return rowSelection.value;
-      },
-    },
-    onSortingChange: (updaterOrValue) => {
-      localSorting.value =
-        typeof updaterOrValue === "function" ? updaterOrValue(localSorting.value) : updaterOrValue;
-    },
-    onGlobalFilterChange: (updaterOrValue) => {
-      globalFilter.value =
-        typeof updaterOrValue === "function" ? updaterOrValue(globalFilter.value) : updaterOrValue;
-    },
-    onRowSelectionChange: (updaterOrValue) => {
-      rowSelection.value =
-        typeof updaterOrValue === "function" ? updaterOrValue(rowSelection.value) : updaterOrValue;
-    },
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    enableRowSelection: () => !!props.showSelect,
-  });
-
-  function toggleColumnVisibility(column: any) {
-    columnVisibility.value = {
-      ...columnVisibility.value,
-      [column.id]: !column.getIsVisible(),
-    };
-  }
-
-  // eslint-disable-next-line vue/no-dupe-keys
-  const pageSize = computed({
-    get() {
-      return table.getState().pagination.pageSize.toString();
-    },
-    set(value) {
-      table.setPageSize(Number(value));
-    },
-  });
-
-  onMounted(() => {
-    emit("ready", table);
-  });
-
-  defineExpose({ toggleColumnVisibility });
-</script>

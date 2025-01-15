@@ -1,8 +1,8 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
+const { fontFamily } = require("tailwindcss/defaultTheme")
 
-/**@type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class",
+  darkMode: "selector",
   theme: {
     extend: {
       container: {
@@ -20,7 +20,7 @@ module.exports = {
         sans: [
           `Inter, ${fontFamily.sans.join(", ")}`,
           {
-            fontFeatureSettings: '"cv02","cv03","cv04","cv11"',
+            fontFeatureSettings: "\"cv02\",\"cv03\",\"cv04\",\"cv11\"",
           },
         ],
         mono: ["'Fira Code'", ...fontFamily.mono],
@@ -31,11 +31,11 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
-        shine: {
+        "shine": {
           from: { backgroundPosition: "200% 0" },
           to: { backgroundPosition: "-200% 0" },
         },
-        meteor: {
+        "meteor": {
           "0%": { transform: "rotate(215deg) translateX(0)", opacity: 1 },
           "70%": { opacity: 1 },
           "100%": {
@@ -43,7 +43,7 @@ module.exports = {
             opacity: 0,
           },
         },
-        grid: {
+        "grid": {
           "0%": { transform: "translateY(-50%)" },
           "100%": { transform: "translateY(0)" },
         },
@@ -60,11 +60,11 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0px" },
         },
-        fadeIn: {
+        "fadeIn": {
           from: { opacity: "0" },
           to: { opacity: "1" },
         },
-        fadeOut: {
+        "fadeOut": {
           from: { opacity: "1" },
           to: { opacity: "0" },
         },
@@ -78,13 +78,13 @@ module.exports = {
         },
       },
       animation: {
-        shine: "shine 8s ease-in-out infinite",
-        meteor: "meteor 5s linear infinite",
-        grid: "grid 15s linear infinite",
+        "shine": "shine 8s ease-in-out infinite",
+        "meteor": "meteor 5s linear infinite",
+        "grid": "grid 15s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        fadeIn: "fadeIn 0.2s ease-out",
-        fadeOut: "fadeOut 0.2s ease-out",
+        "fadeIn": "fadeIn 0.2s ease-out",
+        "fadeOut": "fadeOut 0.2s ease-out",
         "collapse-down": "collapse-down 0.2s ease-out",
         "collapse-up": "collapse-up 0.2s ease-out",
       },
@@ -123,18 +123,18 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
+          "DEFAULT": "hsl(var(--sidebar-background))",
+          "foreground": "hsl(var(--sidebar-foreground))",
+          "primary": "hsl(var(--sidebar-primary))",
           "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
+          "accent": "hsl(var(--sidebar-accent))",
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-          input: "hsl(var(--sidebar-input))",
+          "border": "hsl(var(--sidebar-border))",
+          "ring": "hsl(var(--sidebar-ring))",
+          "input": "hsl(var(--sidebar-input))",
         },
       },
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms")({ strategy: "class" })],
-};
+}

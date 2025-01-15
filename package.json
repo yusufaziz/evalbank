@@ -1,7 +1,8 @@
 {
   "name": "nuxt-app",
-  "private": true,
   "type": "module",
+  "private": true,
+  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -9,10 +10,15 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "seed": "esno prisma/seed.ts",
-    "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore --fix src",
-    "format": "prettier .  --write"
+    "db:init:seed": "rm prisma/dev.db && prisma migrate dev --name init && pnpm seed",
+    "lint": "eslint .",
+    "format": "prettier . --write --list-different",
+    "lint:fix": "eslint . --fix",
+    "lint:fix:format": "pnpm format && pnpm lint:fix",
+    "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@antfu/eslint-config": "^3.14.0",
     "@faker-js/faker": "^9.3.0",
     "@morev/vue-transitions": "^3.0.5",
     "@nuxt/fonts": "^0.10.3",
@@ -26,11 +32,13 @@
     "@vee-validate/nuxt": "^4.15.0",
     "@vee-validate/zod": "^4.15.0",
     "@vueuse/nuxt": "^12.4.0",
+    "consola": "^3.4.0",
     "datatables.net-buttons-dt": "^3.2.0",
     "datatables.net-responsive-dt": "^3.0.3",
     "datatables.net-searchbuilder-dt": "^1.8.1",
     "datatables.net-select-dt": "^3.0.0",
     "datatables.net-vue3": "^3.0.3",
+    "eslint-plugin-prettier-vue": "^5.0.0",
     "jszip": "^3.10.1",
     "nuxt": "^3.15.1",
     "nuxt-seo-utils": "^6.0.8",
@@ -44,22 +52,24 @@
     "vue-sonner": "^1.3.0",
     "zod": "^3.24.1"
   },
-  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf",
   "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.18.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@iconify-json/heroicons": "^1.2.2",
     "@iconify-json/lucide": "^1.2.22",
+    "@nuxt/eslint": "^0.7.5",
     "@vueuse/core": "^12.4.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
-    "eslint-loader": "^4.0.2",
-    "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-vue": "^9.32.0",
+    "eslint-plugin-format": "^1.0.1",
     "esno": "^4.8.0",
+    "globals": "^15.14.0",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vue-tsc": "^2.2.0"
   }
 }

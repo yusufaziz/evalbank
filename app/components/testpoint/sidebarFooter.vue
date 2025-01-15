@@ -1,3 +1,22 @@
+<script setup lang="ts">
+const props = defineProps({
+  state: {
+    type: String,
+    required: true,
+  },
+  isMobile: {
+    type: Boolean,
+    required: true,
+  },
+})
+const userData = {
+  name: "breezy",
+  email: "m@example.com",
+  avatar: "https://behonbaker.com/icon.png",
+}
+const isDark = useDark()
+</script>
+
 <template>
   <UiSidebarFooter>
     <UiSidebarMenu>
@@ -9,8 +28,9 @@
               class="data-[props.state=open]:bg-sidebar-accent data-[props.state=open]:text-sidebar-accent-foreground"
             >
               <UiAvatar class="size-8 rounded-lg">
-                <UiAvatarImage :src="userData.avatar" :alt="userData.name" />
-                <UiAvatarFallback class="rounded-lg">BB</UiAvatarFallback>
+                <UiAvatarFallback class="rounded-lg">
+                  BB
+                </UiAvatarFallback>
               </UiAvatar>
               <div class="grid flex-1 text-left text-sm leading-tight">
                 <span class="truncate font-semibold">{{ userData.name }}</span>
@@ -29,7 +49,9 @@
               <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <UiAvatar class="size-8 rounded-lg">
                   <UiAvatarImage :src="userData.avatar" :alt="userData.name" />
-                  <UiAvatarFallback class="rounded-lg">BB</UiAvatarFallback>
+                  <UiAvatarFallback class="rounded-lg">
+                    BB
+                  </UiAvatarFallback>
                 </UiAvatar>
                 <div class="grid flex-1 text-left text-sm leading-tight">
                   <span class="truncate font-semibold">{{ userData.name }}</span>
@@ -43,8 +65,16 @@
             </UiDropdownMenuGroup>
             <UiDropdownMenuSeparator />
             <UiDropdownMenuGroup>
-              <UiDropdownMenuItem icon="lucide:badge-check" title="Account" />
-              <UiDropdownMenuItem icon="lucide:credit-card" title="Billing" />
+              <UiDropdownMenuItem
+                icon="lucide:sun"
+                title="Light Theme"
+                @click="useToggle(isDark)"
+              />
+              <UiDropdownMenuItem
+                icon="lucide:moon"
+                title="Dark Theme"
+                @click="useToggle(isDark)"
+              />
               <UiDropdownMenuItem icon="lucide:settings-2" title="Settings" />
               <UiDropdownMenuItem icon="lucide:bell" title="Notifications" />
             </UiDropdownMenuGroup>
@@ -56,21 +86,3 @@
     </UiSidebarMenu>
   </UiSidebarFooter>
 </template>
-
-<script setup lang="ts">
-  const props = defineProps({
-    state: {
-      type: String,
-      required: true,
-    },
-    isMobile: {
-      type: Boolean,
-      required: true,
-    },
-  });
-  const userData = {
-    name: "breezy",
-    email: "m@example.com",
-    avatar: "https://behonbaker.com/icon.png",
-  };
-</script>

@@ -1,3 +1,32 @@
+<script lang="ts">
+import type { Component } from "vue"
+import type { SidebarMenuButtonProps } from "./MenuButtonChild.vue"
+</script>
+
+<script setup lang="ts">
+defineOptions({ inheritAttrs: false })
+
+const props = withDefaults(
+  defineProps<
+    SidebarMenuButtonProps & {
+      tooltip?: string | Component
+    }
+  >(),
+  {
+    as: "button",
+    variant: "default",
+    size: "default",
+  },
+)
+
+const { isMobile, state } = useSidebar()
+
+const delegatedProps = computed(() => {
+  const { tooltip, ...delegated } = props
+  return delegated
+})
+</script>
+
 <template>
   <UiSidebarMenuButtonChild v-if="!tooltip" v-bind="{ ...delegatedProps, ...$attrs }">
     <slot />
@@ -17,31 +46,3 @@
     </UiTooltipContent>
   </UiTooltip>
 </template>
-
-<script lang="ts">
-  import type { SidebarMenuButtonProps } from "./MenuButtonChild.vue";
-  import type { Component } from "vue";
-</script>
-<script setup lang="ts">
-  defineOptions({ inheritAttrs: false });
-
-  const props = withDefaults(
-    defineProps<
-      SidebarMenuButtonProps & {
-        tooltip?: string | Component;
-      }
-    >(),
-    {
-      as: "button",
-      variant: "default",
-      size: "default",
-    }
-  );
-
-  const { isMobile, state } = useSidebar();
-
-  const delegatedProps = computed(() => {
-    const { tooltip, ...delegated } = props;
-    return delegated;
-  });
-</script>

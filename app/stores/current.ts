@@ -3,6 +3,6 @@ export const useCurrentStore = defineStore("current", {
     return {
       activeProjectsId: "",
       breadcrumbItems: [],
-    };
+    }
   },
-});
+})

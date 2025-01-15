@@ -1,18 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2024-11-01",
-  devtools: { enabled: true },
-
-  future: {
-    compatibilityVersion: 4,
-  },
-
-  typescript: {
-    strict: true,
-  },
-
-  telemetry: false,
-
   modules: [
     "@nuxtjs/tailwindcss",
     "@nuxtjs/color-mode",
@@ -23,16 +10,8 @@ export default defineNuxtConfig({
     "@vee-validate/nuxt",
     "@morev/vue-transitions/nuxt",
     "nuxt-seo-utils",
+    "@nuxt/eslint",
   ],
-
-  tailwindcss: {
-    exposeConfig: true,
-    editorSupport: true,
-  },
-
-  colorMode: {
-    classSuffix: "",
-  },
 
   imports: {
     imports: [
@@ -52,10 +31,7 @@ export default defineNuxtConfig({
       },
     ],
   },
-
-  build: {
-    transpile: ["vue-sonner"],
-  },
+  devtools: { enabled: true },
 
   app: {
     head: {
@@ -71,4 +47,37 @@ export default defineNuxtConfig({
       ],
     },
   },
-});
+
+  colorMode: {
+    classSuffix: "",
+  },
+
+  build: {
+    transpile: ["vue-sonner"],
+  },
+
+  future: {
+    compatibilityVersion: 4,
+  },
+  compatibilityDate: "2024-11-01",
+
+  typescript: {
+    strict: true,
+  },
+
+  telemetry: false,
+
+  eslint: {
+    config: {
+      standalone: false,
+      nuxt: {
+        sortConfigKeys: true,
+      },
+    },
+  },
+
+  tailwindcss: {
+    exposeConfig: true,
+    editorSupport: true,
+  },
+})

@@ -1,3 +1,17 @@
+<script lang="ts" setup>
+import type { PaginationEllipsisProps } from "radix-vue"
+import { reactiveOmit } from "@vueuse/core"
+import { PaginationEllipsis } from "radix-vue"
+
+const props = defineProps<
+  PaginationEllipsisProps & {
+    /** Icon to show */
+    icon?: string
+  }
+>()
+const forwarded = reactiveOmit(props, "icon")
+</script>
+
 <template>
   <PaginationEllipsis v-bind="forwarded">
     <slot>
@@ -7,17 +21,3 @@
     </slot>
   </PaginationEllipsis>
 </template>
-
-<script lang="ts" setup>
-  import { reactiveOmit } from "@vueuse/core";
-  import { PaginationEllipsis } from "radix-vue";
-  import type { PaginationEllipsisProps } from "radix-vue";
-
-  const props = defineProps<
-    PaginationEllipsisProps & {
-      /** Icon to show */
-      icon?: string;
-    }
-  >();
-  const forwarded = reactiveOmit(props, "icon");
-</script>

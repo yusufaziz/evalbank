@@ -1,3 +1,33 @@
+<script setup lang="ts">
+import type { Project } from "@prisma/client"
+
+const props = defineProps({
+  state: {
+    type: String,
+    required: true,
+  },
+  isMobile: {
+    type: Boolean,
+    required: true,
+  },
+})
+const route = useRoute()
+const isHasProject = !!route.query.projectId
+const { data: projects } = await useFetch<Project[]>("/api/projects")
+const { data: project } = useFetch<Project>(`api/projects/${route.query.projectId}`)
+function getGroupedProjects() {
+  if (projects) {
+    let ret = [] as Project[] | undefined
+    const fyUnique = []
+    ret = projects.value
+    return ret
+  }
+  else {
+    return []
+  }
+}
+</script>
+
 <template>
   <UiSidebarHeader v-if="isHasProject">
     <UiSidebarMenu>
@@ -35,7 +65,9 @@
               <div class="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Icon name="lucide:plus" class="size-4" />
               </div>
-              <div class="font-medium text-muted-foreground">Add team</div>
+              <div class="font-medium text-muted-foreground">
+                Add team
+              </div>
             </UiDropdownMenuItem>
           </UiDropdownMenuContent>
         </UiDropdownMenu>
@@ -43,10 +75,12 @@
     </UiSidebarMenu>
 
     <!-- Search form -->
-    <form v-if="props.state != 'collapsed'">
+    <form v-if="props.state !== 'collapsed'">
       <UiSidebarGroup class="pyproject-0">
         <UiSidebarGroupContent class="relative">
-          <UiLabel for="search" class="sr-only"> Search </UiLabel>
+          <UiLabel for="search" class="sr-only">
+            Search
+          </UiLabel>
           <UiSidebarInput id="search" placeholder="Search the docs..." class="pl-8" />
           <Icon
             name="lucide:search"
@@ -58,43 +92,3 @@
     </form>
   </UiSidebarHeader>
 </template>
-
-<script setup lang="ts">
-  import type { Project } from "@prisma/client";
-
-  const route = useRoute();
-  const isHasProject = !!route.query.projectId;
-  const { data: projects } = await useFetch<Project[]>("/api/projects");
-  const { data: project, status: projectStatus } = useFetch<Project>(
-    `api/projects/${route.query.projectId}`
-  );
-  interface IGroupedSubProjects {
-    title: string;
-    item: Project[];
-  }
-  interface IGroupedProjects {
-    title: string;
-    item: IGroupedSubProjects;
-  }
-  function getGroupedProjects() {
-    if (projects) {
-      let ret = [] as Project[] | undefined;
-      const fyUnique = [];
-      ret = projects.value;
-      return ret;
-    } else {
-      return [];
-    }
-  }
-
-  const props = defineProps({
-    state: {
-      type: String,
-      required: true,
-    },
-    isMobile: {
-      type: Boolean,
-      required: true,
-    },
-  });
-</script>

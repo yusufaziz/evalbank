@@ -9,9 +9,9 @@ datasource db {
 
 model Project {
   id          String       @id @default(uuid())
-  name        String       @unique
+  name        String
   modelFY     Int
-  modelSeries   String
+  modelSeries String
   modelName   String
   author      String
   evaluations Evaluation[]
@@ -40,18 +40,17 @@ model CheckItem {
 }
 
 model Setting {
-  id          String      @id @default(uuid())
-  name        String      @unique
-  constraints String
-  checkItems  CheckItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id         String      @id @default(uuid())
+  name       String
+  value      String
+  checkItems CheckItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model Evaluation {
   id         String      @id @default(uuid())
-  status     String
-  judgement  String
+  judgement  Int
   remarks    String?
   projectId  String?
   project    Project?    @relation(fields: [projectId], references: [id])
