@@ -5,34 +5,41 @@ const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
 })
 
-const onSubmit = handleSubmit(async (_) => {
-  const promise = () => new Promise(resolve => setTimeout(resolve, 3000))
-  useSonner.promise(promise, {
-    loading: "Sending information to our servers...",
-    success: () => "We updated your information.",
-    error: () => "Error! Your information could not be sent to our servers!",
-  })
+const onSubmit = handleSubmit(async (data) => {
+  useSonner.promise(
+    $fetch("/api/testcase/", {
+      method: "PUT",
+      body: data,
+    }),
+    {
+      loading: "Creating Testcase ...",
+      success: () => "Testcase has been added into database.",
+      error: () => "Error! Your information could not be sent to our servers!",
+    },
+  )
+  navigateTo("/testcase")
 })
 </script>
 
 <template>
-  <div class="flex items-center justify-center">
-    <form class="mx-auto max-w-md" @submit="onSubmit">
+  <div class="flex items-center">
+    <form class="mx-auto max-w-lg" @submit="onSubmit">
       <UiCard
-        class="w-[360px] max-w-sm"
+        class="w-[800px]"
         title="Create testcase"
         description="Create a new testcase."
       >
         <template #content>
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
-              <UiVeeInput label="Testcase Name" name="name" />
+              <UiVeeInput label="Name" name="name" />
+              <UiVeeTextarea label="Procedures" name="procedures" :rows="10" hint="Separate each step of procedure with new line." />
             </fieldset>
           </UiCardContent>
         </template>
         <template #footer>
           <UiCardFooter class="flex justify-between">
-            <UiButton type="reset" variant="outline">
+            <UiButton type="reset" variant="outline" @click="() => { useRouter().back() }">
               Cancel
             </UiButton>
             <UiButton type="submit">

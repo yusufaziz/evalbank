@@ -51,13 +51,13 @@ function getGroupedProjects() {
             :side="props.isMobile ? 'bottom' : 'right'"
             :side-offset="4"
           >
-            <template v-for="(project, index) in getGroupedProjects()" :key="index">
+            <template v-for="(projectItem, index) in getGroupedProjects()" :key="index">
               <UiDropdownMenuItem
                 class="cursor-pointer gap-2 p-2"
-                :class="[route.query.projectId === project.id && 'bg-muted']"
-                @click="route.query.projectId = project.id"
+                :class="[route.query.projectId === projectItem.id && 'bg-muted']"
+                @click="route.query.projectId = projectItem.id"
               >
-                {{ project.name }}
+                {{ projectItem.name }}
               </UiDropdownMenuItem>
             </template>
             <UiDropdownMenuSeparator />
@@ -81,7 +81,7 @@ function getGroupedProjects() {
           <UiLabel for="search" class="sr-only">
             Search
           </UiLabel>
-          <UiSidebarInput id="search" placeholder="Search the docs..." class="pl-8" />
+          <UiSidebarInput id="search" placeholder="Search the projects..." class="pl-8" />
           <Icon
             name="lucide:search"
             class="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50"

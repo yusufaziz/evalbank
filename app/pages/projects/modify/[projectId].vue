@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
-import consola from "consola"
 import { zodProjectSchema } from "~~/shared/schema/project"
 
 const { data: project } = useFetch<Project>(`/api/projects/${useRoute().params.projectId}`)
@@ -8,13 +7,18 @@ const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodProjectSchema),
 })
 const onSubmit = handleSubmit(async (data) => {
-  consola.info(data)
-  const promise = () => new Promise(resolve => setTimeout(resolve, 3000))
-  useSonner.promise(promise, {
-    loading: "Sending information to our servers...",
-    success: () => "We updated your information.",
-    error: () => "Error! Your information could not be sent to our servers!",
-  })
+  useSonner.promise(
+    useFetch(`/api/projects/${useRoute().params.projectId}`, {
+      method: "patch",
+      body: data,
+    }),
+    {
+      loading: "Modifying Project ...",
+      success: () => "Project information has been modified.",
+      error: () => "Error! Something went wrong during modifying data!",
+    },
+  )
+  navigateTo("/projects")
 })
 </script>
 

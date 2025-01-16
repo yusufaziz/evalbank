@@ -5,12 +5,11 @@ import type { ColumnDef, Table } from "@tanstack/vue-table"
 const tableRef = ref()
 const table = ref<Table<Setting> | null>(null)
 const search = ref("")
-
 const { data: settings } = useFetch<Setting[]>("/api/settings")
 
 const columns: ColumnDef<Setting>[] = [
-  { accessorKey: "id", header: "ID", enableHiding: true },
-  { accessorKey: "name", header: "Project Name", enableHiding: true },
+  { accessorKey: "name", header: "Name", enableHiding: true },
+  { accessorKey: "value", header: "Value Name", enableHiding: true },
   {
     accessorKey: "actions",
     header: "",

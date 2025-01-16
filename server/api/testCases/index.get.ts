@@ -1,6 +1,6 @@
 import prisma from "../../../plugins/prisma.client"
 
 export default defineEventHandler(async (event) => {
-  const testCases = await prisma.testCase.findMany()
-  return testCases
+  const testcases = await prisma.testcase.findMany()
+  return testcases
 })

@@ -25,6 +25,7 @@ const props = withDefaults(
     ascIcon?: string
     descIcon?: string
     unsortedIcon?: string
+    columnVisibility?: any
     class?: any
     showPagination?: boolean
     rowsPerPageText?: string
@@ -91,7 +92,7 @@ if (props.showSelect) {
 
 const localSorting = ref(props.sorting)
 const globalFilter = ref(props.search)
-const columnVisibility = ref({})
+const columnVisibility = ref({ ...props.columnVisibility })
 const rowSelection = ref({})
 
 const table = useVueTable({

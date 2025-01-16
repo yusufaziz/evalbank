@@ -17,6 +17,7 @@ const onSubmit = handleSubmit(async (data) => {
       error: () => "Error! Your information could not be sent to our servers!",
     },
   )
+  navigateTo("/projects")
 })
 </script>
 

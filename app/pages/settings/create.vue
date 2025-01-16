@@ -5,13 +5,19 @@ const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodSettingSchema),
 })
 
-const onSubmit = handleSubmit(async (_) => {
-  const promise = () => new Promise(resolve => setTimeout(resolve, 3000))
-  useSonner.promise(promise, {
-    loading: "Sending information to our servers...",
-    success: () => "We updated your information.",
-    error: () => "Error! Your information could not be sent to our servers!",
-  })
+const onSubmit = handleSubmit(async (data) => {
+  useSonner.promise(
+    $fetch("/api/settings/", {
+      method: "PUT",
+      body: data,
+    }),
+    {
+      loading: "Creating Settings ...",
+      success: () => "Settings has been added into database.",
+      error: () => "Error! Your information could not be sent to our servers!",
+    },
+  )
+  navigateTo("/settings")
 })
 </script>
 
@@ -23,6 +29,7 @@ const onSubmit = handleSubmit(async (_) => {
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
               <UiVeeInput label="Setting Name" name="name" />
+              <UiVeeInput label="Setting Value" name="value" />
             </fieldset>
           </UiCardContent>
         </template>

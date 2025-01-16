@@ -19,7 +19,7 @@ model Project {
   updatedAt   DateTime     @updatedAt
 }
 
-model TestCase {
+model Testcase {
   id         String      @id @default(uuid())
   name       String
   procedures String
@@ -33,7 +33,7 @@ model CheckItem {
   expectedTarget String
   settings       Setting[]
   testCaseId     String?
-  testCase       TestCase?    @relation(fields: [testCaseId], references: [id])
+  testcase       Testcase?    @relation(fields: [testCaseId], references: [id])
   evaluations    Evaluation[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt

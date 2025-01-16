@@ -1,42 +1,47 @@
 <script lang="ts" setup>
-import type { TestCase } from "@prisma/client"
-import consola from "consola"
+import type { Testcase } from "@prisma/client"
 import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 
-const { data: testcase } = useFetch<TestCase>(`/api/testcases/${useRoute().params.testcaseId}`)
+const { data: testcase } = useFetch<Testcase>(`/api/testcases/${useRoute().params.testcaseId}`)
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  consola.log(data)
-  const promise = () => new Promise(resolve => setTimeout(resolve, 3000))
-  useSonner.promise(promise, {
-    loading: "Sending information to our servers...",
-    success: () => "We updated your information.",
-    error: () => "Error! Your information could not be sent to our servers!",
-  })
+  useSonner.promise(
+    $fetch(`/api/testcases/{useRoute().params.testcaseId}/`, {
+      method: "PATCH",
+      body: data,
+    }),
+    {
+      loading: "Modifying Testcase ...",
+      success: () => "Testcase information has been updated.",
+      error: () => "Error! Your information could not be sent to our servers!",
+    },
+  )
+  navigateTo("/testcase")
 })
 </script>
 
 <template>
-  <div class="flex items-center justify-center">
-    <form class="mx-auto max-w-md" @submit="onSubmit">
+  <div class="flex items-center">
+    <form class="mx-auto" @submit="onSubmit">
       <UiCard
-        class="w-[360px] max-w-sm"
-        title="Modify Project"
-        description="Modify the Project information."
+        class="w-[800px]"
+        title="Modify Testcase"
+        description="Modify the Testcase information."
       >
         <template #content>
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
-              <UiVeeInput label="Project Name" name="name" :model-value="testcase?.name" />
+              <UiVeeInput label="Name" name="name" :model-value="testcase?.name" />
+              <UiVeeTextarea label="Procedures" name="procedures" :model-value="testcase?.procedures" :rows="10" hint="Separate each step of procedure with new line." />
             </fieldset>
           </UiCardContent>
         </template>
         <template #footer>
           <UiCardFooter class="flex justify-between">
-            <UiButton type="reset" variant="outline">
+            <UiButton type="reset" variant="outline" @click="() => { useRouter().back() }">
               Cancel
             </UiButton>
             <UiButton type="submit">

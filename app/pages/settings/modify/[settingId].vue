@@ -9,13 +9,18 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 
 const onSubmit = handleSubmit(async (data) => {
-  consola.log(data)
-  const promise = () => new Promise(resolve => setTimeout(resolve, 3000))
-  useSonner.promise(promise, {
-    loading: "Sending information to our servers...",
-    success: () => "We updated your information.",
-    error: () => "Error! Your information could not be sent to our servers!",
-  })
+  useSonner.promise(
+    $fetch("/api/settings/${useRoute().params.settingId}/", {
+      method: "PATCH",
+      body: data,
+    }),
+    {
+      loading: "Creating Settings ...",
+      success: () => "Settings has been added into database.",
+      error: () => "Error! Your information could not be sent to our servers!",
+    },
+  )
+  navigateTo("/settings")
 })
 </script>
 

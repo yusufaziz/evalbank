@@ -6,12 +6,12 @@ const tableRef = ref()
 const table = ref<Table<Project> | null>(null)
 const search = ref("")
 
-const { data: projects } = useFetch("/api/projects")
+const { data: projects, refresh: refreshProjects } = useFetch("/api/projects")
 
 const columns: ColumnDef<Project>[] = [
-  { accessorKey: "id", header: "ID", enableHiding: true, maxSize: 100 },
   { accessorKey: "name", header: "Project Name", enableHiding: true },
   { accessorKey: "modelFY", header: "FY", enableHiding: true },
+  { accessorKey: "modelSeries", header: "Model Series", enableHiding: true },
   { accessorKey: "modelName", header: "Model Name", enableHiding: true },
   {
     accessorKey: "actions",
@@ -84,9 +84,14 @@ const columns: ColumnDef<Project>[] = [
           size: "icon",
           class: "w-9 h-9",
           onClick: () => {
-            useSonner(`TODO: Delete Projects: ${value.row.original.id}`, {
-              duration: 3000,
+            useSonner.promise(useFetch(`/api/projects/${value.row.original.id}`, {
+              method: "delete",
+            }), {
+              loading: "Deleting projects...",
+              success: () => "Data has been deleted",
+              error: () => "Error! Couldn't delete data on database.",
             })
+            refreshProjects()
           },
         },
         () => [h(resolveComponent("Icon"), { name: "lucide:trash", class: "h-4 w-4" })],

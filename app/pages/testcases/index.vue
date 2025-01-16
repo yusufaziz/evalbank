@@ -6,12 +6,20 @@ const tableRef = ref()
 const table = ref<Table<TestCase> | null>(null)
 const search = ref("")
 
-const { data: testcases } = useFetch<TestCase[]>("/api/testCases")
+const { data: testcases } = useFetch<TestCase[]>("/api/testcases")
 
 const columns: ColumnDef<TestCase>[] = [
   { accessorKey: "id", header: "ID", enableHiding: true },
-  { accessorKey: "name", header: "Testcase Name", enableHiding: true },
-  { accessorKey: "procedures", header: "Procedures", enableHiding: true },
+  { accessorKey: "name", header: "Name", enableHiding: true },
+  { accessorKey: "procedures", header: "Testcase", enableHiding: true, cell: ({ row }) => {
+    return h(
+      resolveComponent("TestpointPartTestcaseProcedureColapsibles"),
+      {
+        name: row.original.name,
+        procedures: row.original.procedures,
+      },
+    )
+  } },
   {
     accessorKey: "actions",
     header: "",
@@ -68,6 +76,7 @@ const columns: ColumnDef<TestCase>[] = [
       :data="testcases"
       :columns="columns"
       class="mt-5 rounded-md border"
+      :column-visibility="{ id: false, name: false }"
       @ready="table = $event"
     >
       <template #empty>
