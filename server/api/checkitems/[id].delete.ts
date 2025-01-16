@@ -2,8 +2,8 @@ import prisma from "../../../plugins/prisma.client"
 
 export default defineEventHandler(async (event) => {
   const id = event.context.params?.id
-  const checkItem = await prisma.checkItem.findUnique({
+  await prisma.checkitem.delete({
     where: { id },
   })
-  return checkItem || { message: "checkItem not found" }
+  return { message: "checkItem deleted successfully" }
 })

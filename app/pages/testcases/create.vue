@@ -7,7 +7,7 @@ const { handleSubmit, isSubmitting } = useForm({
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch("/api/testcase/", {
+    $fetch("/api/testcases/", {
       method: "PUT",
       body: data,
     }),
@@ -17,7 +17,7 @@ const onSubmit = handleSubmit(async (data) => {
       error: () => "Error! Your information could not be sent to our servers!",
     },
   )
-  navigateTo("/testcase")
+  navigateTo("/testcases")
 })
 </script>
 

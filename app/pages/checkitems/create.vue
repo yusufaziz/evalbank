@@ -1,41 +1,40 @@
 <script lang="ts" setup>
-import type { Testcase } from "@prisma/client"
-import { zodTestcaseSchema } from "~~/shared/schema/testcase"
+import { zodCheckitemSchema } from "~~/shared/schema/checkitem"
 
-const { data: testcase } = useFetch<Testcase>(`/api/testcases/${useRoute().params.testcaseId}`)
 const { handleSubmit, isSubmitting } = useForm({
-  validationSchema: toTypedSchema(zodTestcaseSchema),
+  validationSchema: toTypedSchema(zodCheckitemSchema),
 })
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch(`/api/testcases/{useRoute().params.testcaseId}/`, {
-      method: "PATCH",
+    $fetch("/api/checkitems/", {
+      method: "PUT",
       body: data,
     }),
     {
-      loading: "Modifying Testcase ...",
-      success: () => "Testcase information has been updated.",
+      loading: "Creating Checkitem ...",
+      success: () => "Checkitem has been added into database.",
       error: () => "Error! Your information could not be sent to our servers!",
     },
   )
-  navigateTo("/testcases")
+  navigateTo("/checkitems")
 })
 </script>
 
 <template>
   <div class="flex items-center">
-    <form class="mx-auto" @submit="onSubmit">
+    <form class="mx-auto max-w-lg" @submit="onSubmit">
       <UiCard
         class="w-[800px]"
-        title="Modify Testcase"
-        description="Modify the Testcase information."
+        title="Create checkitem"
+        description="Create a new checkitem."
       >
         <template #content>
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
-              <UiVeeInput label="Name" name="name" :model-value="testcase?.name" />
-              <UiVeeTextarea label="Procedures" name="procedures" :model-value="testcase?.procedures" :rows="10" hint="Separate each step of procedure with new line." />
+            <UiVeeInput label="Module" name="module" />
+            <UiVeeInput label="Expected Target" name="expectedTarget" />
+            <UiVeeInput label="Setting Names" name="settingsNames" />
             </fieldset>
           </UiCardContent>
         </template>
@@ -45,7 +44,7 @@ const onSubmit = handleSubmit(async (data) => {
               Cancel
             </UiButton>
             <UiButton type="submit">
-              Modify
+              Create
             </UiButton>
           </UiCardFooter>
         </template>

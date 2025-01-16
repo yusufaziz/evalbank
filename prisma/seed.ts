@@ -24,7 +24,7 @@ async function main() {
   // Create 100 TestCases
   consola.info("Seeding TestCases...")
   for (let i = 0; i < 100; i++) {
-    await prisma. .create({
+    await prisma.testcase.create({
       data: {
         name: `TestCase ${faker.lorem.sentence()}`,
         procedures: faker.lorem.lines(),
@@ -50,9 +50,10 @@ async function main() {
   const testcases = await prisma.testcase.findMany()
   const settings = await prisma.setting.findMany()
   for (let i = 0; i < 100; i++) {
-    await prisma.checkItem.create({
+    await prisma.checkitem.create({
       data: {
         expectedTarget: `Target ${i + 1}`,
+        module: faker.book.publisher(),
         testCaseId: testcases[i % testcases.length].id, // Assign to a test case
         settings: {
           connect: [

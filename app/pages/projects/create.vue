@@ -22,32 +22,34 @@ const onSubmit = handleSubmit(async (data) => {
 </script>
 
 <template>
-  <form class="mx-auto" @submit="onSubmit">
-    <UiCard
-      class="w-[360px] max-w-md"
-      title="Create project"
-      description="Create a new project."
-    >
-      <template #content>
-        <UiCardContent>
-          <fieldset :disabled="isSubmitting">
-            <UiVeeInput label="Project Name" name="name" />
-            <UiVeeInput label="Model FY" name="modelFY" type="number" />
-            <UiVeeInput label="Model Series" name="modelSeries" />
-            <UiVeeInput label="Model Name" name="modelName" />
-          </fieldset>
-        </UiCardContent>
-      </template>
-      <template #footer>
-        <UiCardFooter class="flex justify-between">
-          <UiButton type="reset" variant="outline" @click="useRouter().back()">
-            Cancel
-          </UiButton>
-          <UiButton type="submit">
-            Create
-          </UiButton>
-        </UiCardFooter>
-      </template>
-    </UiCard>
-  </form>
+  <div class="flex items-center">
+    <form class="mx-auto" @submit="onSubmit">
+      <UiCard
+        class="w-[360px] max-w-md"
+        title="Create project"
+        description="Create a new project."
+      >
+        <template #content>
+          <UiCardContent>
+            <fieldset :disabled="isSubmitting">
+              <UiVeeInput label="Project Name" name="name" />
+              <UiVeeInput label="Model FY" name="modelFY" type="number" />
+              <UiVeeInput label="Model Series" name="modelSeries" />
+              <UiVeeInput label="Model Name" name="modelName" />
+            </fieldset>
+          </UiCardContent>
+        </template>
+        <template #footer>
+          <UiCardFooter class="flex justify-between">
+            <UiButton variant="outline" @click="useRouter().back()">
+              Cancel
+            </UiButton>
+            <UiButton type="submit">
+              Create
+            </UiButton>
+          </UiCardFooter>
+        </template>
+      </UiCard>
+    </form>
+  </div>
 </template>

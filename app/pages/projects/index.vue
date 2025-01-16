@@ -6,7 +6,7 @@ const tableRef = ref()
 const table = ref<Table<Project> | null>(null)
 const search = ref("")
 
-const { data: projects, refresh: refreshProjects } = useFetch("/api/projects")
+const { data: projects, refresh: refreshProjects } = useFetch<Project[]>("/api/projects")
 
 const columns: ColumnDef<Project>[] = [
   { accessorKey: "name", header: "Project Name", enableHiding: true },
@@ -103,7 +103,7 @@ const columns: ColumnDef<Project>[] = [
 
 <template>
   <div style="width: max-content">
-    <div class="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+    <div class="flex flex-col gap-5 md:flex-row md:items-center">
       <UiInput v-model="search" type="search" placeholder="Search" class="w-full md:w-96" />
       <UiDropdownMenu>
         <UiDropdownMenuTrigger as-child>
@@ -131,11 +131,10 @@ const columns: ColumnDef<Project>[] = [
 
     <UiTanStackTable
       ref="tableRef"
-      show-select
       :search="search"
       :data="projects"
       :columns="columns"
-      class="mt-5 rounded-md border"
+      class="mt-1 rounded-md border"
       @ready="table = $event"
     >
       <template #empty>

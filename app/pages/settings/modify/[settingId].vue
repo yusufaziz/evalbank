@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { Setting } from "@prisma/client"
-import consola from "consola"
 import { zodSettingSchema } from "~~/shared/schema/setting"
 
 const { data: setting } = useFetch<Setting>(`/api/settings/${useRoute().params.settingId}`)
@@ -10,13 +9,13 @@ const { handleSubmit, isSubmitting } = useForm({
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch("/api/settings/${useRoute().params.settingId}/", {
+    $fetch(`/api/settings/${useRoute().params.settingId}/`, {
       method: "PATCH",
       body: data,
     }),
     {
-      loading: "Creating Settings ...",
-      success: () => "Settings has been added into database.",
+      loading: "MOdify Settings ...",
+      success: () => "Settings information has been updated.",
       error: () => "Error! Your information could not be sent to our servers!",
     },
   )
@@ -25,7 +24,7 @@ const onSubmit = handleSubmit(async (data) => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center">
+  <div class="flex items-center">
     <form class="mx-auto max-w-md" @submit="onSubmit">
       <UiCard
         class="w-[360px] max-w-sm"
@@ -41,7 +40,7 @@ const onSubmit = handleSubmit(async (data) => {
         </template>
         <template #footer>
           <UiCardFooter class="flex justify-between">
-            <UiButton type="reset" variant="outline">
+            <UiButton variant="outline" @click="useRouter().back()">
               Cancel
             </UiButton>
             <UiButton type="submit">

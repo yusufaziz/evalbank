@@ -23,7 +23,7 @@ const onSubmit = handleSubmit(async (data) => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center">
+  <div class="flex items-center">
     <form class="mx-auto max-w-md" @submit="onSubmit">
       <UiCard
         class="w-[360px] max-w-sm"
@@ -38,7 +38,7 @@ const onSubmit = handleSubmit(async (data) => {
                 label="Model FY"
                 name="modelFY"
                 type="number"
-                :model-value="project?.modelFY"
+                :model-value="project?.modelFY.toString()"
               />
               <UiVeeInput
                 label="Model Series"
@@ -51,7 +51,7 @@ const onSubmit = handleSubmit(async (data) => {
         </template>
         <template #footer>
           <UiCardFooter class="flex justify-between">
-            <UiButton type="reset" variant="outline">
+            <UiButton variant="outline" @click="useRouter().back()">
               Cancel
             </UiButton>
             <UiButton type="submit">

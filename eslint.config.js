@@ -7,6 +7,9 @@ export default nuxt(
     formatters: true,
     stylistic: {
       quotes: "double",
+      overrides: {
+
+      },
     },
   }),
 )

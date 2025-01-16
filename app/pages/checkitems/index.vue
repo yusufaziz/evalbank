@@ -1,15 +1,17 @@
 <script lang="ts" setup>
-import type { Setting } from "@prisma/client"
+import type { Checkitem } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/vue-table"
 
 const tableRef = ref()
-const table = ref<Table<Setting> | null>(null)
+const table = ref<Table<Checkitem> | null>(null)
 const search = ref("")
-const { data: settings } = useFetch<Setting[]>("/api/settings")
 
-const columns: ColumnDef<Setting>[] = [
-  { accessorKey: "name", header: "Name", enableHiding: true },
-  { accessorKey: "value", header: "Value Name", enableHiding: true },
+const { data: checkitems } = useFetch<Checkitem[]>("/api/checkitems")
+
+const columns: ColumnDef<Checkitem>[] = [
+  { accessorKey: "id", header: "ID", enableHiding: true },
+  { accessorKey: "module", header: "Module", enableHiding: true },
+  { accessorKey: "expectedTarget", header: "Expected Target", enableHiding: true },
   {
     accessorKey: "actions",
     header: "",
@@ -22,7 +24,7 @@ const columns: ColumnDef<Setting>[] = [
           variant: "ghost",
           size: "icon",
           class: "w-9 h-9",
-          onClick: () => navigateTo(`/settings/modify/${value.row.original.id}`),
+          onClick: () => navigateTo(`/checkitems/modify/${value.row.original.id}`),
         },
         () => [h(resolveComponent("Icon"), { name: "lucide:pen", class: "h-4 w-4" })],
       )
@@ -33,7 +35,7 @@ const columns: ColumnDef<Setting>[] = [
 
 <template>
   <div style="width: max-content">
-    <div class="flex flex-col gap-5 md:flex-row md:items-center">
+    <div class="flex flex-col justify-between gap-5 md:flex-row md:items-center">
       <UiInput v-model="search" type="search" placeholder="Search" class="w-full md:w-96" />
       <UiDropdownMenu>
         <UiDropdownMenuTrigger as-child>
@@ -63,9 +65,10 @@ const columns: ColumnDef<Setting>[] = [
       ref="tableRef"
       show-select
       :search="search"
-      :data="settings"
+      :data="checkitems"
       :columns="columns"
       class="mt-5 rounded-md border"
+      :column-visibility="{ id: false, name: false }"
       @ready="table = $event"
     >
       <template #empty>
