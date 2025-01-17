@@ -24,27 +24,27 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <div class="flex items-center">
-    <form class="mx-auto max-w-md" @submit="onSubmit">
-      <UiCard class="w-[360px] max-w-sm" title="Create setting" description="Create new setting.">
-        <template #content>
+    <UiCard class="w-[360px] max-w-sm" title="Create setting" description="Create new setting.">
+      <template #content>
+        <form id="formCreateSetting" class="mx-auto max-w-md" @submit="onSubmit">
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
               <UiVeeInput label="Setting Name" name="name" />
               <UiVeeInput label="Setting Value" name="value" />
             </fieldset>
           </UiCardContent>
-        </template>
-        <template #footer>
-          <UiCardFooter class="flex justify-between">
-            <UiButton variant="outline" @click="useRouter().back()">
-              Cancel
-            </UiButton>
-            <UiButton type="submit">
-              Create
-            </UiButton>
-          </UiCardFooter>
-        </template>
-      </UiCard>
-    </form>
+        </form>
+      </template>
+      <template #footer>
+        <UiCardFooter class="flex justify-between">
+          <UiButton variant="outline" @click="useRouter().back()">
+            Cancel
+          </UiButton>
+          <UiButton type="submit" form="formCreateSetting">
+            Create
+          </UiButton>
+        </UiCardFooter>
+      </template>
+    </UiCard>
   </div>
 </template>

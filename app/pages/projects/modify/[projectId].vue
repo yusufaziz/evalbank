@@ -2,9 +2,12 @@
 import type { Project } from "@prisma/client"
 import { zodProjectSchema } from "~~/shared/schema/project"
 
-const { data: project } = useFetch<Project>(`/api/projects/${useRoute().params.projectId}`)
+const { data: project } = await useFetch<Project>(`/api/projects/${useRoute().params.projectId}`)
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodProjectSchema),
+  initialValues: {
+    ...project.value,
+  },
 })
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
@@ -24,42 +27,33 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <div class="flex items-center">
-    <form class="mx-auto max-w-md" @submit="onSubmit">
-      <UiCard
-        class="w-[360px] max-w-sm"
-        title="Modify Project"
-        description="Modify the Project information."
-      >
-        <template #content>
+    <UiCard
+      class="w-[600px]"
+      title="Modify Project"
+      description="Modify the Project information."
+    >
+      <template #content>
+        <form id="projectModifyForm" class="mx-auto max-w-lg" @submit.prevent="onSubmit">
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
-              <UiVeeInput label="Project Name" name="name" :model-value="project?.name" />
-              <UiVeeInput
-                label="Model FY"
-                name="modelFY"
-                type="number"
-                :model-value="project?.modelFY.toString()"
-              />
-              <UiVeeInput
-                label="Model Series"
-                name="modelSeries"
-                :model-value="project?.modelSeries"
-              />
-              <UiVeeInput label="Model Name" name="modelName" :model-value="project?.modelName" />
+              <UiVeeInput label="Project Name" name="name" />
+              <UiVeeInput label="Model FY" name="modelFY" type="number" />
+              <UiVeeInput label="Model Series" name="modelSeries" />
+              <UiVeeInput label="Model Name" name="modelName" />
             </fieldset>
           </UiCardContent>
-        </template>
-        <template #footer>
-          <UiCardFooter class="flex justify-between">
-            <UiButton variant="outline" @click="useRouter().back()">
-              Cancel
-            </UiButton>
-            <UiButton type="submit">
-              Modify
-            </UiButton>
-          </UiCardFooter>
-        </template>
-      </UiCard>
-    </form>
+        </form>
+      </template>
+      <template #footer>
+        <UiCardFooter class="flex justify-between">
+          <UiButton variant="outline" @click="useRouter().back()">
+            Cancel
+          </UiButton>
+          <UiButton type="submit" form="projectModifyForm">
+            Modify
+          </UiButton>
+        </UiCardFooter>
+      </template>
+    </UiCard>
   </div>
 </template>

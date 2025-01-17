@@ -23,31 +23,28 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <div class="flex items-center">
-    <form class="mx-auto max-w-lg" @submit="onSubmit">
-      <UiCard
-        class="w-[800px]"
-        title="Create testcase"
-        description="Create a new testcase."
-      >
+      <UiCard class="w-[800px]" title="Create testcase" description="Create a new testcase." >
         <template #content>
+          <form id="formCreateTestcase" class="mx-auto max-w-lg" @submit.prevent="onSubmit">
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
               <UiVeeInput label="Name" name="name" />
               <UiVeeTextarea label="Procedures" name="procedures" :rows="10" hint="Separate each step of procedure with new line." />
             </fieldset>
           </UiCardContent>
+        </form>
         </template>
         <template #footer>
           <UiCardFooter class="flex justify-between">
             <UiButton type="reset" variant="outline" @click="() => { useRouter().back() }">
               Cancel
             </UiButton>
-            <UiButton type="submit">
+            <UiButton type="submit" form="formCreateTestcase">
               Create
             </UiButton>
           </UiCardFooter>
         </template>
       </UiCard>
-    </form>
+    
   </div>
 </template>
