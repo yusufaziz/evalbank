@@ -18,83 +18,17 @@ const columns: ColumnDef<Project>[] = [
     header: "",
     enableSorting: false,
     enableHiding: false,
-    cell: (value) => {
+    cell: ({ row }) => {
       return h(
-        resolveComponent("UiButton"),
+        resolveComponent("TestpointPartFormActionButton"),
         {
-          variant: "outline",
-          size: "icon",
-          class: "w-9 h-9",
-          onClick: () => navigateTo(`/projects/${value.row.original.id}`),
+          id: row.original.id,
+          endpoint: "projects",
+          duplicate: true,
+          view: true,
+          remove: true,
+          edit: true,
         },
-        () => [h(resolveComponent("Icon"), { name: "lucide:eye", class: "h-4 w-4" })],
-      )
-    },
-  },
-  {
-    accessorKey: "actions",
-    header: "",
-    enableSorting: false,
-    enableHiding: false,
-    cell: (value) => {
-      return h(
-        resolveComponent("UiButton"),
-        {
-          variant: "ghost",
-          size: "icon",
-          class: "w-9 h-9",
-          onClick: () => {
-            useSonner(`TODO: Duplicate Projects: ${value.row.original.id}`, {
-              duration: 3000,
-            })
-          },
-        },
-        () => [h(resolveComponent("Icon"), { name: "lucide:copy", class: "h-4 w-4" })],
-      )
-    },
-  },
-  {
-    accessorKey: "actions",
-    header: "",
-    enableSorting: false,
-    enableHiding: false,
-    cell: (value) => {
-      return h(
-        resolveComponent("UiButton"),
-        {
-          variant: "outline",
-          size: "icon",
-          class: "w-9 h-9",
-          onClick: () => navigateTo(`/projects/modify/${value.row.original.id}`),
-        },
-        () => [h(resolveComponent("Icon"), { name: "lucide:pen", class: "h-4 w-4" })],
-      )
-    },
-  },
-  {
-    accessorKey: "actions",
-    header: "",
-    enableSorting: false,
-    enableHiding: false,
-    cell: (value) => {
-      return h(
-        resolveComponent("UiButton"),
-        {
-          variant: "destructive",
-          size: "icon",
-          class: "w-9 h-9",
-          onClick: () => {
-            useSonner.promise(useFetch(`/api/projects/${value.row.original.id}`, {
-              method: "delete",
-            }), {
-              loading: "Deleting projects...",
-              success: () => "Data has been deleted",
-              error: () => "Error! Couldn't delete data on database.",
-            })
-            refreshProjects()
-          },
-        },
-        () => [h(resolveComponent("Icon"), { name: "lucide:trash", class: "h-4 w-4" })],
       )
     },
   },

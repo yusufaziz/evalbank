@@ -9,7 +9,7 @@ const { handleSubmit, isSubmitting } = useForm({
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch(`/api/checkitems/{useRoute().params.checkitemId}/`, {
+    $fetch<Checkitem>(`/api/checkitems/{useRoute().params.checkitemId}/`, {
       method: "PATCH",
       body: data,
     }),

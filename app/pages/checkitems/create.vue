@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { Checkitem } from "@prisma/client"
 import { zodCheckitemSchema } from "~~/shared/schema/checkitem"
 
 const { handleSubmit, isSubmitting } = useForm({
@@ -7,7 +8,7 @@ const { handleSubmit, isSubmitting } = useForm({
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch("/api/checkitems/", {
+    $fetch<Checkitem>("/api/checkitems/", {
       method: "PUT",
       body: data,
     }),
@@ -32,9 +33,9 @@ const onSubmit = handleSubmit(async (data) => {
         <template #content>
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
-            <UiVeeInput label="Module" name="module" />
-            <UiVeeInput label="Expected Target" name="expectedTarget" />
-            <UiVeeInput label="Setting Names" name="settingsNames" />
+              <UiVeeInput label="Module" name="module" />
+              <UiVeeInput label="Expected Target" name="expectedTarget" />
+              <UiVeeInput label="Setting Names" name="settingsNames" />
             </fieldset>
           </UiCardContent>
         </template>

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { Setting } from "@prisma/client"
 import { zodSettingSchema } from "~~/shared/schema/setting"
 
 const { handleSubmit, isSubmitting } = useForm({
@@ -7,7 +8,7 @@ const { handleSubmit, isSubmitting } = useForm({
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch("/api/settings/", {
+    $fetch<Setting>("/api/settings/", {
       method: "PUT",
       body: data,
     }),

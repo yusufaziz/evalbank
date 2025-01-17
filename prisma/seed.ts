@@ -45,27 +45,6 @@ async function main() {
   }
   consola.info("Finished seeding Settings.")
 
-  // Create 100 CheckItems
-  consola.info("Seeding CheckItems...")
-  const testcases = await prisma.testcase.findMany()
-  const settings = await prisma.setting.findMany()
-  for (let i = 0; i < 100; i++) {
-    await prisma.checkitem.create({
-      data: {
-        expectedTarget: `Target ${i + 1}`,
-        module: faker.book.publisher(),
-        testCaseId: testcases[i % testcases.length].id, // Assign to a test case
-        settings: {
-          connect: [
-            { id: settings[i % settings.length].id }, // Assign to a setting
-            { id: settings[(i + 1) % settings.length].id }, // Assign another setting
-          ],
-        },
-      },
-    })
-  }
-  consola.info("Finished seeding CheckItems.")
-
   consola.info("Seeding completed successfully!")
 }
 

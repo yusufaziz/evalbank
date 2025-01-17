@@ -8,7 +8,7 @@ const { handleSubmit, isSubmitting } = useForm({
 })
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    useFetch(`/api/projects/${useRoute().params.projectId}`, {
+    $fetch<Project>(`/api/projects/${useRoute().params.projectId}`, {
       method: "patch",
       body: data,
     }),

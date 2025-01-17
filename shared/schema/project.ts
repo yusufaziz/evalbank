@@ -13,6 +13,4 @@ export const zodProjectSchema = z.object({
     .int("Only numbers are allowed")
     .min(20, "It should be register above FY20")
     .max(50, "Model FY must be under FY50"),
-  author: z.string().optional(),
-  modifier: z.string().optional(),
 })
