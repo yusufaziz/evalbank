@@ -25,25 +25,57 @@ const props = defineProps({
     default: false,
   },
 })
-const emit = defineEmits(["postdelete"])
-async function onDelete() {
-  await useSonner.promise(
+const emit = defineEmits(["needRefresh"])
+function onDelete() {
+  useSonner.promise(
     $fetch<any>(`/api/${props.endpoint}/${props.id}`, {
       method: "delete",
-    }),
+    })
+      .then((response) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            emit("needRefresh")
+            resolve(response)
+          }, 1000) // 1-second delay
+        })
+      }),
     {
       loading: "Deleting Data ...",
-      success: () => "Data sucessfully deleted",
+      success: () => "Data successfully deleted",
       error: () => "Error! Something went wrong during deleting data!",
     },
   )
-  emit("postdelete")
+}
+
+function onDuplicate() {
+  useSonner.promise(
+    $fetch<any>(`/api/duplicate/`, {
+      method: "POST",
+      body: {
+        type: props.endpoint,
+        id: props.id,
+      },
+    })
+      .then((response) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            emit("needRefresh")
+            resolve(response)
+          }, 1000) // 1-second delay
+        })
+      }),
+    {
+      loading: "Duplicating Data ...",
+      success: () => "Data successfully duplicated",
+      error: () => "Error! Something went wrong during duplicating data!",
+    },
+  )
 }
 </script>
 
 <template>
   <div class="flex flex-auto gap-2">
-    <UiButton v-if="props.duplicate" size="icon" variant="outline">
+    <UiButton v-if="props.duplicate" size="icon" variant="outline" @click="onDuplicate">
       <Icon class="size-4" name="lucide:copy" />
     </UiButton>
     <UiButton v-if="props.view" size="icon" variant="outline" @click="navigateTo(`/${endpoint}/${id}`)">

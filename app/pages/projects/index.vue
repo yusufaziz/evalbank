@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/vue-table"
+import consola from "consola";
 
 const tableRef = ref()
 const table = ref<Table<Project> | null>(null)
 const search = ref("")
 
-const { data: projects, refresh: refreshProjects } = useFetch<Project[]>("/api/projects")
+const { data: projects } = useFetch<Project[]>("/api/projects")
 
 const columns: ColumnDef<Project>[] = [
   { accessorKey: "name", header: "Project Name", enableHiding: true },
@@ -28,6 +29,9 @@ const columns: ColumnDef<Project>[] = [
           view: true,
           remove: true,
           edit: true,
+          onNeedRefresh: async () => {
+            await refreshNuxtData()
+          },
         },
       )
     },

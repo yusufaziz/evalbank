@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import type { Testcase } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/vue-table"
+import consola from "consola";
 
 const tableRef = ref()
 const table = ref<Table<Testcase> | null>(null)
 const search = ref("")
 
-const { data: testcases, refresh } = useFetch<Testcase[]>("/api/testcases")
+const { data: testcases } = useFetch<Testcase[]>("/api/testcases")
 
 const columns: ColumnDef<Testcase>[] = [
   { accessorKey: "id", header: "ID", enableHiding: true },
@@ -35,10 +36,8 @@ const columns: ColumnDef<Testcase>[] = [
           duplicate: true,
           remove: true,
           edit: true,
-          onPostdelete: () => {
-            refresh({
-              dedupe: "defer",
-            })
+          onNeedRefresh: async () => {
+            await refreshNuxtData()
           },
         },
       )
