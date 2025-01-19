@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
     const groupedSettings: IGroupedSettings[] = []
     const settings = await prisma.setting.findMany({
       select: {
+        id: true,
         name: true,
         value: true,
       },
@@ -22,7 +23,7 @@ export default defineEventHandler(async (event) => {
     uniqueName.forEach((name) => {
       groupedSettings.push({
         name,
-        value: [...new Set(settings.filter(f => f.name === name).map(m => m.value))],
+        value: [...new Set(settings.filter(f => f.name === name).map(m => `${(query.with === "id" ? `${m.id}#` : "")}${m.value}`))],
       })
     })
     return groupedSettings

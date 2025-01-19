@@ -16,7 +16,7 @@ const props = defineProps({
   },
 })
 const { data: projects } = useFetch<Project[]>("/api/projects")
-const { data: project } = useFetch<Project>(`api/projects/${props.projectId}`)
+const { data: project } = useFetch<Project>(`/api/projects/${props.projectId}`)
 </script>
 
 <template>

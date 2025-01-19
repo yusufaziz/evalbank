@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { Testcase } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/vue-table"
-import consola from "consola";
 
 const tableRef = ref()
 const table = ref<Table<Testcase> | null>(null)
