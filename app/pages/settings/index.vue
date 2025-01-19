@@ -15,16 +15,16 @@ const columns: ColumnDef<Setting>[] = [
     header: "",
     enableSorting: false,
     enableHiding: false,
-    cell: (value) => {
+    cell: ({ row }) => {
       return h(
-        resolveComponent("UiButton"),
+        resolveComponent("TestpointPartFormActionButton"),
         {
-          variant: "ghost",
-          size: "icon",
-          class: "w-9 h-9",
-          onClick: () => navigateTo(`/settings/modify/${value.row.original.id}`),
+          id: row.original.id,
+          endpoint: "settings",
+          view: true,
+          remove: true,
+          edit: true,
         },
-        () => [h(resolveComponent("Icon"), { name: "lucide:pen", class: "h-4 w-4" })],
       )
     },
   },

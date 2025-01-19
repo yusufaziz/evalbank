@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+import type { Checkitem } from "@prisma/client" // Import the Checkitem type
+
 const props = defineProps({
   name: {
     type: String,
@@ -8,6 +10,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  checkitems: {
+    type: Array as () => Checkitem[],
+    required: true,
+  },
 })
 const procedures = props.procedures.split("\n")
 </script>
@@ -15,7 +21,7 @@ const procedures = props.procedures.split("\n")
 <template>
   <div class="flex items-center truncate text-ellipsis">
     <UiCollapsible class="space-y-2">
-      <div class="flex items-center">
+      <div class="flex items-center justify-between w-[600px]">
         <h4 class="text-sm font-semibold">
           {{ props.name }}
         </h4>
@@ -27,20 +33,12 @@ const procedures = props.procedures.split("\n")
         </UiCollapsibleTrigger>
       </div>
       <UiCollapsibleContent v-if="procedures.length > 1" class="space-y-2">
-        <div v-for="(p, i) in procedures" :key="i" class="rounded-md border px-4 py-3 font-mono text-sm">
-          {{ i + 1 }} -  {{ p }}
-        </div>
-        <UiSeparator />
-        <UiCard
-          class="w-[360px] max-w-sm"
-          title="Checkitem 1"
-        >
-          <template #content>
-            <UiCardContent>
-              To do here
-            </UiCardContent>
-          </template>
-        </UiCard>
+        <UiDivider label="Procedures" />
+        <p v-for="(p, i) in procedures" :key="i" class="text-sm">
+          {{ i + 1 }}.  {{ p }}
+        </p>
+        <UiDivider label="Checkitems" />
+        <TestpointPartViewCheckitem v-for="(checkitem, i) in checkitems" :key="i" :checkitem="checkitem" />
       </UiCollapsibleContent>
     </UiCollapsible>
   </div>

@@ -5,27 +5,15 @@ import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 // Create a reactive array for checkitems
 const checkitems = ref<Checkitem[]>([])
 
-const { handleSubmit, isSubmitting, values } = useForm({
+const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
-  initialValues: {
-    checkitems: [], // Initialize checkitems as an empty array
-  },
 })
-
-// Sync the reactive array with the form's values
-watch(
-  checkitems,
-  (newCheckitems) => {
-    values.checkitems = newCheckitems // Update the form's values
-  },
-  { deep: true },
-)
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
     $fetch<Testcase>("/api/testcases/", {
       method: "PUT",
-      body: data,
+      body: { ...data, checkitems: checkitems.value },
     }),
     {
       loading: "Creating Testcase ...",

@@ -6,7 +6,7 @@ const tableRef = ref()
 const table = ref<Table<Testcase> | null>(null)
 const search = ref("")
 
-const { data: testcases } = useFetch<Testcase[]>("/api/testcases")
+const { data: testcases, refresh } = useFetch<Testcase[]>("/api/testcases")
 
 const columns: ColumnDef<Testcase>[] = [
   { accessorKey: "id", header: "ID", enableHiding: true },
@@ -17,6 +17,7 @@ const columns: ColumnDef<Testcase>[] = [
       {
         name: row.original.name,
         procedures: row.original.procedures,
+        checkitems: row.original.checkitems,
       },
     )
   } },
@@ -25,16 +26,21 @@ const columns: ColumnDef<Testcase>[] = [
     header: "",
     enableSorting: false,
     enableHiding: false,
-    cell: (value) => {
+    cell: ({ row }) => {
       return h(
-        resolveComponent("UiButton"),
+        resolveComponent("TestpointPartFormActionButton"),
         {
-          variant: "ghost",
-          size: "icon",
-          class: "w-9 h-9",
-          onClick: () => navigateTo(`/testcases/modify/${value.row.original.id}`),
+          id: row.original.id,
+          endpoint: "testcases",
+          duplicate: true,
+          remove: true,
+          edit: true,
+          onPostdelete: () => {
+            refresh({
+              dedupe: "defer",
+            })
+          },
         },
-        () => [h(resolveComponent("Icon"), { name: "lucide:pen", class: "h-4 w-4" })],
       )
     },
   },
