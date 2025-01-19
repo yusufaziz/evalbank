@@ -5,6 +5,7 @@
 {
   "auto_indent_on_paste": true,
   "format_on_save": "on",
+  "max_tabs": 1,
   "formatter": {
     "code_actions": {
       // Use ESLint's --fix:

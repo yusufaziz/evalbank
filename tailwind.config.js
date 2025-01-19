@@ -18,10 +18,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          `Inter, ${fontFamily.sans.join(", ")}`,
-          {
-            fontFeatureSettings: "\"cv02\",\"cv03\",\"cv04\",\"cv11\"",
-          },
+          `Quicksand, ${fontFamily.sans.join(", ")}`,
         ],
         mono: ["'Fira Code'", ...fontFamily.mono],
       },

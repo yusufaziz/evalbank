@@ -1,47 +1,48 @@
 import process from "node:process"
-import { faker } from "@faker-js/faker"
 import { PrismaClient } from "@prisma/client"
 import consola from "consola"
 
 const prisma = new PrismaClient()
 
+interface PrintingOptions {
+  "Paper Type": string[]
+  "Paper Size": string[]
+  "Printing Quality": string[]
+  "Region": string[]
+  "Printing Resolution": string[]
+  "Scanning Resolution": string[]
+  "Paper Input Source": string[]
+  "Printing Mode": string[]
+}
+
 async function main() {
-  consola.info("Starting seeding process...")
-  consola.info("Seeding Projects...")
-  for (let i = 0; i < 10; i++) {
-    await prisma.project.create({
-      data: {
-        name: faker.lorem.sentence(),
-        modelSeries: faker.food.fruit(),
-        modelFY: faker.number.int({ min: 20, max: 25 }),
-        modelName: `Model ${faker.string.alphanumeric(3).toUpperCase()}`,
-        author: faker.person.fullName(),
-      },
-    })
-  }
-  consola.info("Finished seeding Projects.")
-
-  // Create 100 TestCases
-  consola.info("Seeding TestCases...")
-  for (let i = 0; i < 100; i++) {
-    await prisma.testcase.create({
-      data: {
-        name: `TestCase ${faker.lorem.sentence()}`,
-        procedures: faker.lorem.lines(),
-      },
-    })
-  }
-  consola.info("Finished seeding TestCases.")
-
   // Create 100 Settings
   consola.info("Seeding Settings...")
-  for (let i = 0; i < 100; i++) {
-    await prisma.setting.create({
-      data: {
-        name: `Setting ${i + 1}`,
-        value: faker.lorem.word(),
-      },
-    })
+  // Define the type for the object
+
+  // Create the object with the specified keys and arrays
+  const printingOptions: PrintingOptions = {
+    "Paper Type": ["Glossy", "Matte", "Satin", "Canvas", "Recycled", "Photo Paper", "Transparency"],
+    "Paper Size": ["A4", "A5", "Letter", "Legal", "A3", "A6", "Tabloid", "Envelope"],
+    "Printing Quality": ["High", "Medium", "Low", "Draft", "Best"],
+    "Region": ["North America", "Europe", "Asia", "Australia", "South America", "Africa", "Antarctica"],
+    "Printing Resolution": ["300 dpi", "600 dpi", "1200 dpi", "2400 dpi", "4800 dpi"],
+    "Scanning Resolution": ["150 dpi", "300 dpi", "600 dpi", "1200 dpi", "2400 dpi"],
+    "Paper Input Source": ["Auto Sheet Feeder", "Manual Feed", "Tray 1", "Tray 2", "Tray 3", "Bypass Tray"],
+    "Printing Mode": ["Duplex", "Simplex", "Auto Duplex", "Manual Duplex"],
+  }
+  for (const key in printingOptions) {
+    if (Object.hasOwn(printingOptions, key)) { // Use Object.hasOwn() for safer property checking
+      const values = printingOptions[key as keyof PrintingOptions]
+      for (let i = 0; i < values.length; i++) {
+        await prisma.setting.create({
+          data: {
+            name: key,
+            value: values[i] || "",
+          },
+        })
+      }
+    }
   }
   consola.info("Finished seeding Settings.")
 

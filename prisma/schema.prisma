@@ -15,59 +15,79 @@ model Project {
   modelName   String
   author      String?
   modifier    String?
-  constrains  String?
-  evaluations Evaluation[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  settings    Setting[]
+  evaluations Evaluation[]
+  attachments Attachment[]
 }
 
 model Testcase {
-  id         String      @id @default(uuid())
-  name       String
-  procedures String
-  checkItems Checkitem[]
-  author     String?
-  modifier   String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id          String       @id @default(uuid())
+  name        String
+  procedures  String
+  author      String?
+  modifier    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  checkitems  Checkitem[]
+  attachments Attachment[]
 }
 
 model Checkitem {
-  id             String       @id @default(uuid())
-  module         String
-  expectedTarget String
-  settingsNames  String?
-  testcaseId     String?
-  testcase       Testcase?    @relation(fields: [testcaseId], references: [id])
-  evaluations    Evaluation[]
-  author         String?
-  modifier       String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id               String       @id @default(uuid())
+  module           String
+  expectedTarget   String
+  requiredSettings String?
+  testcaseId       String?
+  testcase         Testcase?    @relation(fields: [testcaseId], references: [id])
+  author           String?
+  modifier         String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  evaluations      Evaluation[]
+  attachments      Attachment[]
 }
 
 model Setting {
-  id         String       @id @default(uuid())
-  name       String
-  value      String
-  constrains String?
-  author     String?
-  modifier   String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  evaluatons Evaluation[]
+  id          String       @id @default(uuid())
+  name        String
+  value       String
+  constrains  String?
+  author      String?
+  modifier    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  evaluatons  Evaluation[]
+  projects    Project[]
+  attachments Attachment[]
 }
 
 model Evaluation {
-  id         String      @id @default(uuid())
-  judgement  Int
-  remarks    String?
-  projectId  String?
-  project    Project?    @relation(fields: [projectId], references: [id])
-  checkitems Checkitem[]
-  settings   Setting[]
-  author     String?
-  modifier   String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id          String       @id @default(uuid())
+  judgement   Int
+  remarks     String?
+  projectId   String?
+  project     Project?     @relation(fields: [projectId], references: [id])
+  author      String?
+  modifier    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  checkitems  Checkitem[]
+  settings    Setting[]
+  attachments Attachment[]
+}
+
+model Attachment {
+  id          String       @id @default(uuid())
+  filename    String
+  author      String?
+  modifier    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  settings    Setting[]
+  evaluations Evaluation[]
+  checkitems  Checkitem[]
+  testcases   Testcase[]
+  projects    Project[]
 }

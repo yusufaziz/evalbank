@@ -1,13 +1,29 @@
 <script lang="ts" setup>
+import type { Checkitem, Testcase } from "@prisma/client"
 import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 
-const { handleSubmit, isSubmitting } = useForm({
+// Create a reactive array for checkitems
+const checkitems = ref<Checkitem[]>([])
+
+const { handleSubmit, isSubmitting, values } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
+  initialValues: {
+    checkitems: [], // Initialize checkitems as an empty array
+  },
 })
+
+// Sync the reactive array with the form's values
+watch(
+  checkitems,
+  (newCheckitems) => {
+    values.checkitems = newCheckitems // Update the form's values
+  },
+  { deep: true },
+)
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch("/api/testcases/", {
+    $fetch<Testcase>("/api/testcases/", {
       method: "PUT",
       body: data,
     }),
@@ -22,29 +38,30 @@ const onSubmit = handleSubmit(async (data) => {
 </script>
 
 <template>
-  <div class="flex items-center">
-      <UiCard class="w-[800px]" title="Create testcase" description="Create a new testcase." >
-        <template #content>
-          <form id="formCreateTestcase" class="mx-auto max-w-lg" @submit.prevent="onSubmit">
-          <UiCardContent>
-            <fieldset :disabled="isSubmitting" class="space-y-5">
-              <UiVeeInput label="Name" name="name" />
-              <UiVeeTextarea label="Procedures" name="procedures" :rows="10" hint="Separate each step of procedure with new line." />
-            </fieldset>
-          </UiCardContent>
-        </form>
-        </template>
-        <template #footer>
-          <UiCardFooter class="flex justify-between">
-            <UiButton type="reset" variant="outline" @click="() => { useRouter().back() }">
-              Cancel
-            </UiButton>
-            <UiButton type="submit" form="formCreateTestcase">
-              Create
-            </UiButton>
-          </UiCardFooter>
-        </template>
-      </UiCard>
-    
-  </div>
+  <form @submit="onSubmit">
+    <UiCard class="w-[600px]" title="Create testcase">
+      <template #content>
+        <UiCardContent>
+          <fieldset :disabled="isSubmitting" class="space-y-5">
+            <UiVeeInput label="Name" name="name" />
+            <UiVeeTextarea
+              label="Procedures"
+              name="procedures"
+              :rows="3"
+              hint="Separate each step of procedure with new line."
+            />
+            <UiDivider label="Checkitems" />
+            <TestpointPartFormAddCheckitem v-model="checkitems" />
+          </fieldset>
+        </UiCardContent>
+      </template>
+      <template #footer>
+        <UiCardFooter class="flex justify-between">
+          <UiButton type="submit">
+            Create
+          </UiButton>
+        </UiCardFooter>
+      </template>
+    </UiCard>
+  </form>
 </template>

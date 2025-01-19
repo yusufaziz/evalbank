@@ -61,7 +61,6 @@ const columns: ColumnDef<Setting>[] = [
 
     <UiTanStackTable
       ref="tableRef"
-      show-select
       :search="search"
       :data="settings"
       :columns="columns"

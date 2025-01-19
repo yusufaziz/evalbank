@@ -31,20 +31,11 @@ export default defineNuxtConfig({
       },
     ],
   },
-  devtools: { enabled: false },
+  devtools: { enabled: true },
 
   app: {
     head: {
-      script: [
-        {
-          src: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js",
-          defer: true,
-        },
-        {
-          src: "https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.min.js",
-          defer: true,
-        },
-      ],
+      script: [],
     },
   },
 

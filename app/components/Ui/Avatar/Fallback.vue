@@ -12,7 +12,7 @@ const props = defineProps<
 >()
 const forwarded = reactiveOmit(props, "class", "fallback")
 const styles = tv({
-  base: "flex h-full w-full items-center justify-center rounded-full bg-muted font-medium",
+  base: "flex h-full w-full items-center justify-center rounded-[inherit] bg-muted font-medium",
 })
 </script>
 

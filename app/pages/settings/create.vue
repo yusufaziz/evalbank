@@ -26,7 +26,7 @@ const onSubmit = handleSubmit(async (data) => {
   <div class="flex items-center">
     <UiCard class="w-[360px] max-w-sm" title="Create setting" description="Create new setting.">
       <template #content>
-        <form id="formCreateSetting" class="mx-auto max-w-md" @submit="onSubmit">
+        <form id="formCreateSetting" class="mx-auto max-w-md" @submit.prevent="onSubmit">
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
               <UiVeeInput label="Setting Name" name="name" />

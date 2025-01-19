@@ -2,16 +2,19 @@
 import type { Testcase } from "@prisma/client"
 import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 
-const { data: testcase } = useFetch<Testcase>(`/api/testcases/${useRoute().params.testcaseId}`)
-const { handleSubmit, isSubmitting } = useForm({
+const { data: testcase } = await useFetch<Testcase>(`/api/testcases/${useRoute().params.testcaseId}`)
+const { handleSubmit, isSubmitting, values } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
+  initialValues: {
+    ...testcase.value,
+  },
 })
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch<Testcase>(`/api/testcases/{useRoute().params.testcaseId}/`, {
+    $fetch<Testcase>(`/api/testcases/${useRoute().params.testcaseId}/`, {
       method: "PATCH",
-      body: data,
+      body: { ...data, modifier: "modifier-id" },
     }),
     {
       loading: "Modifying Testcase ...",
@@ -25,17 +28,13 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <div class="flex items-center">
-    <UiCard
-      class="w-[800px]"
-      title="Modify Testcase"
-      description="Modify the Testcase information."
-    >
+    <UiCard class="w-[800px]" title="Modify Testcase">
       <template #content>
         <form id="formModifyTestcase" class="mx-auto" @submit="onSubmit">
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
-              <UiVeeInput label="Name" name="name" :model-value="testcase?.name" />
-              <UiVeeTextarea label="Procedures" name="procedures" :model-value="testcase?.procedures" :rows="10" hint="Separate each step of procedure with new line." />
+              <UiVeeInput label="Name" name="name" />
+              <UiVeeTextarea label="Procedures" name="procedures" :rows="10" hint="Separate each step of procedure with new line." />
             </fieldset>
           </UiCardContent>
         </form>
@@ -51,5 +50,8 @@ const onSubmit = handleSubmit(async (data) => {
         </UiCardFooter>
       </template>
     </UiCard>
+    <div>
+      <pre>{{ values }}</pre>
+    </div>
   </div>
 </template>

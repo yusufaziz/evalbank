@@ -29,7 +29,7 @@ const styles = tv({
 <template>
   <CheckboxIndicator :class="styles({ class: props.class })" v-bind="forwarded">
     <slot>
-      <Icon :name="checked === 'indeterminate' ? 'lucide:minus' : icon" class="h-4 w-4" />
+      <Icon :name="checked == 'indeterminate' ? 'lucide:minus' : icon" class="h-4 w-4" />
     </slot>
   </CheckboxIndicator>
 </template>

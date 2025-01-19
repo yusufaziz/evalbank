@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import SidebarContent from "~/components/testpoint/sidebarContent.vue"
-import SidebarFooter from "~/components/testpoint/sidebarFooter.vue"
-import SidebarProjectSwitcher from "~/components/testpoint/sidebarProjectSwitcher.vue"
-
 const breadcrumbsItems = useBreadcrumbItems()
+const route = useRoute()
+const routeParamsProjectId = computed(() => route.params.projectId)
 useSeoMeta({ title: "Evalbank: Easier evaluation." })
 </script>
 
@@ -11,10 +9,10 @@ useSeoMeta({ title: "Evalbank: Easier evaluation." })
   <UiSidebarProvider v-slot="{ isMobile, state }">
     <!-- App Sidebar -->
     <UiSidebar collapsible="icon">
-      <SidebarProjectSwitcher :state="state" :is-mobile="isMobile" />
-      <SidebarContent :state="state" :is-mobile="isMobile" />
+      <TestpointSidebarProjectInfo v-if="!!routeParamsProjectId" :state="state" :is-mobile="isMobile" :project-id="routeParamsProjectId.toString()" />
+      <TestpointSidebarContent :state="state" :is-mobile="isMobile" />
       <UiSidebarRail />
-      <SidebarFooter :state="state" :is-mobile="isMobile" />
+      <TestpointSidebarFooter :state="state" :is-mobile="isMobile" />
     </UiSidebar>
     <!-- Sidebar main content -->
     <UiSidebarInset>

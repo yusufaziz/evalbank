@@ -2,14 +2,17 @@
 import type { Setting } from "@prisma/client"
 import { zodSettingSchema } from "~~/shared/schema/setting"
 
-const { data: setting } = useFetch<Setting>(`/api/settings/${useRoute().params.settingId}`)
+const { data: setting } = await useFetch<Setting>(`/api/settings/${useRoute().params.settingId}`)
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodSettingSchema),
+  initialValues: {
+    ...setting.value,
+  },
 })
 
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch(`/api/settings/${useRoute().params.settingId}/`, {
+    $fetch<Setting>(`/api/settings/${useRoute().params.settingId}/`, {
       method: "PATCH",
       body: data,
     }),
@@ -25,30 +28,26 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <div class="flex items-center">
-    <form class="mx-auto max-w-md" @submit="onSubmit">
-      <UiCard
-        class="w-[360px] max-w-sm"
-        title="Modify Evaluation Setting"
-        description="Modify the Evaluation Setting information."
-      >
-        <template #content>
+    <UiCard class="w-[360px] max-w-sm" title="Modify Evaluation Setting" description="Modify the Evaluation Setting information.">
+      <template #content>
+        <form id="formModifySetting" class="mx-auto max-w-md" @submit.prevent="onSubmit">
           <UiCardContent>
             <fieldset :disabled="isSubmitting" class="space-y-5">
               <UiVeeInput label="Setting Name" name="name" :model-value="setting?.name" />
             </fieldset>
           </UiCardContent>
-        </template>
-        <template #footer>
-          <UiCardFooter class="flex justify-between">
-            <UiButton variant="outline" @click="useRouter().back()">
-              Cancel
-            </UiButton>
-            <UiButton type="submit">
-              Modify
-            </UiButton>
-          </UiCardFooter>
-        </template>
-      </UiCard>
-    </form>
+        </form>
+      </template>
+      <template #footer>
+        <UiCardFooter class="flex justify-between">
+          <UiButton variant="outline" @click="useRouter().back()">
+            Cancel
+          </UiButton>
+          <UiButton type="submit" form="formModifySetting">
+            Modify
+          </UiButton>
+        </UiCardFooter>
+      </template>
+    </UiCard>
   </div>
 </template>

@@ -44,21 +44,6 @@ const navMain = [
     ],
   },
   {
-    title: "Checkitems",
-    url: "#",
-    icon: "lucide:bot",
-    items: [
-      {
-        title: "Add New Checkitem",
-        url: "/checkitems/create",
-      },
-      {
-        title: "Show Testcases",
-        url: "/checkitems",
-      },
-    ],
-  },
-  {
     title: "Settings",
     url: "#",
     icon: "lucide:settings-2",

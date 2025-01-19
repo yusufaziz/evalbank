@@ -10,26 +10,17 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  projectId: {
+    type: String,
+    required: true,
+  },
 })
-const route = useRoute()
-const isHasProject = !!route.query.projectId
-const { data: projects } = await useFetch<Project[]>("/api/projects")
-const { data: project } = useFetch<Project>(`api/projects/${route.query.projectId}`)
-function getGroupedProjects() {
-  if (projects) {
-    let ret = [] as Project[] | undefined
-    const fyUnique = []
-    ret = projects.value
-    return ret
-  }
-  else {
-    return []
-  }
-}
+const { data: projects } = useFetch<Project[]>("/api/projects")
+const { data: project } = useFetch<Project>(`api/projects/${props.projectId}`)
 </script>
 
 <template>
-  <UiSidebarHeader v-if="isHasProject">
+  <UiSidebarHeader>
     <UiSidebarMenu>
       <UiSidebarMenuItem>
         <UiDropdownMenu>
@@ -51,11 +42,11 @@ function getGroupedProjects() {
             :side="props.isMobile ? 'bottom' : 'right'"
             :side-offset="4"
           >
-            <template v-for="(projectItem, index) in getGroupedProjects()" :key="index">
+            <template v-for="(projectItem, index) in projects" :key="index">
               <UiDropdownMenuItem
                 class="cursor-pointer gap-2 p-2"
-                :class="[route.query.projectId === projectItem.id && 'bg-muted']"
-                @click="route.query.projectId = projectItem.id"
+                :class="[props.projectId === projectItem.id && 'bg-muted']"
+                @click="props.projectId = projectItem.id"
               >
                 {{ projectItem.name }}
               </UiDropdownMenuItem>

@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import type { TestCase } from "@prisma/client"
+import type { Testcase } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/vue-table"
 
 const tableRef = ref()
-const table = ref<Table<TestCase> | null>(null)
+const table = ref<Table<Testcase> | null>(null)
 const search = ref("")
 
-const { data: testcases } = useFetch<TestCase[]>("/api/testcases")
+const { data: testcases } = useFetch<Testcase[]>("/api/testcases")
 
-const columns: ColumnDef<TestCase>[] = [
+const columns: ColumnDef<Testcase>[] = [
   { accessorKey: "id", header: "ID", enableHiding: true },
   { accessorKey: "name", header: "Name", enableHiding: true },
   { accessorKey: "procedures", header: "Testcase", enableHiding: true, cell: ({ row }) => {
@@ -43,7 +43,7 @@ const columns: ColumnDef<TestCase>[] = [
 
 <template>
   <div style="width: max-content">
-    <div class="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+    <div class="flex flex-col gap-5 md:flex-row md:items-center">
       <UiInput v-model="search" type="search" placeholder="Search" class="w-full md:w-96" />
       <UiDropdownMenu>
         <UiDropdownMenuTrigger as-child>
@@ -71,7 +71,6 @@ const columns: ColumnDef<TestCase>[] = [
 
     <UiTanStackTable
       ref="tableRef"
-      show-select
       :search="search"
       :data="testcases"
       :columns="columns"
