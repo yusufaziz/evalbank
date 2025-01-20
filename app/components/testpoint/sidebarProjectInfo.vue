@@ -15,7 +15,7 @@ const props = defineProps({
     required: true,
   },
 })
-const { data: projects } = useFetch<Project[]>("/api/projects")
+const { data: projects } = useFetch<Project[]>("/api/projects?limit=20")
 const { data: project } = useFetch<Project>(`/api/projects/${props.projectId}`)
 </script>
 
@@ -37,7 +37,7 @@ const { data: project } = useFetch<Project>(`/api/projects/${props.projectId}`)
             </UiSidebarMenuButton>
           </UiDropdownMenuTrigger>
           <UiDropdownMenuContent
-            class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            class="w-min-lg rounded-lg"
             align="start"
             :side="props.isMobile ? 'bottom' : 'right'"
             :side-offset="4"
@@ -46,40 +46,23 @@ const { data: project } = useFetch<Project>(`/api/projects/${props.projectId}`)
               <UiDropdownMenuItem
                 class="cursor-pointer gap-2 p-2"
                 :class="[props.projectId === projectItem.id && 'bg-muted']"
-                @click="props.projectId = projectItem.id"
+                @click="navigateTo(`/projects/${projectItem.id}`)"
               >
-                {{ projectItem.name }}
+                FY{{ projectItem.modelFY }} {{ projectItem.modelSeries }}-{{ projectItem.modelName }} {{ projectItem.name }}
               </UiDropdownMenuItem>
             </template>
             <UiDropdownMenuSeparator />
-            <UiDropdownMenuItem class="gap-2 p-2">
+            <UiDropdownMenuItem class="gap-2 p-2" @click="navigateTo('/projects/create')">
               <div class="flex size-6 items-center justify-center rounded-md border bg-background">
                 <Icon name="lucide:plus" class="size-4" />
               </div>
               <div class="font-medium text-muted-foreground">
-                Add team
+                Add Project
               </div>
             </UiDropdownMenuItem>
           </UiDropdownMenuContent>
         </UiDropdownMenu>
       </UiSidebarMenuItem>
     </UiSidebarMenu>
-
-    <!-- Search form -->
-    <form v-if="props.state !== 'collapsed'">
-      <UiSidebarGroup class="pyproject-0">
-        <UiSidebarGroupContent class="relative">
-          <UiLabel for="search" class="sr-only">
-            Search
-          </UiLabel>
-          <UiSidebarInput id="search" placeholder="Search the projects..." class="pl-8" />
-          <Icon
-            name="lucide:search"
-            class="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50"
-            data
-          />
-        </UiSidebarGroupContent>
-      </UiSidebarGroup>
-    </form>
   </UiSidebarHeader>
 </template>

@@ -17,8 +17,8 @@ const onSubmit = handleSubmit(async (data) => {
     }),
     {
       loading: "Creating Testcase ...",
-      success: () => "Testcase has been added into database.",
-      error: () => "Error! Your information could not be sent to our servers!",
+      success: () => "Testcase has been successfully added to the database.",
+      error: () => "Error! Your information could not be sent to our servers. Please try again.",
     },
   )
   navigateTo("/testcases")
@@ -27,7 +27,7 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <form @submit="onSubmit">
-    <UiCard class="w-[600px]" title="Create testcase">
+    <UiCard title="Create testcase">
       <template #content>
         <UiCardContent>
           <fieldset :disabled="isSubmitting" class="space-y-5">
@@ -44,9 +44,12 @@ const onSubmit = handleSubmit(async (data) => {
         </UiCardContent>
       </template>
       <template #footer>
-        <UiCardFooter class="flex justify-between">
+        <UiCardFooter class="flex justify-start gap-5">
           <UiButton type="submit">
             Create
+          </UiButton>
+          <UiButton variant="outline" @click="useRouter().back()">
+            Cancel
           </UiButton>
         </UiCardFooter>
       </template>

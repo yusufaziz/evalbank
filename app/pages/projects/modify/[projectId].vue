@@ -42,12 +42,9 @@ const onSubmit = handleSubmit(async (data) => {
 </script>
 
 <template>
-  <UiCard
-    class="w-[800px]"
-    title="Modify Project"
-  >
-    <template #content>
-      <form id="projectModifyForm" class="mx-auto" @submit.prevent="onSubmit">
+  <form id="projectModifyForm" class="mx-auto" @submit.prevent="onSubmit">
+    <UiCard title="Modify Project">
+      <template #content>
         <UiCardContent>
           <fieldset :disabled="isSubmitting" class="space-y-5">
             <UiVeeInput label="Project Name" name="name" />
@@ -106,17 +103,17 @@ const onSubmit = handleSubmit(async (data) => {
             </div>
           </fieldset>
         </UiCardContent>
-      </form>
-    </template>
-    <template #footer>
-      <UiCardFooter class="flex justify-between">
-        <UiButton variant="outline" @click="useRouter().back()">
-          Cancel
-        </UiButton>
-        <UiButton type="submit" form="projectModifyForm">
-          Modify
-        </UiButton>
-      </UiCardFooter>
-    </template>
-  </UiCard>
+      </template>
+      <template #footer>
+        <UiCardFooter class="flex justify-start gap-5">
+          <UiButton type="submit" form="projectModifyForm">
+            Modify
+          </UiButton>
+          <UiButton variant="outline" @click="useRouter().back()">
+            Cancel
+          </UiButton>
+        </UiCardFooter>
+      </template>
+    </UiCard>
+  </form>
 </template>

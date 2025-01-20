@@ -25,38 +25,32 @@ const onSubmit = handleSubmit(async (data) => {
 </script>
 
 <template>
-  <div class="flex items-center">
-    <UiCard
-      class="w-[600px]"
-      title="Create project"
-      description="Create a new project."
-    >
+  <form @submit="onSubmit">
+    <UiCard title="Create project">
       <template #content>
-        <form id="projectCreateForm" class="mx-auto max-w-lg" @submit.prevent="onSubmit">
-          <UiCardContent>
-            <fieldset>
-              <UiVeeInput label="Project Name" name="name" />
-              <UiVeeNumberField :min="20" :max="50" label="Model FY" name="modelFY">
-                <UiNumberFieldInput placeholder="20" />
-                <UiNumberFieldDecrement class="border-l" />
-                <UiNumberFieldIncrement class="border-l" />
-              </UiVeeNumberField>
-              <UiVeeInput label="Model Series" name="modelSeries" />
-              <UiVeeInput label="Model Name" name="modelName" />
-            </fieldset>
-          </UiCardContent>
-        </form>
+        <UiCardContent>
+          <fieldset>
+            <UiVeeInput label="Project Name" name="name" />
+            <UiVeeNumberField :min="20" :max="50" label="Model FY" name="modelFY">
+              <UiNumberFieldInput placeholder="20" />
+              <UiNumberFieldDecrement class="border-l" />
+              <UiNumberFieldIncrement class="border-l" />
+            </UiVeeNumberField>
+            <UiVeeInput label="Model Series" name="modelSeries" />
+            <UiVeeInput label="Model Name" name="modelName" />
+          </fieldset>
+        </UiCardContent>
       </template>
       <template #footer>
-        <UiCardFooter class="flex justify-between">
+        <UiCardFooter class="flex justify-start gap-5">
+          <UiButton type="submit">
+            Create Project
+          </UiButton>
           <UiButton variant="outline" @click="useRouter().back()">
             Cancel
-          </UiButton>
-          <UiButton type="submit" form="projectCreateForm">
-            Create Project
           </UiButton>
         </UiCardFooter>
       </template>
     </UiCard>
-  </div>
+  </form>
 </template>

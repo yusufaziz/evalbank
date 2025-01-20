@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client"
 import { defineEventHandler, readBody } from "h3"
 
-const prisma = new PrismaClient()
+import prisma from "../../plugins/prisma.client"
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)

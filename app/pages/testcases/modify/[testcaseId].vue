@@ -46,7 +46,7 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <form @submit="onSubmit">
-    <UiCard class="w-[800px]" title="Modify Testcase">
+    <UiCard title="Modify Testcase">
       <template #content>
         <UiCardContent>
           <fieldset :disabled="isSubmitting" class="space-y-5">
@@ -54,7 +54,7 @@ const onSubmit = handleSubmit(async (data) => {
             <UiVeeTextarea
               label="Procedures"
               name="procedures"
-              :rows="10"
+              :rows="5"
               hint="Separate each step of procedure with new line."
             />
             <UiDivider label="Checkitems" />
@@ -63,9 +63,12 @@ const onSubmit = handleSubmit(async (data) => {
         </UiCardContent>
       </template>
       <template #footer>
-        <UiCardFooter class="flex justify-end">
+        <UiCardFooter class="flex justify-start gap-5">
           <UiButton type="submit">
             Modify
+          </UiButton>
+          <UiButton variant="outline" @click="useRouter().back()">
+            Cancel
           </UiButton>
         </UiCardFooter>
       </template>

@@ -1,3 +1,5 @@
+import process from "node:process"
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: [
@@ -41,6 +43,12 @@ export default defineNuxtConfig({
 
   colorMode: {
     classSuffix: "",
+  },
+  runtimeConfig: {
+    public: {
+      APP_TITLE: process.env.APP_TITLE ? process.env.APP_TITLE : `Evalbank`,
+      APP_DESCRIPTION: process.env.APP_DESCRIPTION ? process.env.APP_DESCRIPTION : `Effective evaluation.`,
+    },
   },
 
   build: {

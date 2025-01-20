@@ -39,7 +39,7 @@ const columns: ColumnDef<Project>[] = [
 </script>
 
 <template>
-  <div style="width: max-content">
+  <div>
     <div class="flex flex-col gap-5 md:flex-row md:items-center">
       <UiInput v-model="search" type="search" placeholder="Search" class="w-full md:w-96" />
       <UiDropdownMenu>
