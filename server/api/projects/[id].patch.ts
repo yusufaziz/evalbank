@@ -10,19 +10,70 @@ export default defineEventHandler(async (event) => {
 
   const { settingIds, ...rest } = body
 
-  const project = await prisma.project.update({
+  // Fetch the current project settings
+  const project = await prisma.project.findUnique({
     where: { id },
-    data: {
-      ...rest,
-      settings: {
-        set: [], // Disconnect all existing settings
-        connect: settingIds.map((settingId: string) => ({ id: settingId })), // Connect new settings
-      },
-    },
     include: {
-      settings: true, // Include the updated settings in the response
+      settings: true,
     },
   })
 
-  return project
+  if (!project) {
+    throw new Error("Project not found")
+  }
+
+  // Check if settingIds is provided and different from existing settings
+  if (settingIds) {
+    const currentSettingIds = project.settings.map(s => s.id).sort().join(",")
+    const newSettingIds = settingIds.sort().join(",")
+
+    if (currentSettingIds !== newSettingIds) {
+      // Update project settings
+      const updatedProject = await prisma.project.update({
+        where: { id },
+        data: {
+          ...rest,
+          settings: {
+            set: [], // Disconnect all existing settings
+            connect: settingIds.map((settingId: string) => ({ id: settingId })), // Connect new settings
+          },
+        },
+        include: {
+          settings: true, // Include the updated settings in the response
+        },
+      })
+
+      // Fetch all evaluations associated with the project
+      const evaluations = await prisma.evaluation.findMany({
+        where: { projectId: id },
+        include: {
+          checkitems: {
+            select: {
+              testcaseId: true, // Include testcaseId from checkitems
+            },
+          },
+        },
+      })
+
+      // Extract unique testcaseIds from checkitems
+      const testcaseIds = [
+        ...new Set(evaluations.flatMap(e => e.checkitems.map(c => c.testcaseId))),
+      ]
+
+      // Regenerate evaluations for each testcaseId
+      for (const testcaseId of testcaseIds) {
+        await regenerateEvaluations(testcaseId, id)
+      }
+
+      return updatedProject
+    }
+  }
+
+  // Update other project information if provided
+  const updatedProject = await prisma.project.update({
+    where: { id },
+    data: rest,
+  })
+
+  return updatedProject
 })

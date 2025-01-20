@@ -7,7 +7,16 @@ export default defineEventHandler(async (event) => {
     include: {
       settings: true,
       attachments: true,
-      evaluations: true,
+      evaluations: {
+        include: {
+          settings: true,
+          checkitem: {
+            include: {
+              testcase: true,
+            },
+          },
+        },
+      },
     },
   })
   return project || { message: "project not found" }

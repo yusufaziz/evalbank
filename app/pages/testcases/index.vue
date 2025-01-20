@@ -15,9 +15,10 @@ const columns: ColumnDef<Testcase>[] = [
     return h(
       resolveComponent("TestpointPartTestcaseProcedureColapsibles"),
       {
+        id: row.original.id,
         name: row.original.name,
-        procedures: row.original.procedures,
         checkitems: row.original.checkitems,
+        procedures: row.original.procedures,
       },
     )
   } },

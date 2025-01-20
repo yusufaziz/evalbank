@@ -1,5 +1,4 @@
 import { defineEventHandler, readBody } from "h3"
-
 import prisma from "../../plugins/prisma.client"
 
 export default defineEventHandler(async (event) => {
@@ -13,7 +12,7 @@ export default defineEventHandler(async (event) => {
         settings: true,
         evaluations: {
           include: {
-            checkitems: true,
+            checkitem: true, // Updated to reflect one-to-many relationship
             attachments: true,
             settings: true,
           },
@@ -49,14 +48,14 @@ export default defineEventHandler(async (event) => {
             remarks: evaluation.remarks,
             author: evaluation.author,
             modifier: evaluation.modifier,
-            checkitems: {
-              create: evaluation.checkitems.map(checkitem => ({
-                module: checkitem.module,
-                expectedTarget: checkitem.expectedTarget,
-                requiredSettings: checkitem.requiredSettings,
-                author: checkitem.author,
-                modifier: checkitem.modifier,
-              })),
+            checkitem: {
+              create: {
+                module: evaluation.checkitem.module,
+                expectedTarget: evaluation.checkitem.expectedTarget,
+                requiredSettings: evaluation.checkitem.requiredSettings,
+                author: evaluation.checkitem.author,
+                modifier: evaluation.checkitem.modifier,
+              },
             },
             settings: {
               create: evaluation.settings.map(setting => ({
@@ -65,6 +64,13 @@ export default defineEventHandler(async (event) => {
                 constrains: setting.constrains,
                 author: setting.author,
                 modifier: setting.modifier,
+              })),
+            },
+            attachments: {
+              create: evaluation.attachments.map(attachment => ({
+                filename: attachment.filename,
+                author: attachment.author,
+                modifier: attachment.modifier,
               })),
             },
           })),

@@ -5,25 +5,25 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
 
   try {
-    // Destructure the payload
-    const { checkitems, ...testcaseData } = body
-
     // Use a transaction to ensure atomicity
     const result = await prisma.$transaction(async (prisma) => {
+      // Destructure the payload inside the transaction
+      const { checkitems: payloadCheckitems, ...testcaseData } = body
+
       // Update the Testcase
       const testcase = await prisma.testcase.update({
         where: { id },
         data: testcaseData,
       })
 
-      if (checkitems && Array.isArray(checkitems)) {
+      if (payloadCheckitems && Array.isArray(payloadCheckitems)) {
         // Get the current Checkitems associated with the Testcase
         const currentCheckitems = await prisma.checkitem.findMany({
           where: { testcaseId: id },
         })
 
         // Extract IDs of Checkitems in the payload
-        const payloadCheckitemIds = checkitems
+        const payloadCheckitemIds = payloadCheckitems
           .filter(item => item.id !== "-")
           .map(item => item.id)
 
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
         }
 
         // Update or create Checkitems
-        for (const item of checkitems) {
+        for (const item of payloadCheckitems) {
           if (item.id === "-") {
             // Create new Checkitem
             await prisma.checkitem.create({
@@ -57,6 +57,32 @@ export default defineEventHandler(async (event) => {
             })
           }
         }
+      }
+
+      // Fetch all checkitems associated with the testcase
+      const dbCheckitems = await prisma.checkitem.findMany({
+        where: { testcaseId: id },
+        select: { id: true },
+      })
+
+      // Fetch all evaluations associated with these checkitems
+      const evaluations = await prisma.evaluation.findMany({
+        where: {
+          checkitems: {
+            some: {
+              id: { in: dbCheckitems.map(c => c.id) },
+            },
+          },
+        },
+        select: { projectId: true },
+      })
+
+      // Extract unique projectIds
+      const projectIds = [...new Set(evaluations.map(e => e.projectId))]
+
+      // Regenerate evaluations for each projectId
+      for (const projectId of projectIds) {
+        await regenerateEvaluations(testcase.id, projectId)
       }
 
       return testcase

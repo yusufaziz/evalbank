@@ -14,7 +14,7 @@ const props = defineProps({
 <template>
   <div class="flex flex-col gap-2">
     <div class="flex flex-row">
-        {{ props.title }}
+      {{ props.title }}
     </div>
   </div>
 </template>

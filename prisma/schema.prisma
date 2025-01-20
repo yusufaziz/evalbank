@@ -69,11 +69,12 @@ model Evaluation {
   remarks     String?
   projectId   String?
   project     Project?     @relation(fields: [projectId], references: [id])
+  checkitemId String?
+  checkitem   Checkitem?   @relation(fields: [checkitemId], references: [id])
   author      String?
   modifier    String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  checkitems  Checkitem[]
   settings    Setting[]
   attachments Attachment[]
 }
@@ -90,4 +91,10 @@ model Attachment {
   checkitems  Checkitem[]
   testcases   Testcase[]
   projects    Project[]
+}
+
+model SettingConstraints {
+  id        String  @id @default(uuid())
+  value     String
+  exclusion Boolean
 }
