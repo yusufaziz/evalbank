@@ -1,16 +1,33 @@
 <script lang="ts" setup>
 const { data: project } = useFetch(`/api/projects/details/${useRoute().params.projectId}`)
-const { data: testcases } = useFetch("/api/testcases")
+const { data: testcases } = useFetch(`/api/testcases?projectId=${useRoute().params.projectId}`)
+// Computed property to calculate total evaluations
+const totalEvaluations = computed(() => {
+  if (!project.value || !project.value || !project.value.testcases) {
+    return 0
+  }
+
+  // Traverse the nested structure and sum evaluations
+  return project.value.testcases.reduce((totalTestcases, testcase) => {
+    return (
+      totalTestcases
+      + testcase.checkitems.reduce((totalCheckitems, checkitem) => {
+        return totalCheckitems + (checkitem.evaluations ? checkitem.evaluations.length : 0)
+      }, 0)
+    )
+  }, 0)
+})
+
 const tabs = [
   {
-    title: "All",
+    title: "Dashboard",
     icon: "lucide:home",
     content: "This is the overview. Here you can see the overview of the project.",
   },
   {
-    title: "Todo",
+    title: "Evaluation",
     icon: "lucide:panels-top-left",
-    badge: 2,
+    badge: totalEvaluations,
     content: "These are the number of outstanding projects.",
   },
   {
@@ -23,7 +40,7 @@ const tabs = [
 
 <template>
   <UiSheet should-scale-background>
-    <UiTabs default-value="All">
+    <UiTabs default-value="Evaluations">
       <div class="flex gap-5">
         <UiTabsList>
           <UiTabsTrigger
@@ -43,7 +60,12 @@ const tabs = [
           <UiButton>Add Testcast to Project</UiButton>
         </UiSheetTrigger>
       </div>
-      <UiTabsContent value="All">
+      <UiTabsContent value="Dashboard">
+        Dashboard.
+        Total Evaluation :
+        {{ totalEvaluations }}
+      </UiTabsContent>
+      <UiTabsContent value="Evaluation">
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
           <div v-for="(item, index) in project?.testcases" :key="index" class="mb-4">
             <TestpointPartTestcaseProcedureColapsibles
@@ -57,11 +79,8 @@ const tabs = [
           </div>
         </UiScrollArea>
       </UiTabsContent>
-      <UiTabsContent value="Todo">
-        Todo
-      </UiTabsContent>
       <UiTabsContent value="NG">
-        NG
+        <pre>{{ project }}</pre>
       </UiTabsContent>
     </UiTabs>
 

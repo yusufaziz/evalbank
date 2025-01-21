@@ -42,16 +42,17 @@ const requiredSettingsTags = computed(() => {
       </UiBadge>
     </div>
     <div v-if="props.checkitem.evaluations" class="p-2 text-sm flex flex-wrap gap-3">
-      Total Evaluation : {{ props.checkitem.evaluations.length }}
       <div v-for="(e, i) in props.checkitem.evaluations" :key="i" class="border">
         <div>
-          {{ i }}. {{ e.settings.map(s => `${s.name}: ${s.value}`).join(", ") }}
+        <p v-for="(settingEval, idxSettingEval) in e.settings.map(s => `${s.name}: ${s.value}`)" :key="idxSettingEval">
+        {{settingEval}}
+        </p>
         </div>
         <div>
           <UiToggleGroup>
-            <UiToggleGroupItem variant="outline" value="bold" icon="lucide:" />
-            <UiToggleGroupItem variant="outline" value="italic" icon="lucide:x" />
-            <UiToggleGroupItem variant="outline" value="underline" icon="lucide:check" />
+            <UiToggleGroupItem variant="outline" size="sm" value="bold" icon="lucide:panel-bottom-close" />
+            <UiToggleGroupItem variant="outline" size="sm" value="italic" icon="lucide:x" />
+            <UiToggleGroupItem variant="outline" size="sm" value="underline" icon="lucide:check" />
           </UiToggleGroup>
         </div>
       </div>
