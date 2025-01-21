@@ -12,7 +12,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["edit", "delete"])
+const emit = defineEmits(["edit", "delete", "needRefresh"])
 
 // Split requiredSettings into an array of tags
 const requiredSettingsTags = computed(() => {
@@ -36,10 +36,25 @@ const requiredSettingsTags = computed(() => {
         </div>
       </div>
     </div>
-    <div v-if="requiredSettingsTags.length > 0" class="mt-2 flex flex-wrap gap-2">
+    <div v-if="requiredSettingsTags.length > 0 && !props.checkitem.evaluations" class="mt-2 flex flex-wrap gap-2">
       <UiBadge v-for="(tag, index) in requiredSettingsTags" :key="index" variant="secondary">
         {{ tag.trim() }}
       </UiBadge>
+    </div>
+    <div v-if="props.checkitem.evaluations" class="p-2 text-sm flex flex-wrap gap-3">
+      Total Evaluation : {{ props.checkitem.evaluations.length }}
+      <div v-for="(e, i) in props.checkitem.evaluations" :key="i" class="border">
+        <div>
+          {{ i }}. {{ e.settings.map(s => `${s.name}: ${s.value}`).join(", ") }}
+        </div>
+        <div>
+          <UiToggleGroup>
+            <UiToggleGroupItem variant="outline" value="bold" icon="lucide:" />
+            <UiToggleGroupItem variant="outline" value="italic" icon="lucide:x" />
+            <UiToggleGroupItem variant="outline" value="underline" icon="lucide:check" />
+          </UiToggleGroup>
+        </div>
+      </div>
     </div>
   </div>
 </template>

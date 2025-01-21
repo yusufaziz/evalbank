@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
       const evaluations = await prisma.evaluation.findMany({
         where: { projectId: id },
         include: {
-          checkitems: {
+          checkitem: {
             select: {
               testcaseId: true, // Include testcaseId from checkitems
             },
@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
 
       // Extract unique testcaseIds from checkitems
       const testcaseIds = [
-        ...new Set(evaluations.flatMap(e => e.checkitems.map(c => c.testcaseId))),
+        ...new Set(evaluations.flatMap(e => e.checkitem.map(c => c.testcaseId))),
       ]
 
       // Regenerate evaluations for each testcaseId

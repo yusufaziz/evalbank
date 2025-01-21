@@ -6,16 +6,20 @@ import { zodProjectSchema } from "~~/shared/schema/project"
 const { data: project } = await useFetch(`/api/projects/${useRoute().params.projectId}/`)
 const { data: settings } = useFetch<IGroupedSettings[]>("/api/settings?group=name&with=id")
 const selectedSettings = ref<{ setting: string, additionalData: string[] }[]>([])
-const transformedSettings = project?.value.settings.reduce((acc, curr) => {
-  const existing = acc.find(item => item.setting === curr.name)
-  if (existing) {
-    existing.additionalData.push(curr.id)
-  }
-  else {
-    acc.push({ setting: curr.name, additionalData: [curr.id] })
-  }
-  return acc
-}, [] as { setting: string, additionalData: string[] }[])
+
+// Check if project.value.settings exists before reducing
+const transformedSettings = project?.value.settings
+  ? project.value.settings.reduce((acc, curr) => {
+      const existing = acc.find(item => item.setting === curr.name)
+      if (existing) {
+        existing.additionalData.push(curr.id)
+      }
+      else {
+        acc.push({ setting: curr.name, additionalData: [curr.id] })
+      }
+      return acc
+    }, [] as { setting: string, additionalData: string[] }[])
+  : []
 
 selectedSettings.value = transformedSettings
 const showAdditional = ref()

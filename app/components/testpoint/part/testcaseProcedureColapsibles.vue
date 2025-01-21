@@ -18,9 +18,16 @@ const props = defineProps({
     type: Array as () => Checkitem[],
     required: true,
   },
+  syncBtn: {
+    type: Boolean,
+    default: false,
+  },
+  unsyncBtn: {
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(["needRefresh"])
-const { data: testcase } = useFetch(`/api/testcases/${props.id}`)
 const procedures = props.procedures.split("\n")
 
 function onSyncdata() {
@@ -47,6 +54,30 @@ function onSyncdata() {
     },
   )
 }
+function onUnSyncdata() {
+  useSonner.promise(
+    $fetch<any>(`/api/projects/unsync`, {
+      method: "patch",
+      body: {
+        projectId: useRoute().params.projectId,
+        testcaseId: props.id,
+      },
+    })
+      .then((response) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            emit("needRefresh")
+            resolve(response)
+          }, 1000) // 1-second delay
+        })
+      }),
+    {
+      loading: "Removing testcase from project ...",
+      success: () => "Sucess removing testcase.",
+      error: () => "Error! Something went wrong during generationg data!",
+    },
+  )
+}
 </script>
 
 <template>
@@ -62,9 +93,13 @@ function onSyncdata() {
             <span class="sr-only">Toggle</span>
           </UiButton>
         </UiCollapsibleTrigger>
-        <UiButton v-if="useRoute().name === 'projects-projectId'" size="sm" class="w-9 p-0" @click="onSyncdata">
+        <UiButton v-if="useRoute().name === 'projects-projectId' && props.syncBtn" size="sm" class="w-9 p-0" @click="onSyncdata">
           <Icon name="lucide:plus" class="h-4 w-4" />
           <span class="sr-only">Add</span>
+        </UiButton>
+        <UiButton v-if="useRoute().name === 'projects-projectId' && props.unsyncBtn" size="sm" class="w-9 p-0" @click="onUnSyncdata">
+          <Icon name="lucide:trash" class="h-4 w-4" />
+          <span class="sr-only">Delete</span>
         </UiButton>
       </div>
     </div>
@@ -74,7 +109,7 @@ function onSyncdata() {
         {{ i + 1 }}.  {{ p }}
       </p>
       <UiDivider label="Checkitems" />
-      <TestpointPartViewCheckitem v-for="(checkitem, i) in testcase.checkitems" :key="i" :checkitem="checkitem" />
+      <TestpointPartViewCheckitem v-for="(checkitem, i) in props.checkitems" :key="i" :checkitem="checkitem" />
     </UiCollapsibleContent>
   </UiCollapsible>
 </template>

@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-const { data: project } = useFetch(
-  `/api/projects/${useRoute().params.projectId}`,
-)
+const { data: project } = useFetch(`/api/projects/details/${useRoute().params.projectId}`)
 const { data: testcases } = useFetch("/api/testcases")
 const tabs = [
   {
@@ -25,7 +23,7 @@ const tabs = [
 
 <template>
   <UiSheet should-scale-background>
-    <UiTabs default-value="Projects">
+    <UiTabs default-value="All">
       <div class="flex gap-5">
         <UiTabsList>
           <UiTabsTrigger
@@ -46,13 +44,24 @@ const tabs = [
         </UiSheetTrigger>
       </div>
       <UiTabsContent value="All">
-        <pre>{{ project }}</pre>
+        <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
+          <div v-for="(item, index) in project?.testcases" :key="index" class="mb-4">
+            <TestpointPartTestcaseProcedureColapsibles
+              :id="item.id"
+              :name="item.name"
+              :checkitems="item.checkitems"
+              :procedures="item.procedures"
+              :unsync-btn="true"
+              @need-refresh="async () => { await refreshNuxtData() }"
+            />
+          </div>
+        </UiScrollArea>
       </UiTabsContent>
       <UiTabsContent value="Todo">
-        Todo {{ project.evaluations }}
+        Todo
       </UiTabsContent>
       <UiTabsContent value="NG">
-        NG {{ project.evaluations }}
+        NG
       </UiTabsContent>
     </UiTabs>
 
@@ -63,7 +72,14 @@ const tabs = [
       <template #content>
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
           <div v-for="(item, index) in testcases" :key="index" class="mb-4">
-            <TestpointPartTestcaseProcedureColapsibles :id="item.id" :name="item.name" :checkitems="item.checkitems" :procedures="item.procedures" />
+            <TestpointPartTestcaseProcedureColapsibles
+              :id="item.id"
+              :name="item.name"
+              :checkitems="item.checkitems"
+              :procedures="item.procedures"
+              :sync-btn="true"
+              @need-refresh="async () => { await refreshNuxtData() }"
+            />
           </div>
         </UiScrollArea>
       </template>
