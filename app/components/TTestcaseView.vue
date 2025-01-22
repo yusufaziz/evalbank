@@ -109,7 +109,7 @@ function onUnSyncdata() {
         {{ i + 1 }}.  {{ p }}
       </p>
       <UiDivider label="Checkitems" />
-      <TestpointPartViewCheckitem v-for="(checkitem, i) in props.checkitems" :key="i" :checkitem="checkitem" />
+      <TCheckitemView v-for="(checkitem, i) in props.checkitems" :key="i" :checkitem="checkitem" />
     </UiCollapsibleContent>
   </UiCollapsible>
 </template>

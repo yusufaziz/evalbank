@@ -7,10 +7,10 @@ useSeoMeta({ title: `${useRuntimeConfig().public.APP_TITLE}: ${useRuntimeConfig(
   <UiSidebarProvider v-slot="{ isMobile, state }">
     <!-- App Sidebar -->
     <UiSidebar collapsible="icon">
-      <TestpointSidebarProjectInfo v-if="useRoute().name === 'projects-projectId'" :state="state" :is-mobile="isMobile" :project-id="useRoute().params.projectId?.toString() || ''" />
-      <TestpointSidebarContent :state="state" :is-mobile="isMobile" />
+      <TSidebarProjectInfo v-if="useRoute().name === 'projects-projectId'" :state="state" :is-mobile="isMobile" :project-id="useRoute().params.projectId?.toString() || ''" />
+      <TSidebarContent :state="state" :is-mobile="isMobile" />
       <UiSidebarRail />
-      <TestpointSidebarFooter :state="state" :is-mobile="isMobile" />
+      <TSidebarFooter :state="state" :is-mobile="isMobile" />
     </UiSidebar>
     <!-- Sidebar main content -->
     <UiSidebarInset>

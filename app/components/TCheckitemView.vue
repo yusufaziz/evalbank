@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Checkitem } from "@prisma/client"
+import type { ICheckitem } from "~~/shared/interface/checkitems"
 
 const props = defineProps({
   checkitem: {
-    type: Object as () => Checkitem,
+    type: Object as () => Partial<ICheckitem>,
     required: true,
   },
   modify: {
@@ -19,7 +19,8 @@ const emit = defineEmits(["edit", "delete", "needRefresh"])
  * @output An array of strings representing the settings.
  */
 const settingsTags = computed(() => {
-  return props.checkitem.settings?.map(setting => `${setting.name}: ${setting.value}`) || []
+  return [...new Set(props.checkitem.settings?.map(c => c.name))]
+    .map(name => `${name}: ${props.checkitem.settings?.filter(f => f.name === name).map(s => s.value).join(",")}`) || []
 })
 </script>
 

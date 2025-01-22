@@ -13,7 +13,7 @@ const columns: ColumnDef<Testcase>[] = [
   { accessorKey: "name", header: "Name", enableHiding: true },
   { accessorKey: "procedures", header: "Testcase", enableHiding: true, cell: ({ row }) => {
     return h(
-      resolveComponent("TestpointPartTestcaseProcedureColapsibles"),
+      resolveComponent("TTestcaseView"),
       {
         id: row.original.id,
         name: row.original.name,
@@ -29,7 +29,7 @@ const columns: ColumnDef<Testcase>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       return h(
-        resolveComponent("TestpointPartFormActionButton"),
+        resolveComponent("TActionButton"),
         {
           id: row.original.id,
           endpoint: "testcases",

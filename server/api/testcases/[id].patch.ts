@@ -43,9 +43,12 @@ export default defineEventHandler(async (event) => {
             // Create new Checkitem
             await prisma.checkitem.create({
               data: {
-                ...item,
-                id: undefined, // Let Prisma generate the UUID
+                module: item.module,
+                expectedTarget: item.expectedTarget,
                 testcaseId: testcase.id, // Associate with the Testcase
+                settings: {
+                  connect: item.settings.map(setting => ({ id: setting.id })), // Connect the settings
+                },
               },
             })
           }
@@ -53,7 +56,14 @@ export default defineEventHandler(async (event) => {
             // Update existing Checkitem
             await prisma.checkitem.update({
               where: { id: item.id },
-              data: item,
+              data: {
+                module: item.module,
+                expectedTarget: item.expectedTarget,
+                settings: {
+                  set: [], // Disconnect all existing settings
+                  connect: item.settings.map(setting => ({ id: setting.id })), // Reconnect the settings
+                },
+              },
             })
           }
         }

@@ -20,7 +20,7 @@ const columns: ColumnDef<Project>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       return h(
-        resolveComponent("TestpointPartFormActionButton"),
+        resolveComponent("TActionButton"),
         {
           id: row.original.id,
           endpoint: "projects",

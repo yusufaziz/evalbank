@@ -63,7 +63,7 @@ const tabs = [
       <UiTabsContent value="Evaluation">
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
           <div v-for="(item, index) in project?.testcases" :key="index" class="mb-4">
-            <TestpointPartTestcaseProcedureColapsibles
+            <TTestcaseView
               :id="item.id"
               :name="item.name"
               :checkitems="item.checkitems"
@@ -86,7 +86,7 @@ const tabs = [
       <template #content>
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
           <div v-for="(item, index) in testcases" :key="index" class="mb-4">
-            <TestpointPartTestcaseProcedureColapsibles
+            <TTestcaseView
               :id="item.id"
               :name="item.name"
               :checkitems="item.checkitems"

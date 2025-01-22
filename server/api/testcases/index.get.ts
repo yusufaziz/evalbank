@@ -33,7 +33,9 @@ export default defineEventHandler(async (event) => {
     // Step 4: If no projectId is provided, fetch all testcases
     testcases = await prisma.testcase.findMany({
       include: {
-        checkitems: true, // Include related checkitems
+        checkitems: {
+          include: { settings: true },
+        }, // Include related checkitems
         attachments: true, // Include related attachments
       },
     })
