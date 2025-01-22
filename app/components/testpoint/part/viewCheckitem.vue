@@ -14,9 +14,12 @@ const props = defineProps({
 
 const emit = defineEmits(["edit", "delete", "needRefresh"])
 
-// Split requiredSettings into an array of tags
-const requiredSettingsTags = computed(() => {
-  return props.checkitem.requiredSettings?.split("|") || []
+/**
+ * @brief Computes the settings tags for display.
+ * @output An array of strings representing the settings.
+ */
+const settingsTags = computed(() => {
+  return props.checkitem.settings?.map(setting => `${setting.name}: ${setting.value}`) || []
 })
 </script>
 
@@ -36,23 +39,40 @@ const requiredSettingsTags = computed(() => {
         </div>
       </div>
     </div>
-    <div v-if="requiredSettingsTags.length > 0 && !props.checkitem.evaluations" class="mt-2 flex flex-wrap gap-2">
-      <UiBadge v-for="(tag, index) in requiredSettingsTags" :key="index" variant="secondary">
-        {{ tag.trim() }}
+    <div v-if="settingsTags.length > 0 && !props.checkitem.evaluations" class="mt-2 flex flex-wrap gap-2">
+      <UiBadge v-for="(tag, index) in settingsTags" :key="index" variant="secondary">
+        {{ tag }}
       </UiBadge>
     </div>
     <div v-if="props.checkitem.evaluations" class="p-2 text-sm flex flex-wrap gap-3">
-      <div v-for="(e, i) in props.checkitem.evaluations" :key="i" class="border">
+      <div v-for="(e, i) in props.checkitem.evaluations" :key="i" class="border rounded-sm p-2">
         <div>
-        <p v-for="(settingEval, idxSettingEval) in e.settings.map(s => `${s.name}: ${s.value}`)" :key="idxSettingEval">
-        {{settingEval}}
-        </p>
+          <p v-for="(settingEval, idxSettingEval) in e.settings.map((s) => `${s.name}: ${s.value}`)" :key="idxSettingEval">
+            {{ settingEval }}
+          </p>
         </div>
         <div>
-          <UiToggleGroup>
-            <UiToggleGroupItem variant="outline" size="sm" value="bold" icon="lucide:panel-bottom-close" />
-            <UiToggleGroupItem variant="outline" size="sm" value="italic" icon="lucide:x" />
-            <UiToggleGroupItem variant="outline" size="sm" value="underline" icon="lucide:check" />
+          <UiToggleGroup class="item-start justify-start pt-2">
+            <UiRadioGroup default-value="todo">
+              <div class="flex space-x-2">
+                <UiRadioGroupItem id="r1" value="1" />
+                <UiLabel for="r1">
+                  Not Supported
+                </UiLabel>
+              </div>
+              <div class="flex items-center space-x-2">
+                <UiRadioGroupItem id="r2" value="2" />
+                <UiLabel for="r2">
+                  NG
+                </UiLabel>
+              </div>
+              <div class="flex items-center space-x-2">
+                <UiRadioGroupItem id="r3" value="3" />
+                <UiLabel for="r3">
+                  OK
+                </UiLabel>
+              </div>
+            </UiRadioGroup>
           </UiToggleGroup>
         </div>
       </div>

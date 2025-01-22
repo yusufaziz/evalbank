@@ -22,18 +22,15 @@ const tabs = [
   {
     title: "Dashboard",
     icon: "lucide:home",
-    content: "This is the overview. Here you can see the overview of the project.",
+  },
+  {
+    title: "Project Information",
+    icon: "lucide:box",
   },
   {
     title: "Evaluation",
     icon: "lucide:panels-top-left",
     badge: totalEvaluations,
-    content: "These are the number of outstanding projects.",
-  },
-  {
-    title: "NG",
-    icon: "lucide:box",
-    content: "You have a few new packages awaiting your approval.",
   },
 ]
 </script>
@@ -61,9 +58,7 @@ const tabs = [
         </UiSheetTrigger>
       </div>
       <UiTabsContent value="Dashboard">
-        Dashboard.
-        Total Evaluation :
-        {{ totalEvaluations }}
+        Total Evaluation : {{ totalEvaluations }}
       </UiTabsContent>
       <UiTabsContent value="Evaluation">
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
@@ -79,7 +74,7 @@ const tabs = [
           </div>
         </UiScrollArea>
       </UiTabsContent>
-      <UiTabsContent value="NG">
+      <UiTabsContent value="Project Information">
         <pre>{{ project }}</pre>
       </UiTabsContent>
     </UiTabs>

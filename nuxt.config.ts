@@ -75,6 +75,17 @@ export default defineNuxtConfig({
     },
   },
 
+  fonts: {
+    providers: {
+      google: false,
+      adobe: false,
+      fontsource: false,
+      bunny: false,
+      fontshare: false,
+      googleicons: false,
+    },
+  },
+
   tailwindcss: {
     exposeConfig: true,
     editorSupport: true,

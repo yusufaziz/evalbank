@@ -38,7 +38,7 @@ model Checkitem {
   id               String       @id @default(uuid())
   module           String
   expectedTarget   String
-  requiredSettings String?
+  settings    Setting[]
   testcaseId       String?
   testcase         Testcase?    @relation(fields: [testcaseId], references: [id])
   author           String?
@@ -58,6 +58,7 @@ model Setting {
   modifier    String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  checkitems  Checkitem[]
   evaluatons  Evaluation[]
   projects    Project[]
   attachments Attachment[]

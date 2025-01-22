@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
         settings: true,
         evaluations: {
           include: {
-            checkitem: true, // Updated to reflect one-to-many relationship
+            checkitem: true,
             attachments: true,
             settings: true,
           },
@@ -52,7 +52,15 @@ export default defineEventHandler(async (event) => {
               create: {
                 module: evaluation.checkitem.module,
                 expectedTarget: evaluation.checkitem.expectedTarget,
-                requiredSettings: evaluation.checkitem.requiredSettings,
+                settings: {
+                  create: evaluation.checkitem.settings.map(setting => ({
+                    name: setting.name,
+                    value: setting.value,
+                    constrains: setting.constrains,
+                    author: setting.author,
+                    modifier: setting.modifier,
+                  })),
+                },
                 author: evaluation.checkitem.author,
                 modifier: evaluation.checkitem.modifier,
               },
@@ -92,7 +100,11 @@ export default defineEventHandler(async (event) => {
     const testcase = await prisma.testcase.findUnique({
       where: { id },
       include: {
-        checkitems: true,
+        checkitems: {
+          include: {
+            settings: true, // Include settings for checkitems
+          },
+        },
         attachments: true,
       },
     })
@@ -111,7 +123,15 @@ export default defineEventHandler(async (event) => {
           create: testcase.checkitems.map(checkitem => ({
             module: checkitem.module,
             expectedTarget: checkitem.expectedTarget,
-            requiredSettings: checkitem.requiredSettings,
+            settings: {
+              create: checkitem.settings.map(setting => ({
+                name: setting.name,
+                value: setting.value,
+                constrains: setting.constrains,
+                author: setting.author,
+                modifier: setting.modifier,
+              })),
+            },
             author: checkitem.author,
             modifier: checkitem.modifier,
           })),

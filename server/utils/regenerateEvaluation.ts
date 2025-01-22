@@ -31,7 +31,11 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
     const testcase = await prisma.testcase.findUnique({
       where: { id: testcaseId },
       include: {
-        checkitems: true, // Include all checkitems associated with the testcase
+        checkitems: {
+          include: {
+            settings: true, // Include settings associated with the checkitem
+          },
+        },
       },
     })
 
@@ -71,61 +75,14 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
 
     // Process each checkitem individually
     for (const checkitem of testcase.checkitems) {
-      if (!checkitem.requiredSettings)
-        continue // Skip checkitems without requiredSettings
-
-      // Parse requiredSettings and fetch matching settings for the checkitem
       const settingsGroups: Map<string, { id: string, name: string, value: string }[]> = new Map()
 
-      const patterns = checkitem.requiredSettings.split("|") // Split requiredSettings into individual patterns
-      for (const pattern of patterns) {
-        const patternTrimmed = pattern.trim() // Remove leading/trailing whitespace
-        if (!patternTrimmed)
-          continue // Skip empty patterns
-
-        // Check if the pattern includes values (e.g., "Printing Resolution(300 dpi,1200 dpi)")
-        if (patternTrimmed.includes("(")) {
-          const [name, valuesStr] = patternTrimmed.split("(") // Split the pattern into name and values
-
-          // Validate that valuesStr is defined and contains a closing parenthesis
-          if (!valuesStr || !valuesStr.includes(")")) {
-            console.error(`Invalid requiredSettings format: ${patternTrimmed}`)
-            continue
-          }
-
-          const values = valuesStr
-            .replace(")", "") // Remove the closing parenthesis
-            .split(",") // Split into individual values
-            .map(v => v.trim()) // Trim whitespace from each value
-
-          // Fetch settings with the matching name and values
-          const settings = await prisma.setting.findMany({
-            where: {
-              name: name.trim(), // Match the setting name
-              value: { in: values }, // Match the setting values
-            },
-          })
-
-          // Add settings to the groups map
-          if (!settingsGroups.has(name.trim())) {
-            settingsGroups.set(name.trim(), [])
-          }
-          settingsGroups.get(name.trim())?.push(...settings)
+      // Group settings by their name
+      for (const setting of checkitem.settings) {
+        if (!settingsGroups.has(setting.name)) {
+          settingsGroups.set(setting.name, [])
         }
-        else {
-          // Fetch all settings with the matching name (no values specified)
-          const settings = await prisma.setting.findMany({
-            where: {
-              name: patternTrimmed, // Match the setting name
-            },
-          })
-
-          // Add settings to the groups map
-          if (!settingsGroups.has(patternTrimmed)) {
-            settingsGroups.set(patternTrimmed, [])
-          }
-          settingsGroups.get(patternTrimmed)?.push(...settings)
-        }
+        settingsGroups.get(setting.name)?.push(setting)
       }
 
       // Generate all possible combinations of settings (cartesian product)
@@ -133,23 +90,23 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
       const allCombinations = cartesianProduct(settingsGroupsArray)
 
       // Filter combinations to exclude invalid ones based on constraints
-      const validCombinations = allCombinations.filter((combination) => {
-        const combinationSettingIds = combination.map(s => s.id).sort().join("#")
-        return !exclusionConstraints.some(constraint =>
+      const validCombinations = allCombinations.filter((combination: { id: string }[]) => {
+        const combinationSettingIds = combination.map((s: { id: string }) => s.id).sort().join("#")
+        return !exclusionConstraints.some((constraint: { value: string }) =>
           constraint.value.split("#").sort().join("#") === combinationSettingIds,
         )
       })
 
       // Fetch existing evaluations for the checkitem
       const checkitemEvaluations = existingEvaluations.filter(
-        evaluation => evaluation.checkitemId === checkitem.id,
+        (evaluation: { checkitemId: string }) => evaluation.checkitemId === checkitem.id,
       )
 
       // Mark evaluations that are not in valid combinations but have been modified
       for (const evaluation of checkitemEvaluations) {
-        const evaluationSettingIds = evaluation.settings.map(s => s.id).sort().join("#")
-        const isInValidCombinations = validCombinations.some(combination =>
-          combination.map(s => s.id).sort().join("#") === evaluationSettingIds,
+        const evaluationSettingIds = evaluation.settings.map((s: { id: string }) => s.id).sort().join("#")
+        const isInValidCombinations = validCombinations.some((combination: { id: string }[]) =>
+          combination.map((s: { id: string }) => s.id).sort().join("#") === evaluationSettingIds,
         )
 
         if (!isInValidCombinations) {
@@ -172,11 +129,18 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
       }
 
       // Create a new evaluation for each valid combination that doesn't already exist
-      const newEvaluations = []
+      const newEvaluations: {
+        judgement: number
+        remarks: string
+        projectId: string
+        checkitemId: string
+        settings: { connect: { id: string }[] }
+      }[] = []
+
       for (const combination of validCombinations) {
-        const combinationSettingIds = combination.map(s => s.id).sort().join("#")
-        const alreadyExists = checkitemEvaluations.some(evaluation =>
-          evaluation.settings.map(s => s.id).sort().join("#") === combinationSettingIds,
+        const combinationSettingIds = combination.map((s: { id: string }) => s.id).sort().join("#")
+        const alreadyExists = checkitemEvaluations.some((evaluation: { settings: { id: string }[] }) =>
+          evaluation.settings.map((s: { id: string }) => s.id).sort().join("#") === combinationSettingIds,
         )
 
         if (!alreadyExists) {
@@ -186,7 +150,7 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
             projectId,
             checkitemId: checkitem.id,
             settings: {
-              connect: combination.map(setting => ({ id: setting.id })), // Connect the settings to the evaluation
+              connect: combination.map((setting: { id: string }) => ({ id: setting.id })), // Connect the settings to the evaluation
             },
           })
         }

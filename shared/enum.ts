@@ -1,5 +1,6 @@
 export enum EVALUATION_JUDGEMENT {
-  NG = 0,
-  OK = 1,
-  NOT_SUPPORT = 2,
+  NOT_EXECUTED = 0,
+  NOT_SUPPORT = 1,
+  NG = 2,
+  OK = 3,
 }
