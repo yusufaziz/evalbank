@@ -1,3 +1,5 @@
+import type { Setting } from "@prisma/client"
+import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 import prisma from "../../plugins/prisma.client"
 
 /**
@@ -13,6 +15,23 @@ function cartesianProduct<T>(arrays: T[][]): T[][] {
       return acc.flatMap(x => array.map(y => [...x, y]))
     },
     [[]],
+  )
+}
+
+/**
+ * @brief Filters the checkitem.settings array to only include settings that exist in project.settings.
+ * @param checkitemSettings - The settings array from the checkitem.
+ * @param projectSettings - The settings array from the project.
+ * @returns A filtered array of settings that exist in both checkitem.settings and project.settings.
+ */
+function filterSettings(checkitemSettings: Setting[], projectSettings: Setting[]): Setting[] {
+  return checkitemSettings.filter(checkitemSetting =>
+    projectSettings.some(
+      projectSetting =>
+        projectSetting.id === checkitemSetting.id // Match by ID
+        && projectSetting.name === checkitemSetting.name // Match by name
+        && projectSetting.value === checkitemSetting.value, // Match by value
+    ),
   )
 }
 
@@ -75,10 +94,10 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
 
     // Process each checkitem individually
     for (const checkitem of testcase.checkitems) {
-      const settingsGroups: Map<string, { id: string, name: string, value: string }[]> = new Map()
+      const settingsGroups: Map<string, Setting[]> = new Map()
 
-      // Group settings by their name
-      for (const setting of checkitem.settings) {
+      // Group settings by their name using filtered setting that only available in project.settings
+      for (const setting of filterSettings(checkitem.settings, project.settings)) {
         if (!settingsGroups.has(setting.name)) {
           settingsGroups.set(setting.name, [])
         }
@@ -98,9 +117,7 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
       })
 
       // Fetch existing evaluations for the checkitem
-      const checkitemEvaluations = existingEvaluations.filter(
-        (evaluation: { checkitemId: string }) => evaluation.checkitemId === checkitem.id,
-      )
+      const checkitemEvaluations = existingEvaluations.filter(evaluation => evaluation.checkitemId === checkitem.id)
 
       // Mark evaluations that are not in valid combinations but have been modified
       for (const evaluation of checkitemEvaluations) {
@@ -115,7 +132,7 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
             await prisma.evaluation.update({
               where: { id: evaluation.id },
               data: {
-                judgement: -1,
+                judgement: EVALUATION_JUDGEMENT.NOT_SUPPORT,
               },
             })
           }
@@ -145,7 +162,7 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
 
         if (!alreadyExists) {
           newEvaluations.push({
-            judgement: 0, // Default judgement value
+            judgement: EVALUATION_JUDGEMENT.NOT_EXECUTED,
             remarks: "Auto-generated evaluation",
             projectId,
             checkitemId: checkitem.id,

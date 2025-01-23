@@ -26,7 +26,7 @@ const styles = tv({
     <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-primary">
       <UiDropdownMenuItemIndicator>
         <Icon v-if="icon" :name="icon" class="h-4 w-4" />
-        <Icon v-else name="ph:circle-fill" class="h-2 w-2" />
+        <Icon v-else name="lucide:check" class="h-2 w-2" />
       </UiDropdownMenuItemIndicator>
     </span>
     <slot>{{ title }}</slot>

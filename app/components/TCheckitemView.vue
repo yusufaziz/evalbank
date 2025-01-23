@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { ICheckitem } from "~~/shared/interface/checkitem"
+import type { IEvaluation } from "~~/shared/interface/evaluation"
+import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 
 const props = defineProps({
   checkitem: {
@@ -20,8 +22,44 @@ const emit = defineEmits(["edit", "delete", "needRefresh"])
  */
 const settingsTags = computed(() => {
   return [...new Set(props.checkitem.settings?.map(c => c.name))]
-    .map(name => `${name}: ${props.checkitem.settings?.filter(f => f.name === name).map(s => s.value).join(",")}`) || []
+    .map(
+      name =>
+        `${name}: ${props.checkitem.settings
+          ?.filter(f => f.name === name)
+          .map(s => s.value)
+          .join(",")}`,
+    ) || []
 })
+
+/**
+ * @brief Handles the change in judgement for an evaluation.
+ * @param evaluation - The evaluation object to update.
+ * @param judgement - The new judgement value.
+ */
+function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
+  evaluation.judgement = judgement // Update the judgement
+  useSonner.promise(
+    $fetch<ICheckitem>(`/api/evaluations/${evaluation.id}`, {
+      method: "patch",
+      body: {
+        judgement,
+      },
+    })
+      .then((response) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            emit("needRefresh")
+            resolve(response)
+          }, 1000) // 1-second delay
+        })
+      }),
+    {
+      loading: "Updating evaluation result",
+      success: () => "Update sucess.",
+      error: () => "Error! Something went wrong during updating data!",
+    },
+  )
+}
 </script>
 
 <template>
@@ -48,27 +86,33 @@ const settingsTags = computed(() => {
     <div v-if="props.checkitem.evaluations" class="p-2 text-sm flex flex-wrap gap-3">
       <div v-for="(e, i) in props.checkitem.evaluations" :key="i" class="border rounded-sm p-2">
         <div>
-          <p v-for="(settingEval, idxSettingEval) in e.settings.map((s) => `${s.name}: ${s.value}`)" :key="idxSettingEval">
+          <p
+            v-for="(settingEval, idxSettingEval) in e.settings?.map((s) => `${s.name}: ${s.value}`)"
+            :key="idxSettingEval"
+          >
             {{ settingEval }}
           </p>
         </div>
         <div>
           <UiToggleGroup class="item-start justify-start pt-2">
-            <UiRadioGroup default-value="todo">
+            <UiRadioGroup
+              :model-value="e.judgement?.toString()"
+              @update:model-value="(value) => handleJudgementChange(e, Number(value))"
+            >
               <div class="flex space-x-2">
-                <UiRadioGroupItem id="r1" value="1" />
+                <UiRadioGroupItem id="r1" :value="EVALUATION_JUDGEMENT.NOT_SUPPORT.toString()" />
                 <UiLabel for="r1">
                   Not Supported
                 </UiLabel>
               </div>
               <div class="flex items-center space-x-2">
-                <UiRadioGroupItem id="r2" value="2" />
+                <UiRadioGroupItem id="r2" :value="EVALUATION_JUDGEMENT.NG.toString()" />
                 <UiLabel for="r2">
                   NG
                 </UiLabel>
               </div>
               <div class="flex items-center space-x-2">
-                <UiRadioGroupItem id="r3" value="3" />
+                <UiRadioGroupItem id="r3" :value="EVALUATION_JUDGEMENT.OK.toString()" />
                 <UiLabel for="r3">
                   OK
                 </UiLabel>

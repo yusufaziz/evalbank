@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-const { data: project } = useFetch(`/api/projects/details/${useRoute().params.projectId}`)
+import type { IProjectDetails } from "~~/shared/interface/project"
+
+const { data: project } = useFetch<IProjectDetails>(`/api/projects/details/${useRoute().params.projectId}`)
 const { data: testcases } = useFetch(`/api/testcases?projectId=${useRoute().params.projectId}`)
 // Computed property to calculate total evaluations
 const totalEvaluations = computed(() => {

@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
           judgement: true,
           settings: { select: { id: true, name: true, value: true } },
           checkitem: {
-            select: { id: true, module: true, expectedTarget: true, requiredSettings: true, testcase: { select: { id: true, name: true, procedures: true } } },
+            select: { id: true, module: true, expectedTarget: true, settings: true, testcase: { select: { id: true, name: true, procedures: true } } },
           },
         },
       },
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     // Initialize testcase if not already in the map
     if (!testcasesMap.has(testcaseId)) {
       testcasesMap.set(testcaseId, {
-        ...evaluation.checkitem.testcase,
+        ...evaluation.checkitem?.testcase,
         checkitems: new Map<string, any>(),
       })
     }

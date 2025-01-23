@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Checkitem } from "@prisma/client" // Import the Checkitem type
+import type { ICheckitem } from "~~/shared/interface/checkitem"
 
 const props = defineProps({
   id: {
@@ -15,7 +15,7 @@ const props = defineProps({
     required: true,
   },
   checkitems: {
-    type: Array as () => Checkitem[],
+    type: Array as () => ICheckitem[],
     required: true,
   },
   syncBtn: {
@@ -109,7 +109,7 @@ function onUnSyncdata() {
         {{ i + 1 }}.  {{ p }}
       </p>
       <UiDivider label="Checkitems" />
-      <TCheckitemView v-for="(checkitem, i) in props.checkitems" :key="i" :checkitem="checkitem" />
+      <TCheckitemView v-for="(checkitem, i) in props.checkitems" :key="i" :checkitem="checkitem" @need-refresh="emit('needRefresh')" />
     </UiCollapsibleContent>
   </UiCollapsible>
 </template>

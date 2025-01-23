@@ -19,7 +19,7 @@ const styles = tv({
 <template>
   <RadioGroupIndicator v-bind="forwarded" :class="styles({ class: props.class })">
     <slot>
-      <Icon :name="icon || 'ph:circle-fill'" class="h-2.5 w-2.5 fill-current text-current" />
+      <Icon :name="icon || 'lucide:check'" class="h-2.5 w-2.5 fill-current text-current" />
     </slot>
   </RadioGroupIndicator>
 </template>
