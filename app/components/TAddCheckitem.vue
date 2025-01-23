@@ -130,12 +130,7 @@ function deleteCheckitem(index: number) {
                         class="text-sm"
                       />
                     </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Required Settings
-                      </label>
-                      <TSettingsSelection v-model="selectedSettings" />
-                    </div>
+                    <TSettingsSelection v-model="selectedSettings" />
                   </fieldset>
                 </form>
               </div>

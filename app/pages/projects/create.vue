@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
+import type { ISelectedSetting } from "~~/shared/interface/setting"
 import consola from "consola"
 import { zodProjectSchema } from "~~/shared/schema/project"
 
@@ -7,12 +8,14 @@ const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodProjectSchema),
 })
 
+const selectedSettings = ref<ISelectedSetting[]>([])
+
 const onSubmit = handleSubmit(async (data) => {
   consola.log(data)
   await useSonner.promise(
     $fetch<Project>("/api/projects", {
       method: "PUT",
-      body: { ...data, author: "dummy-author-id" },
+      body: { ...data, author: "dummy-author-id", settingIds: convertSelectedSetting(selectedSettings.value).map(s => s.id) },
     }),
     {
       loading: "Creating Project ...",
@@ -29,15 +32,18 @@ const onSubmit = handleSubmit(async (data) => {
     <UiCard title="Create project">
       <template #content>
         <UiCardContent>
-          <fieldset>
+          <fieldset :disabled="isSubmitting" class="space-y-5">
             <UiVeeInput label="Project Name" name="name" />
-            <UiVeeNumberField :min="20" :max="50" label="Model FY" name="modelFY">
-              <UiNumberFieldInput placeholder="20" />
-              <UiNumberFieldDecrement class="border-l" />
-              <UiNumberFieldIncrement class="border-l" />
-            </UiVeeNumberField>
-            <UiVeeInput label="Model Series" name="modelSeries" />
-            <UiVeeInput label="Model Name" name="modelName" />
+            <div class="flex flex-row gap-2">
+              <UiVeeNumberField :min="20" :max="50" label="Model FY" name="modelFY">
+                <UiNumberFieldInput placeholder="20" />
+                <UiNumberFieldDecrement class="border-l" />
+                <UiNumberFieldIncrement class="border-l" />
+              </UiVeeNumberField>
+              <UiVeeInput label="Model Series" name="modelSeries" />
+              <UiVeeInput label="Model Name" name="modelName" />
+            </div>
+            <TSettingsSelection v-model="selectedSettings" />
           </fieldset>
         </UiCardContent>
       </template>

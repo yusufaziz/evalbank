@@ -1,10 +1,5 @@
-import type { Project } from "@prisma/client"
+import type { Project, Setting } from "@prisma/client"
 
-export interface IGroupedSubProjects {
-  title: string
-  item: Project[]
-}
-export interface IGroupedProjects {
-  title: string
-  item: IGroupedSubProjects
+export interface IProject extends Project {
+  settings?: Setting[]
 }

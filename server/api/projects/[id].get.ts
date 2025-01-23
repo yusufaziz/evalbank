@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const project = await prisma.project.findUnique({
     where: { id },
     include: {
-      settings: { select: { id: true, name: true, value: true } },
+      settings: true,
     },
   })
 
