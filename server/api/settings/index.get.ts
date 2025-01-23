@@ -1,4 +1,4 @@
-import type { IGroupedSettings } from "~~/shared/interface/settings"
+import type { IGroupedSettings } from "~~/shared/interface/setting"
 import prisma from "../../../plugins/prisma.client"
 
 export default defineEventHandler(async (event) => {

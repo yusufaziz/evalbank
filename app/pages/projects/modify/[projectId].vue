@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
-import type { IGroupedSettings } from "~~/shared/interface/settings"
+import type { IGroupedSettings } from "~~/shared/interface/setting"
 import { zodProjectSchema } from "~~/shared/schema/project"
 
 const { data: project } = await useFetch(`/api/projects/${useRoute().params.projectId}/`)

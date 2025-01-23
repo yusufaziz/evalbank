@@ -1,3 +1,4 @@
+import type { Setting } from "@prisma/client"
 import prisma from "../../../plugins/prisma.client"
 
 export default defineEventHandler(async (event) => {
@@ -39,7 +40,7 @@ export default defineEventHandler(async (event) => {
 
         // Update or create Checkitems
         for (const item of payloadCheckitems) {
-          if (item.id === "-") {
+          if (!item.id || item.id === "-") {
             // Create new Checkitem
             await prisma.checkitem.create({
               data: {
@@ -47,7 +48,7 @@ export default defineEventHandler(async (event) => {
                 expectedTarget: item.expectedTarget,
                 testcaseId: testcase.id, // Associate with the Testcase
                 settings: {
-                  connect: item.settings.map(setting => ({ id: setting.id })), // Connect the settings
+                  connect: item.settings.map((setting: Setting) => ({ id: setting.id })), // Connect the settings
                 },
               },
             })
@@ -61,7 +62,7 @@ export default defineEventHandler(async (event) => {
                 expectedTarget: item.expectedTarget,
                 settings: {
                   set: [], // Disconnect all existing settings
-                  connect: item.settings.map(setting => ({ id: setting.id })), // Reconnect the settings
+                  connect: item.settings.map((setting: Setting) => ({ id: setting.id })), // Reconnect the settings
                 },
               },
             })
@@ -78,10 +79,8 @@ export default defineEventHandler(async (event) => {
       // Fetch all evaluations associated with these checkitems
       const evaluations = await prisma.evaluation.findMany({
         where: {
-          checkitems: {
-            some: {
-              id: { in: dbCheckitems.map(c => c.id) },
-            },
+          checkitem: {
+            id: { in: dbCheckitems.map(c => c.id) },
           },
         },
         select: { projectId: true },
@@ -92,7 +91,9 @@ export default defineEventHandler(async (event) => {
 
       // Regenerate evaluations for each projectId
       for (const projectId of projectIds) {
-        await regenerateEvaluations(testcase.id, projectId)
+        if (projectId) {
+          await regenerateEvaluations(testcase.id, projectId)
+        }
       }
 
       return testcase

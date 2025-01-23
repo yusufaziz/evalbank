@@ -103,7 +103,7 @@ function onUnSyncdata() {
         </UiButton>
       </div>
     </div>
-    <UiCollapsibleContent v-if="procedures.length > 1" class="space-y-2">
+    <UiCollapsibleContent v-if="procedures.length > 0" class="space-y-2">
       <UiDivider label="Procedures" />
       <p v-for="(p, i) in procedures" :key="i" class="text-sm">
         {{ i + 1 }}.  {{ p }}

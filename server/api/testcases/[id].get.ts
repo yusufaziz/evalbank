@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   const id = event.context.params?.id
   const testcase = await prisma.testcase.findUnique({
     where: { id },
-    include: { checkitems: true },
+    include: { checkitems: { include: { settings: true } } },
   })
   return testcase || { message: "testcase not found" }
 })

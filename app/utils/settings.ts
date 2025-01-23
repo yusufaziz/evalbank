@@ -22,3 +22,12 @@ export function populateSelectedSettings(settingsArray: Setting[]): ISelectedSet
     return acc
   }, [] as ISelectedSetting[])
 }
+
+/**
+ * @brief Transforms an array of ISelectedSetting objects into a flat array of Setting objects.
+ * @param selectedSettingsArray - An array of ISelectedSetting objects.
+ * @returns An array of Setting objects.
+ */
+export function convertSelectedSetting(selectedSettingsArray: ISelectedSetting[]): Setting[] {
+  return selectedSettingsArray.flatMap(item => item.settings || [])
+}

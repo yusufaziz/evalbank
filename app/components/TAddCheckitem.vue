@@ -1,27 +1,31 @@
 <script setup lang="ts">
-import type { ICheckitem } from "~~/shared/interface/checkitems";
-import type { ISelectedSetting } from "~~/shared/interface/settings";
-import { populateSelectedSettings } from "~/utils/settings";
+import type { ICheckitem } from "~~/shared/interface/checkitem"
+import type { ISelectedSetting } from "~~/shared/interface/setting"
+import consola from "consola"
+import { populateSelectedSettings } from "~/utils/settings"
 
 const model = defineModel<Partial<ICheckitem>[]>({
   default: () => [],
-});
+})
 
 const newCheckitem = ref<Partial<ICheckitem>>({
   settings: [],
-});
+})
 
-const isSheetOpen = ref(false);
-const editedCheckitem = ref<Partial<ICheckitem> | null>(null);
-const selectedSettings = ref<ISelectedSetting[]>([]);
+const isSheetOpen = ref(false)
+const editedIndex = ref(-1)
+const selectedSettings = ref<ISelectedSetting[]>([])
 
 /**
  * @brief Initializes the newCheckitem object with default values.
  */
 function initializeCheckitem() {
+  consola.log("initializeCheckitem")
+  editedIndex.value = -1
   newCheckitem.value = {
     settings: [],
-  };
+  }
+  selectedSettings.value = []
 }
 
 /**
@@ -29,58 +33,58 @@ function initializeCheckitem() {
  */
 watch(selectedSettings, () => {
   newCheckitem.value.settings = selectedSettings.value.flatMap(
-    (selectedSetting) => selectedSetting.settings || []
-  );
-}, { deep: true, flush: "post" });
+    selectedSetting => selectedSetting.settings || [],
+  )
+}, { deep: true, flush: "post" })
 
 /**
  * @brief Edits an existing checkitem.
  * @param checkitem - The checkitem to edit.
  */
-function editCheckitem(checkitem: Partial<ICheckitem>) {
-  editedCheckitem.value = checkitem;
-  newCheckitem.value = { ...checkitem };
-
+function editCheckitem(checkitem: Partial<ICheckitem>, index: number) {
+  consola.log(checkitem, index)
+  editedIndex.value = index
+  newCheckitem.value = { ...checkitem }
   // Populate selectedSettings using the utility function
-  selectedSettings.value = populateSelectedSettings(checkitem.settings || []);
-
-  isSheetOpen.value = true; // Open the sheet when editing
+  selectedSettings.value = populateSelectedSettings(checkitem.settings || [])
+  isSheetOpen.value = true // Open the sheet when editing
 }
 
 /**
  * @brief Adds a new checkitem to the model.
  */
 function addNewCheckitem() {
-  model.value.push({ ...newCheckitem.value });
-  initializeCheckitem();
-  selectedSettings.value = [];
-  isSheetOpen.value = false; // Close the sheet after adding
+  consola.log("addNewCheckitem", newCheckitem.value, selectedSettings.value, editedIndex.value)
+  model.value.push({
+    ...newCheckitem.value,
+    settings: convertSelectedSetting(selectedSettings.value),
+  })
+  isSheetOpen.value = false // Close the sheet after adding
 }
 
 /**
  * @brief Updates the edited checkitem in the model.
  */
 function updateCheckitem() {
-  if (editedCheckitem.value) {
-    const index = model.value.findIndex(
-      (item) => item.id === editedCheckitem.value?.id
-    );
-    if (index !== -1) {
-      model.value[index] = { ...newCheckitem.value };
-    }
+  consola.log("updateCheckitem", newCheckitem.value, selectedSettings.value, editedIndex.value)
+  model.value[editedIndex.value] = {
+    ...newCheckitem.value,
+    settings: convertSelectedSetting(selectedSettings.value),
   }
-  editedCheckitem.value = null;
-  initializeCheckitem();
-  selectedSettings.value = [];
-  isSheetOpen.value = false; // Close the sheet after updating
+  isSheetOpen.value = false // Close the sheet after updating
 }
 
 /**
- * @brief Deletes a checkitem from the model.
- * @param checkitem - The checkitem to delete.
+ * @brief Deletes a checkitem from the model using its index.
+ * @param index - The index of the checkitem to delete.
  */
-function deleteCheckitem(checkitem: Partial<ICheckitem>) {
-  model.value = model.value.filter((item) => item.id !== checkitem.id);
+function deleteCheckitem(index: number) {
+  if (index >= 0 && index < model.value.length) {
+    model.value.splice(index, 1) // Remove the checkitem at the specified index
+  }
+  else {
+    console.error("Invalid index:", index)
+  }
 }
 </script>
 
@@ -92,25 +96,27 @@ function deleteCheckitem(checkitem: Partial<ICheckitem>) {
         :key="i"
         :checkitem="checkitem"
         :modify="true"
-        @edit="editCheckitem"
-        @delete="deleteCheckitem"
+        @edit="editCheckitem(checkitem, i)"
+        @delete="deleteCheckitem(i)"
       />
     </div>
 
     <div>
-      <UiSheet should-scale-background class="pt-2" :open="isSheetOpen" @update:open="isSheetOpen = $event">
+      <UiSheet should-scale-background class="pt-2" :open="isSheetOpen" @update:open="isSheetOpen = $event;">
         <UiSheetTrigger as-child>
-          <UiButton variant="outline"> Add New Checkitem </UiButton>
+          <UiButton variant="outline" @click="initializeCheckitem()">
+            Add New Checkitem
+          </UiButton>
         </UiSheetTrigger>
         <UiSheetContent
           class="sm:max-w-none md:w-[650px]"
           side="right"
-          :title="editedCheckitem ? 'Edit Checkitem' : 'New Checkitem'"
+          :title="editedIndex >= 0 ? 'Edit Checkitem' : 'New Checkitem'"
         >
           <template #content>
             <div class="mx-auto w-full rounded-t-lg p-4 pb-10">
               <div class="relative">
-                <form id="formCheckitem" @submit.prevent="editedCheckitem ? updateCheckitem() : addNewCheckitem()">
+                <form id="formCheckitem" @submit.prevent="editedIndex >= 0 ? updateCheckitem() : addNewCheckitem()">
                   <fieldset class="grid gap-3">
                     <div class="flex flex-row gap-3">
                       <UiVeeInput
@@ -150,7 +156,7 @@ function deleteCheckitem(checkitem: Partial<ICheckitem>) {
               </UiSheetClose>
               <UiSheetClose as-child>
                 <UiButton type="submit" class="text-sm" form="formCheckitem">
-                  {{ editedCheckitem ? "Update" : "Add" }}
+                  {{ editedIndex >= 0 ? "Update" : "Add" }}
                 </UiButton>
               </UiSheetClose>
             </UiSheetFooter>

@@ -14,7 +14,6 @@ const userData = {
   email: "m@example.com",
   avatar: "https://behonbaker.com/icon.png",
 }
-const isDark = useDark()
 </script>
 
 <template>
@@ -68,12 +67,12 @@ const isDark = useDark()
               <UiDropdownMenuItem
                 icon="lucide:sun"
                 title="Light Theme"
-                @click="useToggle(isDark)"
+                @click="useColorMode().preference = 'light'"
               />
               <UiDropdownMenuItem
                 icon="lucide:moon"
                 title="Dark Theme"
-                @click="useToggle(isDark)"
+                @click="useColorMode().preference = 'dark'"
               />
               <UiDropdownMenuItem icon="lucide:settings-2" title="Settings" />
               <UiDropdownMenuItem icon="lucide:bell" title="Notifications" />

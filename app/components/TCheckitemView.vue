@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ICheckitem } from "~~/shared/interface/checkitems"
+import type { ICheckitem } from "~~/shared/interface/checkitem"
 
 const props = defineProps({
   checkitem: {
