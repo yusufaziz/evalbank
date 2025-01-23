@@ -15,7 +15,7 @@ const props = defineProps({
     required: true,
   },
   checkitems: {
-    type: Array as () => ICheckitem[],
+    type: Array as () => ICheckitem[] | undefined,
     required: true,
   },
   syncBtn: {

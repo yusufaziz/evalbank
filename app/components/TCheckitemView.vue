@@ -65,9 +65,11 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
 <template>
   <div class="rounded-lg border border-input p-2">
     <div class="flex items-center justify-between">
-      <span>{{ props.checkitem.expectedTarget }}</span>
-      <div class="flex flex-row gap-2">
+      <div class="flex flex-row gap-1">
         <UiBadge>{{ props.checkitem.module }}</UiBadge>
+        <span>{{ props.checkitem.expectedTarget }}</span>
+      </div>
+      <div class="flex flex-row gap-2">
         <div v-if="modify" class="flex gap-2">
           <UiButton variant="outline" size="icon-xs" @click="emit('edit', props.checkitem)">
             <Icon name="lucide:pencil" />
@@ -84,14 +86,22 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
       </UiBadge>
     </div>
     <div v-if="props.checkitem.evaluations" class="p-2 text-sm flex flex-wrap gap-3">
-      <div v-for="(e, i) in props.checkitem.evaluations" :key="i" class="border rounded-sm p-2">
+      <div
+        v-for="(e, i) in props.checkitem.evaluations" :key="i" class="border rounded-sm p-2" :class="{
+          'border-2': e.judgement !== EVALUATION_JUDGEMENT.NOT_EXECUTED, // Thicker border if not NOT_EXECUTED
+          'border-red-500': e.judgement === EVALUATION_JUDGEMENT.NG, // Red border for NG
+          'border-green-500': e.judgement === EVALUATION_JUDGEMENT.OK, // Green border for OK
+        }"
+      >
         <div>
-          <p
-            v-for="(settingEval, idxSettingEval) in e.settings?.map((s) => `${s.name}: ${s.value}`)"
+          <div
+            v-for="(settingEval, idxSettingEval) in e.settings"
             :key="idxSettingEval"
+            class="flex flex-row"
           >
-            {{ settingEval }}
-          </p>
+            <span class="font-bold">{{ settingEval.name }}</span>
+            <span>: {{ settingEval.value }}</span>
+          </div>
         </div>
         <div>
           <UiToggleGroup class="item-start justify-start pt-2">

@@ -39,7 +39,7 @@ const tabs = [
 
 <template>
   <UiSheet should-scale-background>
-    <UiTabs default-value="Evaluations">
+    <UiTabs default-value="Dashboard">
       <div class="flex gap-5">
         <UiTabsList>
           <UiTabsTrigger
