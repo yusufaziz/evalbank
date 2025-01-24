@@ -25,6 +25,7 @@ model Project {
 model Testcase {
   id          String       @id @default(uuid())
   name        String
+  group       String        @default("Common")
   procedures  String
   author      String?
   modifier    String?

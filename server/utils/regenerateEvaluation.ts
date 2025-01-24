@@ -11,9 +11,7 @@ import prisma from "../../plugins/prisma.client"
  */
 function cartesianProduct<T>(arrays: T[][]): T[][] {
   return arrays.reduce<T[][]>(
-    (acc, array) => {
-      return acc.flatMap(x => array.map(y => [...x, y]))
-    },
+    (acc, array) => acc.flatMap(x => array.map(y => [...x, y])),
     [[]],
   )
 }
@@ -25,14 +23,8 @@ function cartesianProduct<T>(arrays: T[][]): T[][] {
  * @returns A filtered array of settings that exist in both checkitem.settings and project.settings.
  */
 function filterSettings(checkitemSettings: Setting[], projectSettings: Setting[]): Setting[] {
-  return checkitemSettings.filter(checkitemSetting =>
-    projectSettings.some(
-      projectSetting =>
-        projectSetting.id === checkitemSetting.id // Match by ID
-        && projectSetting.name === checkitemSetting.name // Match by name
-        && projectSetting.value === checkitemSetting.value, // Match by value
-    ),
-  )
+  const projectSettingIds = new Set(projectSettings.map(setting => setting.id))
+  return checkitemSettings.filter(setting => projectSettingIds.has(setting.id))
 }
 
 /**
@@ -44,64 +36,43 @@ function filterSettings(checkitemSettings: Setting[], projectSettings: Setting[]
  * @param projectId - The ID of the project associated with the testcase.
  */
 export async function regenerateEvaluations(testcaseId: string, projectId: string) {
-  // Increase the transaction timeout to 30 seconds (or adjust as needed)
   await prisma.$transaction(async (prisma) => {
-    // Fetch the testcase and its checkitems
-    const testcase = await prisma.testcase.findUnique({
-      where: { id: testcaseId },
-      include: {
-        checkitems: {
-          include: {
-            settings: true, // Include settings associated with the checkitem
-          },
-        },
-      },
-    })
+    // Fetch all required data in parallel
+    const [testcase, project, exclusionConstraints, existingEvaluations] = await Promise.all([
+      prisma.testcase.findUnique({
+        where: { id: testcaseId },
+        include: { checkitems: { include: { settings: true } } },
+      }),
+      prisma.project.findUnique({
+        where: { id: projectId },
+        include: { settings: true },
+      }),
+      prisma.settingConstraints.findMany({ where: { exclusion: true } }),
+      prisma.evaluation.findMany({
+        where: { projectId, checkitem: { testcaseId }, judgement: EVALUATION_JUDGEMENT.NOT_EXECUTED },
+        include: { settings: true },
+      }),
+    ])
 
-    if (!testcase) {
-      throw new Error("Testcase not found")
+    if (!testcase || !project) {
+      throw new Error("Testcase or Project not found")
     }
 
-    // Fetch the project's connected settings
-    const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      include: {
-        settings: true, // Include all settings associated with the project
-      },
-    })
-
-    if (!project) {
-      throw new Error("Project not found")
-    }
-
-    // Fetch exclusion constraints from SettingConstraints
-    const exclusionConstraints = await prisma.settingConstraints.findMany({
-      where: { exclusion: true }, // Only fetch exclusion constraints
-    })
-
-    // Fetch existing evaluations for the testcase
-    const existingEvaluations = await prisma.evaluation.findMany({
-      where: {
-        projectId,
-        checkitem: {
-          testcaseId, // Filter evaluations connected to the testcase through checkitem
-        },
-      },
-      include: {
-        settings: true, // Include settings to compare with valid combinations
-      },
-    })
+    // Create a Set of exclusion constraints for fast lookup
+    const exclusionSet = new Set(
+      exclusionConstraints.map(constraint => constraint.value.split("#").sort().join("#")),
+    )
 
     // Process each checkitem individually
     for (const checkitem of testcase.checkitems) {
-      const settingsGroups: Map<string, Setting[]> = new Map()
+      const settingsGroups: Map<string, string[]> = new Map()
 
-      // Group settings by their name using filtered setting that only available in project.settings
+      // Group settings by their name using filtered settings that are available in project.settings
       for (const setting of filterSettings(checkitem.settings, project.settings)) {
         if (!settingsGroups.has(setting.name)) {
           settingsGroups.set(setting.name, [])
         }
-        settingsGroups.get(setting.name)?.push(setting)
+        settingsGroups.get(setting.name)?.push(setting.id)
       }
 
       // Generate all possible combinations of settings (cartesian product)
@@ -109,90 +80,89 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
       const allCombinations = cartesianProduct(settingsGroupsArray)
 
       // Filter combinations to exclude invalid ones based on constraints
-      const validCombinations = allCombinations.filter((combination: { id: string }[]) => {
-        const combinationSettingIds = combination.map((s: { id: string }) => s.id).sort().join("#")
-        return !exclusionConstraints.some((constraint: { value: string }) =>
-          constraint.value.split("#").sort().join("#") === combinationSettingIds,
-        )
+      const validCombinations = allCombinations.filter((combination) => {
+        const combinationSettingIds = combination.sort().join("#")
+        return !exclusionSet.has(combinationSettingIds)
       })
 
       // Fetch existing evaluations for the checkitem
-      const checkitemEvaluations = existingEvaluations.filter(evaluation => evaluation.checkitemId === checkitem.id)
+      const checkitemEvaluations = existingEvaluations.filter(
+        evaluation => evaluation.checkitemId === checkitem.id,
+      )
 
       // Mark evaluations that are not in valid combinations but have been modified
-      for (const evaluation of checkitemEvaluations) {
-        const evaluationSettingIds = evaluation.settings.map((s: { id: string }) => s.id).sort().join("#")
-        const isInValidCombinations = validCombinations.some((combination: { id: string }[]) =>
-          combination.map((s: { id: string }) => s.id).sort().join("#") === evaluationSettingIds,
-        )
-
-        if (!isInValidCombinations) {
+      const updates = checkitemEvaluations
+        .filter((evaluation) => {
+          const evaluationSettingIds = evaluation.settings.map(s => s.id).sort().join("#")
+          return !validCombinations.some(
+            combination => combination.sort().join("#") === evaluationSettingIds,
+          )
+        })
+        .map((evaluation) => {
           if (evaluation.createdAt.getTime() !== evaluation.updatedAt.getTime()) {
-            // Evaluation has been modified, set judgement to -1
-            await prisma.evaluation.update({
+            // Evaluation has been modified, set judgement to NOT_SUPPORT
+            return prisma.evaluation.update({
               where: { id: evaluation.id },
-              data: {
-                judgement: EVALUATION_JUDGEMENT.NOT_SUPPORT,
-              },
+              data: { judgement: EVALUATION_JUDGEMENT.NOT_SUPPORT },
             })
           }
           else {
             // Evaluation has not been modified, delete it
-            await prisma.evaluation.delete({
-              where: { id: evaluation.id },
-            })
+            return prisma.evaluation.delete({ where: { id: evaluation.id } })
           }
-        }
-      }
+        })
 
-      // Create a new evaluation for each valid combination that doesn't already exist
-      const newEvaluations: {
-        judgement: number
-        remarks: string
-        projectId: string
-        checkitemId: string
-        settings: { connect: { id: string }[] }
-      }[] = []
+      // Create new evaluations for valid combinations that don't already exist
+      const newEvaluations = validCombinations
+        .filter((combination) => {
+          const combinationSettingIds = combination.sort().join("#")
+          return !checkitemEvaluations.some(
+            evaluation =>
+              evaluation.settings.map(s => s.id).sort().join("#") === combinationSettingIds,
+          )
+        })
+        .map(combination => ({
+          judgement: EVALUATION_JUDGEMENT.NOT_EXECUTED,
+          projectId,
+          checkitemId: checkitem.id,
+          settings: combination, // Store settings as an array of IDs
+          remarks: `##TEMP##${JSON.stringify(combination)}`, // Store setting IDs in remarks
+        }))
 
-      for (const combination of validCombinations) {
-        const combinationSettingIds = combination.map((s: { id: string }) => s.id).sort().join("#")
-        const alreadyExists = checkitemEvaluations.some((evaluation: { settings: { id: string }[] }) =>
-          evaluation.settings.map((s: { id: string }) => s.id).sort().join("#") === combinationSettingIds,
-        )
+      // Bulk insert evaluations using createMany
+      if (newEvaluations.length > 0) {
+        await prisma.evaluation.createMany({
+          data: newEvaluations.map(evaluation => ({
+            judgement: evaluation.judgement,
+            projectId: evaluation.projectId,
+            checkitemId: evaluation.checkitemId,
+            remarks: evaluation.remarks, // Store setting IDs in remarks
+          })),
+        })
 
-        if (!alreadyExists) {
-          newEvaluations.push({
-            judgement: EVALUATION_JUDGEMENT.NOT_EXECUTED,
-            remarks: "Auto-generated evaluation",
-            projectId,
-            checkitemId: checkitem.id,
-            settings: {
-              connect: combination.map((setting: { id: string }) => ({ id: setting.id })), // Connect the settings to the evaluation
-            },
-          })
-        }
-      }
+        // Fetch evaluations with temporary remarks
+        const tempEvaluations = await prisma.evaluation.findMany({
+          where: { remarks: { startsWith: "##TEMP##" } },
+        })
 
-      // Batch create new evaluations in smaller chunks
-      const chunkSize = 100 // Adjust chunk size as needed
-      for (let i = 0; i < newEvaluations.length; i += chunkSize) {
-        const chunk = newEvaluations.slice(i, i + chunkSize)
+        // Connect settings and clear remarks
         await Promise.all(
-          chunk.map(evaluation =>
-            prisma.evaluation.create({
+          tempEvaluations.map((evaluation) => {
+            const settingIds = JSON.parse(evaluation.remarks?.replace("##TEMP##", "") || "") as string[]
+
+            return prisma.evaluation.update({
+              where: { id: evaluation.id },
               data: {
-                judgement: evaluation.judgement,
-                remarks: evaluation.remarks,
-                project: { connect: { id: evaluation.projectId } },
-                checkitem: { connect: { id: evaluation.checkitemId } },
-                settings: evaluation.settings,
+                settings: { connect: settingIds.map(id => ({ id })) },
+                remarks: "", // Clear the remarks field
               },
-            }),
-          ),
+            })
+          }),
         )
       }
+
+      // Execute updates for existing evaluations
+      await Promise.all(updates)
     }
-  }, {
-    timeout: 30000, // Increase transaction timeout to 30 seconds
-  })
+  }, { timeout: 60000 }) // Increase transaction timeout to 60 seconds
 }

@@ -31,6 +31,7 @@ const onSubmit = handleSubmit(async (data) => {
       <template #content>
         <UiCardContent>
           <fieldset :disabled="isSubmitting" class="space-y-5">
+            <UiVeeInput label="Group" name="group" />
             <UiVeeInput label="Name" name="name" />
             <UiVeeTextarea
               label="Procedures"
