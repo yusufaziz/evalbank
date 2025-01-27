@@ -15,6 +15,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["edit", "delete", "needRefresh"])
+const startEvaluationView = ref(0)
 
 /**
  * @brief Computes the settings tags for display.
@@ -61,6 +62,9 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
   )
   useEventBus("project:info").emit("refresh")
 }
+const evaluationItems = computed(() => {
+  return props.checkitem.evaluations?.slice(startEvaluationView.value, startEvaluationView.value + 10) || []
+})
 </script>
 
 <template>
@@ -69,6 +73,10 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
       <div class="flex flex-row gap-1">
         <UiBadge>{{ props.checkitem.module }}</UiBadge>
         <span>{{ props.checkitem.expectedTarget }}</span>
+        <span>[OK: {{ props.checkitem.evaluations?.filter(f => f.judgement === EVALUATION_JUDGEMENT.OK).length }}]</span>
+        <span>[NG: {{ props.checkitem.evaluations?.filter(f => f.judgement === EVALUATION_JUDGEMENT.NG).length }}]</span>
+        <span>[Not Executed: {{ props.checkitem.evaluations?.filter(f => f.judgement === EVALUATION_JUDGEMENT.NOT_EXECUTED).length }}]</span>
+        <span>[Not Supported: {{ props.checkitem.evaluations?.filter(f => f.judgement === EVALUATION_JUDGEMENT.NOT_SUPPORT).length }}]</span>
       </div>
       <div class="flex flex-row gap-2">
         <div v-if="modify" class="flex gap-2">
@@ -86,52 +94,63 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
         {{ tag }}
       </UiBadge>
     </div>
-    <div v-if="props.checkitem.evaluations" class="p-2 text-sm flex flex-wrap gap-3">
-      <div
-        v-for="(e, i) in props.checkitem.evaluations" :key="i" class="border rounded-sm p-2" :class="{
-          'border-2': e.judgement !== EVALUATION_JUDGEMENT.NOT_EXECUTED, // Thicker border if not NOT_EXECUTED
-          'border-red-500': e.judgement === EVALUATION_JUDGEMENT.NG, // Red border for NG
-          'border-green-500': e.judgement === EVALUATION_JUDGEMENT.OK, // Green border for OK
-        }"
-      >
-        <div>
-          <div
-            v-for="(settingEval, idxSettingEval) in e.settings"
-            :key="idxSettingEval"
-            class="flex flex-row"
-          >
-            <span class="font-bold">{{ settingEval.name }}</span>
-            <span>: {{ settingEval.value }}</span>
+    <UiScrollArea class="h-[500px] w-full rounded-md border pt-2">
+      <div v-if="props.checkitem.evaluations" class="p-2 text-sm flex flex-wrap gap-3">
+        <div
+          v-for="(e, i) in evaluationItems" :key="i" class="border rounded-sm p-2" :class="{
+            'border-2': e.judgement !== EVALUATION_JUDGEMENT.NOT_EXECUTED, // Thicker border if not NOT_EXECUTED
+            'border-red-500': e.judgement === EVALUATION_JUDGEMENT.NG, // Red border for NG
+            'border-green-500': e.judgement === EVALUATION_JUDGEMENT.OK, // Green border for OK
+          }"
+        >
+          <div>
+            <div
+              v-for="(settingEval, idxSettingEval) in e.settings"
+              :key="idxSettingEval"
+              class="flex flex-row"
+            >
+              <span class="font-bold">{{ settingEval.name }}</span>
+              <span>: {{ settingEval.value }}</span>
+            </div>
+          </div>
+          <div>
+            <UiToggleGroup class="item-start justify-start pt-2">
+              <UiRadioGroup
+                :model-value="e.judgement?.toString()"
+                @update:model-value="(value) => handleJudgementChange(e, Number(value))"
+              >
+                <div class="flex space-x-2">
+                  <UiRadioGroupItem id="r1" :value="EVALUATION_JUDGEMENT.NOT_SUPPORT.toString()" />
+                  <UiLabel for="r1">
+                    Not Supported
+                  </UiLabel>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <UiRadioGroupItem id="r2" :value="EVALUATION_JUDGEMENT.NG.toString()" />
+                  <UiLabel for="r2">
+                    NG
+                  </UiLabel>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <UiRadioGroupItem id="r3" :value="EVALUATION_JUDGEMENT.OK.toString()" />
+                  <UiLabel for="r3">
+                    OK
+                  </UiLabel>
+                </div>
+              </UiRadioGroup>
+            </UiToggleGroup>
           </div>
         </div>
-        <div>
-          <UiToggleGroup class="item-start justify-start pt-2">
-            <UiRadioGroup
-              :model-value="e.judgement?.toString()"
-              @update:model-value="(value) => handleJudgementChange(e, Number(value))"
-            >
-              <div class="flex space-x-2">
-                <UiRadioGroupItem id="r1" :value="EVALUATION_JUDGEMENT.NOT_SUPPORT.toString()" />
-                <UiLabel for="r1">
-                  Not Supported
-                </UiLabel>
-              </div>
-              <div class="flex items-center space-x-2">
-                <UiRadioGroupItem id="r2" :value="EVALUATION_JUDGEMENT.NG.toString()" />
-                <UiLabel for="r2">
-                  NG
-                </UiLabel>
-              </div>
-              <div class="flex items-center space-x-2">
-                <UiRadioGroupItem id="r3" :value="EVALUATION_JUDGEMENT.OK.toString()" />
-                <UiLabel for="r3">
-                  OK
-                </UiLabel>
-              </div>
-            </UiRadioGroup>
-          </UiToggleGroup>
-        </div>
       </div>
-    </div>
+      <div class="flex gap-3 p-2">
+        <UiButton :disabled="startEvaluationView === 0" @click="startEvaluationView -= 10">
+          Prev
+        </UiButton>
+        <UiButton @click="startEvaluationView += 10">
+          Next
+        </UiButton>
+        {{ startEvaluationView }}
+      </div>
+    </UiScrollArea>
   </div>
 </template>

@@ -81,7 +81,7 @@ function onUnSyncdata() {
 </script>
 
 <template>
-  <UiCollapsible class="w-[calc(100svw-30rem)]">
+  <UiCollapsible class="w-full">
     <div class="flex items-center justify-between">
       <h4 class="text-sm font-semibold">
         {{ props.name }}
