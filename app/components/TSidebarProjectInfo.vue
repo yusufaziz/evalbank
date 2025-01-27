@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Project } from "@prisma/client"
-import consola from "consola"
 
 const props = defineProps({
   state: {

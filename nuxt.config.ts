@@ -60,6 +60,12 @@ export default defineNuxtConfig({
   },
   compatibilityDate: "2024-11-01",
 
+  nitro: {
+    experimental: {
+      tasks: true,
+    },
+  },
+
   typescript: {
     strict: true,
   },

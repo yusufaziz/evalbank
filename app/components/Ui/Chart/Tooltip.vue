@@ -1,3 +1,14 @@
+<script setup lang="ts">
+defineProps<{
+  title?: string
+  data: {
+    name: string
+    color: string
+    value: any
+  }[]
+}>()
+</script>
+
 <template>
   <UiCard class="text-sm">
     <UiCardHeader v-if="title" class="border-b p-3">
@@ -25,14 +36,3 @@
     </UiCardContent>
   </UiCard>
 </template>
-
-<script setup lang="ts">
-  defineProps<{
-    title?: string;
-    data: {
-      name: string;
-      color: string;
-      value: any;
-    }[];
-  }>();
-</script>

@@ -118,18 +118,16 @@ function deleteCheckitem(index: number) {
               <div class="relative">
                 <form id="formCheckitem" @submit.prevent="editedIndex >= 0 ? updateCheckitem() : addNewCheckitem()">
                   <fieldset class="grid gap-3">
-                    <div class="flex flex-row gap-3">
-                      <UiVeeInput
-                        v-model="newCheckitem.module"
-                        label="Module"
-                        class="w-200 text-sm"
-                      />
-                      <UiVeeInput
-                        v-model="newCheckitem.expectedTarget"
-                        label="Expected Target"
-                        class="text-sm"
-                      />
-                    </div>
+                    <UiVeeInput
+                      v-model="newCheckitem.module"
+                      label="Module"
+                      class="text-sm"
+                    />
+                    <UiVeeInput
+                      v-model="newCheckitem.expectedTarget"
+                      label="Expected Target"
+                      class="text-sm"
+                    />
                     <TSettingsSelection v-model="selectedSettings" />
                   </fieldset>
                 </form>

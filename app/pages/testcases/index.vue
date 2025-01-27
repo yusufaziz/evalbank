@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import type { Testcase } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/vue-table"
+import type { ITestcase } from "~~/shared/interface/testcase"
 
 const tableRef = ref()
-const table = ref<Table<Testcase> | null>(null)
+const table = ref<Table<ITestcase> | null>(null)
 const search = ref("")
 
-const { data: testcases } = useFetch<Testcase[]>("/api/testcases")
+const { data: testcases } = useFetch<ITestcase[]>("/api/testcases")
 
-const columns: ColumnDef<Testcase>[] = [
+const columns: ColumnDef<ITestcase>[] = [
   { accessorKey: "id", header: "ID", enableHiding: true },
   { accessorKey: "name", header: "Name", enableHiding: true },
   { accessorKey: "procedures", header: "Testcase", enableHiding: true, cell: ({ row }) => {

@@ -81,7 +81,7 @@ function onUnSyncdata() {
 </script>
 
 <template>
-  <UiCollapsible class="space-y-2 pr-5">
+  <UiCollapsible class="w-[calc(100svw-30rem)]">
     <div class="flex items-center justify-between">
       <h4 class="text-sm font-semibold">
         {{ props.name }}
@@ -103,7 +103,7 @@ function onUnSyncdata() {
         </UiButton>
       </div>
     </div>
-    <UiCollapsibleContent v-if="procedures.length > 0" class="space-y-2">
+    <UiCollapsibleContent v-if="procedures.length > 0" class="">
       <UiDivider label="Procedures" />
       <p v-for="(p, i) in procedures" :key="i" class="text-sm">
         {{ i + 1 }}.  {{ p }}

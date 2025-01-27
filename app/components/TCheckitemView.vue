@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ICheckitem } from "~~/shared/interface/checkitem"
 import type { IEvaluation } from "~~/shared/interface/evaluation"
-import consola from "consola"
 import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 
 const props = defineProps({

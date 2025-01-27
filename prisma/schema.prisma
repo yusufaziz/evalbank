@@ -33,13 +33,14 @@ model Testcase {
   updatedAt   DateTime     @updatedAt
   checkitems  Checkitem[]
   attachments Attachment[]
+  evaluations      Evaluation[]
 }
 
 model Checkitem {
   id               String       @id @default(uuid())
   module           String
   expectedTarget   String
-  settings    Setting[]
+  settings        Setting[]
   testcaseId       String?
   testcase         Testcase?    @relation(fields: [testcaseId], references: [id])
   author           String?
@@ -71,6 +72,8 @@ model Evaluation {
   remarks     String?
   projectId   String?
   project     Project?     @relation(fields: [projectId], references: [id])
+  testcaseId String?
+  testcase   Testcase?   @relation(fields: [testcaseId], references: [id])
   checkitemId String?
   checkitem   Checkitem?   @relation(fields: [checkitemId], references: [id])
   author      String?

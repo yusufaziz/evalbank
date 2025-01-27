@@ -40,6 +40,16 @@ async function main() {
   }
   consola.info("Finished seeding Settings.")
 
+  consola.info("Creating a project...")
+  await prisma.project.create({
+    data: {
+      name: "Alpha Evaluation",
+      modelFY: 22,
+      modelSeries: "Bamboo",
+      modelName: "MDX",
+    },
+  })
+
   consola.info("Seeding completed successfully!")
 }
 

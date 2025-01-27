@@ -66,7 +66,7 @@ defineExpose({ initializeSelectedSettings })
     <label class="block text-sm font-medium text-gray-700 mb-1">
       Required Settings
     </label>
-    <UiScrollArea class="h-[calc(100vh-300px)] w-full rounded-md border p-4">
+    <UiScrollArea class="h-[calc(100vh-380px)] w-full rounded-md border p-4">
       <div v-for="(item, index) in selectedSettings" :key="index" class="mb-4">
         <div class="flex items-center gap-2">
           <UiSelect

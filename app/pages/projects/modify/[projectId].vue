@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
 import type { IProject } from "~~/shared/interface/project"
-import type { IGroupedSettings, ISelectedSetting } from "~~/shared/interface/setting"
+import type { ISelectedSetting } from "~~/shared/interface/setting"
 import { zodProjectSchema } from "~~/shared/schema/project"
 
 const { data: project } = await useFetch<Partial<IProject>>(`/api/projects/${useRoute().params.projectId}/`)
