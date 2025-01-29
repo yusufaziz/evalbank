@@ -7,7 +7,7 @@ useSeoMeta({ title: `${useRuntimeConfig().public.APP_TITLE}: ${useRuntimeConfig(
   <UiSidebarProvider v-slot="{ isMobile, state }">
     <!-- App Sidebar -->
     <UiSidebar collapsible="icon">
-      <TSidebarProjectInfo v-if="useRoute().name === 'projects-projectId'" :state="state" :is-mobile="isMobile" :project-id="useRoute().params.projectId?.toString() || ''" />
+      <TSidebarProjectInfo v-if="useRoute().name === 'projects-projectId'" :state="state" :is-mobile="isMobile" />
       <TSidebarContent :state="state" :is-mobile="isMobile" />
       <UiSidebarRail />
       <TSidebarFooter :state="state" :is-mobile="isMobile" />

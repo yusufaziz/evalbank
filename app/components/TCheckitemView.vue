@@ -25,20 +25,29 @@ const props = defineProps({
 
 const emit = defineEmits(["edit", "delete", "needRefresh"])
 const page = ref(1)
+const searchInput = ref("")
+const search = useDebounce(searchInput, 500)
 
 // Create a reactive query object
 const query = computed(() => ({
+  search: search.value,
   checkitemId: props.checkitem.id,
   testcaseId: props.testcaseId,
   projectId: useRoute().params.projectId,
   page: page.value,
-  pageSize: 10,
+  pageSize: 5,
 }))
 
 // Use the reactive query in useFetch
-const { data: evaluation, status: evaluationStatus } = useFetch(`/api/evaluations`, {
+const { data: evaluation } = useFetch(`/api/evaluations`, {
   query,
-  watch: [page], // Watch the page ref for changes
+  onResponse: (response) => {
+    if (page.value > response.response._data.totalPages) {
+      page.value = 1
+      consola.info("Page changed to 1", response)
+    }
+    consola.info("Evaluation data fetched", response)
+  },
 })
 
 /**
@@ -87,10 +96,10 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
       <div class="flex flex-row gap-1">
         <UiBadge>{{ props.checkitem.module }}</UiBadge>
         <span>{{ props.checkitem.expectedTarget }}</span>
-        <span>[OK: {{ props.checkitem.evaluations?.filter(f => f.judgement === EVALUATION_JUDGEMENT.OK).length }}]</span>
-        <span>[NG: {{ props.checkitem.evaluations?.filter(f => f.judgement === EVALUATION_JUDGEMENT.NG).length }}]</span>
-        <span>[Not Executed: {{ props.checkitem.evaluations?.filter(f => f.judgement === EVALUATION_JUDGEMENT.NOT_EXECUTED).length }}]</span>
-        <span>[Not Supported: {{ props.checkitem.evaluations?.filter(f => f.judgement === EVALUATION_JUDGEMENT.NOT_SUPPORT).length }}]</span>
+        <span>[OK: {{ evaluation?.evaluationCount.OK }}]</span>
+        <span>[NG: {{ evaluation?.evaluationCount.NG }}]</span>
+        <span>[Not Executed: {{ evaluation?.evaluationCount.NOT_EXECUTED }}]</span>
+        <span>[Not Supported: {{ evaluation?.evaluationCount.NOT_SUPPORT }}]</span>
       </div>
       <div class="flex flex-row gap-2">
         <div v-if="modify" class="flex gap-2">
@@ -103,7 +112,7 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
         </div>
       </div>
     </div>
-    <div v-if="settingsTags.length > 0 && !props.checkitem.evaluations" class="mt-2 flex flex-wrap gap-2">
+    <div v-if="settingsTags.length > 0 && !props.showEvaluation" class="mt-2 flex flex-wrap gap-2">
       <p v-for="(tag, index) in settingsTags" :key="index" class="grid">
         <span class="text-sm font-bold border-b-2">{{ tag }}</span>
         <span class="text-sm">
@@ -111,7 +120,13 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
         </span>
       </p>
     </div>
-    <UiScrollArea v-if="props.showEvaluation && evaluationStatus === 'success'" class="h-[500px] w-full">
+    <UiScrollArea v-if="props.showEvaluation" class="h-[300px] w-full">
+      <div class="flex gap-3 p-2">
+        <div class="flex w-full justify-between">
+          <UiInput v-model="searchInput" placeholder="Search" class="max-w-md" />
+          <UiPagination v-model:page="page" :total="evaluation?.totalEvaluations" :items-per-page="5" :sibling-count="1" />
+        </div>
+      </div>
       <div class="p-2 text-sm flex flex-wrap gap-3">
         <div
           v-for="(e, i) in evaluation?.evaluations" :key="i" class="border rounded-sm p-2" :class="{
@@ -157,11 +172,6 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
               </UiRadioGroup>
             </UiToggleGroup>
           </div>
-        </div>
-      </div>
-      <div class="flex gap-3 p-2">
-        <div class="flex w-full justify-center">
-          <UiPagination v-model:page="page" :total="evaluation?.totalEvaluations" :sibling-count="1" />
         </div>
       </div>
     </UiScrollArea>

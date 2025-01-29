@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Project } from "@prisma/client"
+import consola from "consola"
 
 const props = defineProps({
   state: {
@@ -10,15 +11,15 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  projectId: {
-    type: String,
-    required: true,
-  },
 })
+const route = useRoute()
+const projectId = computed(() => route.params.projectId)
+const projectUrl = computed(() => `/api/projects/${projectId.value}`)
+const projectInfoUrl = computed(() => `/api/projects/sidebar/${projectId.value}`)
 
 const { data: projects } = useFetch<Project[]>("/api/projects?limit=20")
-const { data: project } = useFetch<Project>(`/api/projects/${props.projectId}`)
-const { data: info, refresh: refreshInfo } = useFetch<{ name: string, judgement: number, total: number, color: string }[]>(`/api/projects/sidebar/${props.projectId}`)
+const { data: project } = useFetch<Project>(projectUrl, { watch: [projectId] })
+const { data: info, refresh: refreshInfo } = useFetch<{ name: string, judgement: number, total: number, color: string }[]>(projectInfoUrl, { watch: [projectId] })
 useEventBus("project:info").on((e) => {
   if (e === "refresh") {
     refreshInfo()
@@ -52,8 +53,8 @@ useEventBus("project:info").on((e) => {
             <template v-for="(projectItem, index) in projects" :key="index">
               <UiDropdownMenuItem
                 class="cursor-pointer gap-2 p-2"
-                :class="[props.projectId === projectItem.id && 'bg-muted']"
-                @click="navigateTo(`/projects/${projectItem.id}`)"
+                :class="[projectId === projectItem.id && 'bg-muted']"
+                @click="navigateTo(`/projects/${projectItem.id}`); refreshNuxtData()"
               >
                 FY{{ projectItem.modelFY }} {{ projectItem.modelSeries }}-{{ projectItem.modelName }} {{ projectItem.name }}
               </UiDropdownMenuItem>
@@ -71,8 +72,8 @@ useEventBus("project:info").on((e) => {
         </UiDropdownMenu>
       </UiSidebarMenuItem>
     </UiSidebarMenu>
-    <div class="flex flex-col text-sm p-2 border rounded">
-      <UiChartDonut index="name" category="total" :data="info || []" type="pie" :colors="info?.map(i => i.color)" />
+    <div v-if="props.state === 'expanded'" class="flex flex-col text-sm p-2 border rounded">
+      <UiChartDonut v-if="projectId" index="name" category="total" :data="info || []" type="pie" :colors="info?.map(i => i.color)" />
     </div>
   </UiSidebarHeader>
 </template>
