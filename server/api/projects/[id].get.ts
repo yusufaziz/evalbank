@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
     where: { id },
     include: {
       settings: true,
+      attachments: true,
     },
   })
 

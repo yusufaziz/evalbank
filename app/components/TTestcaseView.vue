@@ -6,18 +6,6 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  name: {
-    type: String,
-    required: true,
-  },
-  procedures: {
-    type: String,
-    required: true,
-  },
-  checkitems: {
-    type: Array as () => ICheckitem[] | undefined,
-    required: true,
-  },
   syncBtn: {
     type: Boolean,
     default: false,
@@ -28,7 +16,10 @@ const props = defineProps({
   },
 })
 const emit = defineEmits(["needRefresh"])
-const procedures = props.procedures.split("\n")
+const { data: testcase } = useFetch(`/api/testcases/${props.id}`)
+const procedures = computed(() => {
+  return testcase.value?.procedures.split("\n") || []
+})
 
 function onSyncdata() {
   useSonner.promise(
@@ -84,7 +75,7 @@ function onUnSyncdata() {
   <UiCollapsible class="w-full">
     <div class="flex items-center justify-between">
       <h4 class="text-sm font-semibold">
-        {{ props.name }}
+        {{ testcase?.name }}
       </h4>
       <div class="flex flex-row gap-2">
         <UiCollapsibleTrigger as-child>
@@ -109,7 +100,15 @@ function onUnSyncdata() {
         {{ i + 1 }}.  {{ p }}
       </p>
       <UiDivider label="Checkitems" />
-      <TCheckitemView v-for="(checkitem, i) in props.checkitems" :key="i" :checkitem="checkitem" @need-refresh="emit('needRefresh')" />
+      <TCheckitemView
+        v-for="(checkitem, i) in testcase?.checkitems || []"
+        :key="i"
+        class="mb-2"
+        :checkitem="checkitem"
+        :testcase-id="props.id"
+        :show-evaluation="useRoute().name === 'projects-projectId' && props.unsyncBtn"
+        @need-refresh="emit('needRefresh')"
+      />
     </UiCollapsibleContent>
   </UiCollapsible>
 </template>

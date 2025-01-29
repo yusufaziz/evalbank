@@ -1,24 +1,9 @@
 <script lang="ts" setup>
 import type { IProjectDetails } from "~~/shared/interface/project"
 
-const { data: project } = useFetch<IProjectDetails>(`/api/projects/details/${useRoute().params.projectId}`)
+const { data: projectTestcase } = useFetch(`/api/projects/testcases/${useRoute().params.projectId}`)
+const { data: projectInfo } = useFetch(`/api/projects/${useRoute().params.projectId}`)
 const { data: testcases } = useFetch(`/api/testcases?projectId=${useRoute().params.projectId}`)
-// Computed property to calculate total evaluations
-const totalEvaluations = computed(() => {
-  if (!project.value || !project.value || !project.value.testcases) {
-    return 0
-  }
-
-  // Traverse the nested structure and sum evaluations
-  return project.value.testcases.reduce((totalTestcases, testcase) => {
-    return (
-      totalTestcases
-      + testcase.checkitems.reduce((totalCheckitems, checkitem) => {
-        return totalCheckitems + (checkitem.evaluations ? checkitem.evaluations.length : 0)
-      }, 0)
-    )
-  }, 0)
-})
 
 const tabs = [
   {
@@ -32,7 +17,7 @@ const tabs = [
   {
     title: "Evaluation",
     icon: "lucide:panels-top-left",
-    badge: totalEvaluations,
+    badge: projectTestcase.value?.totalCount || "Calculating ...",
   },
 ]
 </script>
@@ -60,16 +45,13 @@ const tabs = [
         </UiSheetTrigger>
       </div>
       <UiTabsContent value="Dashboard">
-        Total Evaluation : {{ totalEvaluations }}
+        <pre>{{projectTestcase}}</pre>
       </UiTabsContent>
       <UiTabsContent value="Evaluation">
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
-          <div v-for="(item, index) in project?.testcases" :key="index" class="mb-4">
+          <div v-for="(item, index) in projectTestcase?.testcases" :key="index" class="mb-4">
             <TTestcaseView
-              :id="item.id"
-              :name="item.name"
-              :checkitems="item.checkitems"
-              :procedures="item.procedures"
+              :id="item.testcaseId"
               :unsync-btn="true"
               @need-refresh="async () => { await refreshNuxtData() }"
             />
@@ -77,7 +59,7 @@ const tabs = [
         </UiScrollArea>
       </UiTabsContent>
       <UiTabsContent value="Project Information">
-        <pre>{{ project }}</pre>
+        <pre>{{ projectInfo }}</pre>
       </UiTabsContent>
     </UiTabs>
 
@@ -90,9 +72,6 @@ const tabs = [
           <div v-for="(item, index) in testcases" :key="index" class="mb-4">
             <TTestcaseView
               :id="item.id"
-              :name="item.name"
-              :checkitems="item.checkitems"
-              :procedures="item.procedures"
               :sync-btn="true"
               @need-refresh="async () => { await refreshNuxtData() }"
             />

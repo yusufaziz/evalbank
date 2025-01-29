@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import type { ICheckitem } from "~~/shared/interface/checkitem"
 import type { IEvaluation } from "~~/shared/interface/evaluation"
+import consola from "consola"
 import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 
 const props = defineProps({
   checkitem: {
     type: Object as () => Partial<ICheckitem>,
     required: true,
+  },
+  testcaseId: {
+    type: String,
+    default: () => "",
+  },
+  showEvaluation: {
+    type: Boolean,
+    default: false,
   },
   modify: {
     type: Boolean,
@@ -15,7 +24,22 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["edit", "delete", "needRefresh"])
-const startEvaluationView = ref(0)
+const page = ref(1)
+
+// Create a reactive query object
+const query = computed(() => ({
+  checkitemId: props.checkitem.id,
+  testcaseId: props.testcaseId,
+  projectId: useRoute().params.projectId,
+  page: page.value,
+  pageSize: 10,
+}))
+
+// Use the reactive query in useFetch
+const { data: evaluation, status: evaluationStatus } = useFetch(`/api/evaluations`, {
+  query,
+  watch: [page], // Watch the page ref for changes
+})
 
 /**
  * @brief Computes the settings tags for display.
@@ -23,13 +47,6 @@ const startEvaluationView = ref(0)
  */
 const settingsTags = computed(() => {
   return [...new Set(props.checkitem.settings?.map(c => c.name))]
-    .map(
-      name =>
-        `${name}: ${props.checkitem.settings
-          ?.filter(f => f.name === name)
-          .map(s => s.value)
-          .join(",")}`,
-    ) || []
 })
 
 /**
@@ -62,9 +79,6 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
   )
   useEventBus("project:info").emit("refresh")
 }
-const evaluationItems = computed(() => {
-  return props.checkitem.evaluations?.slice(startEvaluationView.value, startEvaluationView.value + 10) || []
-})
 </script>
 
 <template>
@@ -90,14 +104,17 @@ const evaluationItems = computed(() => {
       </div>
     </div>
     <div v-if="settingsTags.length > 0 && !props.checkitem.evaluations" class="mt-2 flex flex-wrap gap-2">
-      <UiBadge v-for="(tag, index) in settingsTags" :key="index" variant="secondary">
-        {{ tag }}
-      </UiBadge>
+      <p v-for="(tag, index) in settingsTags" :key="index" class="grid">
+        <span class="text-sm font-bold border-b-2">{{ tag }}</span>
+        <span class="text-sm">
+          {{ props.checkitem.settings?.filter(f => f.name === tag).map(m => m.value).join(", ") }}
+        </span>
+      </p>
     </div>
-    <UiScrollArea class="h-[500px] w-full rounded-md border pt-2">
-      <div v-if="props.checkitem.evaluations" class="p-2 text-sm flex flex-wrap gap-3">
+    <UiScrollArea v-if="props.showEvaluation && evaluationStatus === 'success'" class="h-[500px] w-full">
+      <div class="p-2 text-sm flex flex-wrap gap-3">
         <div
-          v-for="(e, i) in evaluationItems" :key="i" class="border rounded-sm p-2" :class="{
+          v-for="(e, i) in evaluation?.evaluations" :key="i" class="border rounded-sm p-2" :class="{
             'border-2': e.judgement !== EVALUATION_JUDGEMENT.NOT_EXECUTED, // Thicker border if not NOT_EXECUTED
             'border-red-500': e.judgement === EVALUATION_JUDGEMENT.NG, // Red border for NG
             'border-green-500': e.judgement === EVALUATION_JUDGEMENT.OK, // Green border for OK
@@ -143,13 +160,9 @@ const evaluationItems = computed(() => {
         </div>
       </div>
       <div class="flex gap-3 p-2">
-        <UiButton :disabled="startEvaluationView === 0" @click="startEvaluationView -= 10">
-          Prev
-        </UiButton>
-        <UiButton @click="startEvaluationView += 10">
-          Next
-        </UiButton>
-        {{ startEvaluationView }}
+        <div class="flex w-full justify-center">
+          <UiPagination v-model:page="page" :total="evaluation?.totalEvaluations" :sibling-count="1" />
+        </div>
       </div>
     </UiScrollArea>
   </div>

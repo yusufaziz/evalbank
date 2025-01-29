@@ -1,3 +1,4 @@
+import { connect } from "node:http2"
 import { defineEventHandler, readBody } from "h3"
 import prisma from "../../plugins/prisma.client"
 
@@ -12,9 +13,9 @@ export default defineEventHandler(async (event) => {
         settings: true,
         evaluations: {
           include: {
-            checkitem: true,
-            attachments: true,
-            settings: true,
+            testcase: {
+              select: { id: true },
+            },
           },
         },
         attachments: true,
@@ -31,67 +32,16 @@ export default defineEventHandler(async (event) => {
         modelFY: project.modelFY,
         modelSeries: project.modelSeries,
         modelName: project.modelName,
-        author: project.author,
-        modifier: project.modifier,
         settings: {
-          create: project.settings.map(setting => ({
-            name: setting.name,
-            value: setting.value,
-            constrains: setting.constrains,
-            author: setting.author,
-            modifier: setting.modifier,
-          })),
-        },
-        evaluations: {
-          create: project.evaluations.map(evaluation => ({
-            judgement: evaluation.judgement,
-            remarks: evaluation.remarks,
-            author: evaluation.author,
-            modifier: evaluation.modifier,
-            checkitem: {
-              create: {
-                module: evaluation.checkitem.module,
-                expectedTarget: evaluation.checkitem.expectedTarget,
-                settings: {
-                  create: evaluation.checkitem.settings.map(setting => ({
-                    name: setting.name,
-                    value: setting.value,
-                    constrains: setting.constrains,
-                    author: setting.author,
-                    modifier: setting.modifier,
-                  })),
-                },
-                author: evaluation.checkitem.author,
-                modifier: evaluation.checkitem.modifier,
-              },
-            },
-            settings: {
-              create: evaluation.settings.map(setting => ({
-                name: setting.name,
-                value: setting.value,
-                constrains: setting.constrains,
-                author: setting.author,
-                modifier: setting.modifier,
-              })),
-            },
-            attachments: {
-              create: evaluation.attachments.map(attachment => ({
-                filename: attachment.filename,
-                author: attachment.author,
-                modifier: attachment.modifier,
-              })),
-            },
-          })),
+          connect: project.settings.map(setting => ({ id: setting.id })),
         },
         attachments: {
-          create: project.attachments.map(attachment => ({
-            filename: attachment.filename,
-            author: attachment.author,
-            modifier: attachment.modifier,
-          })),
+          connect: project.attachments.map(attachment => ({ id: attachment.id })),
         },
       },
     })
+    const testcaseIds = [...new Set(project.evaluations.map(evaluation => evaluation.testcase?.id))]
+    testcaseIds.forEach(testcaseId => regenerateEvaluations(testcaseId || "", newProject.id))
 
     return newProject
   }
@@ -117,34 +67,24 @@ export default defineEventHandler(async (event) => {
       data: {
         name: `${testcase.name} (Copy)`,
         procedures: testcase.procedures,
-        author: testcase.author,
-        modifier: testcase.modifier,
-        checkitems: {
-          create: testcase.checkitems.map(checkitem => ({
-            module: checkitem.module,
-            expectedTarget: checkitem.expectedTarget,
-            settings: {
-              create: checkitem.settings.map(setting => ({
-                name: setting.name,
-                value: setting.value,
-                constrains: setting.constrains,
-                author: setting.author,
-                modifier: setting.modifier,
-              })),
-            },
-            author: checkitem.author,
-            modifier: checkitem.modifier,
-          })),
-        },
         attachments: {
-          create: testcase.attachments.map(attachment => ({
-            filename: attachment.filename,
-            author: attachment.author,
-            modifier: attachment.modifier,
-          })),
+          connect: testcase.attachments.map(attachment => ({ id: attachment.id })),
         },
       },
     })
+
+    await prisma.$transaction(testcase.checkitems.map((checkitem) => {
+      return prisma.checkitem.create({
+        data: {
+          module: checkitem.module,
+          expectedTarget: checkitem.expectedTarget,
+          testcaseId: newTestcase.id,
+          settings: {
+            connect: checkitem.settings.map(setting => ({ id: setting.id })),
+          },
+        },
+      })
+    }))
 
     return newTestcase
   }

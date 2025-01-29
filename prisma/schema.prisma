@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Project {
-  id          String       @id @default(uuid())
+  id          String       @id @default("")
   name        String
   modelFY     Int
   modelSeries String
@@ -23,7 +23,7 @@ model Project {
 }
 
 model Testcase {
-  id          String       @id @default(uuid())
+  id          String       @id @default("")
   name        String
   group       String        @default("Common")
   procedures  String
@@ -37,7 +37,7 @@ model Testcase {
 }
 
 model Checkitem {
-  id               String       @id @default(uuid())
+  id               String       @id @default("")
   module           String
   expectedTarget   String
   settings        Setting[]
@@ -52,7 +52,7 @@ model Checkitem {
 }
 
 model Setting {
-  id          String       @id @default(uuid())
+  id          String       @id @default("")
   name        String
   value       String
   constrains  String?
@@ -67,7 +67,7 @@ model Setting {
 }
 
 model Evaluation {
-  id          String       @id @default(uuid())
+  id          String       @id @default("")
   judgement   Int
   remarks     String?
   projectId   String?
@@ -85,7 +85,7 @@ model Evaluation {
 }
 
 model Attachment {
-  id          String       @id @default(uuid())
+  id          String       @id @default("")
   filename    String
   author      String?
   modifier    String?
@@ -99,7 +99,7 @@ model Attachment {
 }
 
 model SettingConstraints {
-  id        String  @id @default(uuid())
+  id        String  @id @default("")
   value     String
   exclusion Boolean
 }

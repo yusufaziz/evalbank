@@ -1,8 +1,6 @@
 import process from "node:process"
-import { PrismaClient } from "@prisma/client"
 import consola from "consola"
-
-const prisma = new PrismaClient()
+import prisma from "../plugins/prisma.client"
 
 interface PrintingOptions {
   "Paper Type": string[]
@@ -40,6 +38,11 @@ async function main() {
   }
   consola.info("Finished seeding Settings.")
 
+  const settingIds = await prisma.setting.findMany({
+    select: {
+      id: true,
+    },
+  })
   consola.info("Creating a project...")
   await prisma.project.create({
     data: {
@@ -47,9 +50,87 @@ async function main() {
       modelFY: 22,
       modelSeries: "Bamboo",
       modelName: "MDX",
+      settings: {
+        connect: settingIds.map(setting => ({ id: setting.id })),
+      },
     },
   })
-
+  consola.info("Creating a testcase...")
+  const testcaseSettingIds = await prisma.setting.findMany({
+    where: {
+      OR: [
+        { name: "Paper Type" },
+        { name: "Paper Size" },
+        { name: "Printing Quality" },
+      ],
+    },
+    select: { id: true },
+  })
+  const testcaseSettingIds2 = await prisma.setting.findMany({
+    where: {
+      OR: [
+        { name: "Paper Type" },
+        { name: "Printing Quality" },
+        { name: "SKU" },
+      ],
+    },
+    select: { id: true },
+  })
+  const testcaseSettingIds3 = await prisma.setting.findMany({
+    where: {
+      OR: [
+        { name: "Printing Quality" },
+        { name: "SKU" },
+        { name: "Copy Mode" },
+      ],
+    },
+    select: { id: true },
+  })
+  const checkitem = await prisma.checkitem.create({
+    data: {
+      module: "Printer",
+      expectedTarget: "Printer Check",
+      settings: {
+        connect: testcaseSettingIds.map(setting => ({ id: setting.id })),
+      },
+    },
+  })
+  const checkitem2 = await prisma.checkitem.create({
+    data: {
+      module: "Printer",
+      expectedTarget: "Printer Check 2",
+      settings: {
+        connect: testcaseSettingIds2.map(setting => ({ id: setting.id })),
+      },
+    },
+  })
+  const checkitem3 = await prisma.checkitem.create({
+    data: {
+      module: "Printer",
+      expectedTarget: "Printer Check 3",
+      settings: {
+        connect: testcaseSettingIds3.map(setting => ({ id: setting.id })),
+      },
+    },
+  })
+  await prisma.testcase.create({
+    data: {
+      name: "Print Test",
+      procedures: "1. Turn on the printer\n2. Load the paper\n3. Print the test page",
+      checkitems: {
+        connect: [{ id: checkitem.id }, { id: checkitem2.id }],
+      },
+    },
+  })
+  await prisma.testcase.create({
+    data: {
+      name: "Print Test 2",
+      procedures: "1. Turn on the printer\n2. Load the paper\n3. Print the test page",
+      checkitems: {
+        connect: [{ id: checkitem3.id }],
+      },
+    },
+  })
   consola.info("Seeding completed successfully!")
 }
 

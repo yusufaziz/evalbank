@@ -1,0 +1,20 @@
+-- AlterTable
+ALTER TABLE `Attachment` MODIFY `id` VARCHAR(191) NOT NULL DEFAULT '';
+
+-- AlterTable
+ALTER TABLE `Checkitem` MODIFY `id` VARCHAR(191) NOT NULL DEFAULT '';
+
+-- AlterTable
+ALTER TABLE `Evaluation` MODIFY `id` VARCHAR(191) NOT NULL DEFAULT '';
+
+-- AlterTable
+ALTER TABLE `Project` MODIFY `id` VARCHAR(191) NOT NULL DEFAULT '';
+
+-- AlterTable
+ALTER TABLE `Setting` MODIFY `id` VARCHAR(191) NOT NULL DEFAULT '';
+
+-- AlterTable
+ALTER TABLE `SettingConstraints` MODIFY `id` VARCHAR(191) NOT NULL DEFAULT '';
+
+-- AlterTable
+ALTER TABLE `Testcase` MODIFY `id` VARCHAR(191) NOT NULL DEFAULT '';
