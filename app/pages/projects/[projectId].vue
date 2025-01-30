@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { IProjectDetails } from "~~/shared/interface/project"
-
 const { data: projectTestcase } = useFetch(`/api/projects/testcases/${useRoute().params.projectId}`)
 const { data: projectInfo } = useFetch(`/api/projects/${useRoute().params.projectId}`)
 const { data: testcases } = useFetch(`/api/testcases?projectId=${useRoute().params.projectId}`)
@@ -45,7 +43,7 @@ const tabs = [
         </UiSheetTrigger>
       </div>
       <UiTabsContent value="Dashboard">
-        <pre>{{projectTestcase}}</pre>
+        <pre>{{ projectTestcase }}</pre>
       </UiTabsContent>
       <UiTabsContent value="Evaluation">
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
@@ -73,7 +71,7 @@ const tabs = [
             <TTestcaseView
               :id="item.id"
               :sync-btn="true"
-              @need-refresh="async () => { await refreshNuxtData() }"
+              @need-refresh="async () => { refreshNuxtData() }"
             />
           </div>
         </UiScrollArea>

@@ -2,7 +2,7 @@
 import type { Setting } from "@prisma/client"
 import { zodSettingSchema } from "~~/shared/schema/setting"
 
-const { handleSubmit, isSubmitting } = useForm({
+const { handleSubmit, isSubmitting, values } = useForm({
   validationSchema: toTypedSchema(zodSettingSchema),
 })
 
@@ -20,6 +20,10 @@ const onSubmit = handleSubmit(async (data) => {
   )
   navigateTo("/settings")
 })
+const nameModel = ref("")
+const nameDebounce = useDebounce(nameModel, 500)
+const checkHintUrl = computed(() => `/api/settings/checkname?name=${nameDebounce.value}`)
+const { data: nameHint } = useFetch(checkHintUrl)
 </script>
 
 <template>
@@ -28,8 +32,8 @@ const onSubmit = handleSubmit(async (data) => {
       <template #content>
         <UiCardContent>
           <fieldset :disabled="isSubmitting" class="space-y-5">
-            <UiVeeInput label="Setting Name" name="name" />
-            <UiVeeInput label="Setting Value" name="value" />
+            <UiVeeInput v-model="nameModel" label="Setting Name" name="name" :hint="nameHint" />
+            <UiVeeTextarea label="Setting Value" name="value" :row="3" hint="Separate each value into new line." />
           </fieldset>
         </UiCardContent>
       </template>

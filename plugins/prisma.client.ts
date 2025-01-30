@@ -8,6 +8,12 @@ prisma.$use(async (params, next) => {
     params.args.data.id = nanoid() // Generate NanoID for new records
     params.args.data.author = "dummy-author-id" // Set the author to a dummy ID
   }
+  else if (params.action === "createMany") {
+    params.args.data.forEach((d: any) => {
+      d.id = nanoid()
+      d.author = "dummy-author-id" // Set the author to a dummy ID
+    })
+  }
   return next(params)
 })
 
