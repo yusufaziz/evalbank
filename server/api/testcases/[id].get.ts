@@ -6,6 +6,7 @@ export default defineEventHandler(async (event) => {
     where: { id },
     select: {
       id: true,
+      group: true,
       name: true,
       procedures: true,
       checkitems: {

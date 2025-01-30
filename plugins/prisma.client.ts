@@ -14,6 +14,14 @@ prisma.$use(async (params, next) => {
       d.author = "dummy-author-id" // Set the author to a dummy ID
     })
   }
+  else if (params.action === "update") {
+    params.args.data.modifier = "dummy-modifier-id" // Set the author to a dummy ID
+  }
+  else if (params.action === "updateMany") {
+    params.args.data.forEach((d: any) => {
+      d.modifier = "dummy-modifier-id" // Set the author to a dummy ID
+    })
+  }
   return next(params)
 })
 

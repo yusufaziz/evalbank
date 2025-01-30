@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
       }
 
       return testcase
-    })
+    }, { timeout: 20000 })
 
     return result
   }

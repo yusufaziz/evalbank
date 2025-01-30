@@ -3,9 +3,11 @@ import type { ICheckitem } from "~~/shared/interface/checkitem"
 import type { ITestcase } from "~~/shared/interface/testcase"
 import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 
+const testcaseId = useRoute().params.testcaseId
+
 // Fetch the existing testcase
 const { data: testcase } = await useFetch<ITestcase>(
-  `/api/testcases/${useRoute().params.testcaseId}`,
+  `/api/testcases/${testcaseId}`,
 )
 
 // Create a reactive array for checkitems
@@ -22,9 +24,9 @@ const { handleSubmit, isSubmitting } = useForm({
 // Handle form submission
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
-    $fetch<ITestcase>(`/api/testcases/${useRoute().params.testcaseId}/`, {
+    $fetch<ITestcase>(`/api/testcases/${testcaseId}/`, {
       method: "PATCH",
-      body: { ...data, checkitems: checkitems.value, modifier: "modifier-id" }, // Include checkitems in the payload
+      body: { ...data, checkitems: checkitems.value }, // Include checkitems in the payload
     }),
     {
       loading: "Modifying Testcase ...",

@@ -28,6 +28,8 @@ export default defineEventHandler(async (event) => {
     })
     return groupedSettings
   }
-  const settings = await prisma.setting.findMany()
+  const settings = await prisma.setting.findMany({
+    orderBy: { name: "asc" },
+  })
   return settings
 })

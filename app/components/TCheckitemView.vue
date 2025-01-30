@@ -28,7 +28,6 @@ const page = ref(1)
 const searchInput = ref("")
 const search = useDebounce(searchInput, 500)
 
-// Create a reactive query object
 const query = computed(() => ({
   search: search.value,
   checkitemId: props.checkitem.id,
@@ -39,15 +38,20 @@ const query = computed(() => ({
 }))
 
 // Use the reactive query in useFetch
-const { data: evaluation } = useFetch(`/api/evaluations`, {
+const { data: evaluation, execute } = useFetch(`/api/evaluations`, {
   query,
   onResponse: (response) => {
     if (page.value > response.response._data.totalPages) {
       page.value = 1
-      consola.info("Page changed to 1", response)
     }
-    consola.info("Evaluation data fetched", response)
   },
+  immediate: false,
+})
+
+onMounted(() => {
+  if (props.showEvaluation) {
+    execute()
+  }
 })
 
 /**
@@ -96,10 +100,10 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
       <div class="flex flex-row gap-1">
         <UiBadge>{{ props.checkitem.module }}</UiBadge>
         <span>{{ props.checkitem.expectedTarget }}</span>
-        <span>[OK: {{ evaluation?.evaluationCount.OK }}]</span>
-        <span>[NG: {{ evaluation?.evaluationCount.NG }}]</span>
-        <span>[Not Executed: {{ evaluation?.evaluationCount.NOT_EXECUTED }}]</span>
-        <span>[Not Supported: {{ evaluation?.evaluationCount.NOT_SUPPORT }}]</span>
+        <span v-if="showEvaluation">[OK: {{ evaluation?.evaluationCount.OK }}]</span>
+        <span v-if="showEvaluation">[NG: {{ evaluation?.evaluationCount.NG }}]</span>
+        <span v-if="showEvaluation">[Not Executed: {{ evaluation?.evaluationCount.NOT_EXECUTED }}]</span>
+        <span v-if="showEvaluation">[Not Supported: {{ evaluation?.evaluationCount.NOT_SUPPORT }}]</span>
       </div>
       <div class="flex flex-row gap-2">
         <div v-if="modify" class="flex gap-2">
