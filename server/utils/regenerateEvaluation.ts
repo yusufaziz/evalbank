@@ -1,6 +1,5 @@
 import type { Setting } from "@prisma/client"
 import type { IEvaluationItems } from "~~/shared/interface/evaluation"
-import consola from "consola"
 import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 import prisma from "../../plugins/prisma.client"
 

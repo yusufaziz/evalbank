@@ -1,4 +1,3 @@
-import { connect } from "node:http2"
 import { defineEventHandler, readBody } from "h3"
 import prisma from "../../plugins/prisma.client"
 

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { Setting } from "@prisma/client"
 import type { ISelectedSetting } from "~~/shared/interface/setting"
-import consola from "consola"
 import { zodSettingSchema } from "~~/shared/schema/setting"
 import { populateSelectedSettings } from "~/utils/settings"
 

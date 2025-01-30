@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { ICheckitem } from "~~/shared/interface/checkitem"
-
 const props = defineProps({
   id: {
     type: String,
