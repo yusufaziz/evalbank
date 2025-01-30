@@ -2,7 +2,7 @@
 import type { Setting } from "@prisma/client"
 import { zodSettingSchema } from "~~/shared/schema/setting"
 
-const { handleSubmit, isSubmitting, values } = useForm({
+const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodSettingSchema),
 })
 
@@ -11,6 +11,13 @@ const onSubmit = handleSubmit(async (data) => {
     $fetch<Setting>("/api/settings/", {
       method: "PUT",
       body: data,
+    }).then((response) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          navigateTo("/settings")
+          resolve(response)
+        }, 1000) // 1-second delay
+      })
     }),
     {
       loading: "Creating Settings ...",
@@ -18,12 +25,11 @@ const onSubmit = handleSubmit(async (data) => {
       error: () => "Error! Your information could not be sent to our servers!",
     },
   )
-  navigateTo("/settings")
 })
 const nameModel = ref("")
 const nameDebounce = useDebounce(nameModel, 500)
 const checkHintUrl = computed(() => `/api/settings/checkname?name=${nameDebounce.value}`)
-const { data: nameHint } = useFetch(checkHintUrl)
+const { data: nameHint } = useFetch<string>(checkHintUrl)
 </script>
 
 <template>

@@ -15,7 +15,6 @@ const props = defineProps({
     default: false,
   },
 })
-const emit = defineEmits(["needRefresh"])
 const { data: testcase } = useFetch(`/api/testcases/${props.id}`)
 const procedures = computed(() => {
   return testcase.value?.procedures.split("\n") || []
@@ -33,7 +32,7 @@ function onSyncdata() {
       .then((response) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            emit("needRefresh")
+            useEventBus("refresh:project").emit("all")
             resolve(response)
           }, 1000) // 1-second delay
         })
@@ -57,7 +56,7 @@ function onUnSyncdata() {
       .then((response) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            emit("needRefresh")
+            useEventBus("refresh:project").emit("all")
             resolve(response)
           }, 1000) // 1-second delay
         })
@@ -107,7 +106,6 @@ function onUnSyncdata() {
         :checkitem="checkitem"
         :testcase-id="props.id"
         :show-evaluation="useRoute().name === 'projects-projectId' && props.unsyncBtn"
-        @need-refresh="emit('needRefresh')"
       />
     </UiCollapsibleContent>
   </UiCollapsible>

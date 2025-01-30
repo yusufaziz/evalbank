@@ -25,7 +25,6 @@ const props = defineProps({
     default: false,
   },
 })
-const emit = defineEmits(["needRefresh"])
 function onDelete() {
   useSonner.promise(
     $fetch<any>(`/api/${props.endpoint}/${props.id}`, {
@@ -34,7 +33,9 @@ function onDelete() {
       .then((response) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            emit("needRefresh")
+            useEventBus("refresh:testcases").emit("all")
+            useEventBus("refresh:settings").emit("all")
+            useEventBus("refresh:projects").emit("all")
             resolve(response)
           }, 1000) // 1-second delay
         })
@@ -59,7 +60,9 @@ function onDuplicate() {
       .then((response) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            emit("needRefresh")
+            useEventBus("refresh:testcases").emit("all")
+            useEventBus("refresh:settings").emit("all")
+            useEventBus("refresh:projects").emit("all")
             resolve(response)
           }, 1000) // 1-second delay
         })

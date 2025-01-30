@@ -55,7 +55,6 @@ model Setting {
   id          String       @id @default("")
   name        String
   value       String
-  constrains  String?
   author      String?
   modifier    String?
   createdAt   DateTime     @default(now())
@@ -64,6 +63,8 @@ model Setting {
   evaluatons  Evaluation[]
   projects    Project[]
   attachments Attachment[]
+  requiring  Setting[] @relation("requireSettings")
+  requiredBy  Setting[] @relation("requireSettings")
 }
 
 model Evaluation {
@@ -96,10 +97,4 @@ model Attachment {
   checkitems  Checkitem[]
   testcases   Testcase[]
   projects    Project[]
-}
-
-model SettingConstraints {
-  id        String  @id @default("")
-  value     String
-  exclusion Boolean
 }

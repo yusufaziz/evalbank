@@ -54,7 +54,6 @@ function editCheckitem(checkitem: Partial<ICheckitem>, index: number) {
  * @brief Adds a new checkitem to the model.
  */
 function addNewCheckitem() {
-  consola.log("addNewCheckitem", newCheckitem.value, selectedSettings.value, editedIndex.value)
   model.value.push({
     ...newCheckitem.value,
     settings: convertSelectedSetting(selectedSettings.value),
@@ -66,7 +65,6 @@ function addNewCheckitem() {
  * @brief Updates the edited checkitem in the model.
  */
 function updateCheckitem() {
-  consola.log("updateCheckitem", newCheckitem.value, selectedSettings.value, editedIndex.value)
   model.value[editedIndex.value] = {
     ...newCheckitem.value,
     settings: convertSelectedSetting(selectedSettings.value),
@@ -83,7 +81,7 @@ function deleteCheckitem(index: number) {
     model.value.splice(index, 1) // Remove the checkitem at the specified index
   }
   else {
-    console.error("Invalid index:", index)
+    consola.error("Invalid index:", index)
   }
 }
 </script>

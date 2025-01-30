@@ -1,3 +1,4 @@
+import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 import prisma from "../../../../plugins/prisma.client"
 
 export default defineEventHandler(async (event) => {
@@ -53,9 +54,36 @@ export default defineEventHandler(async (event) => {
     return acc
   }, [] as { testcaseId: string, checkitems: { checkitemId: string, count: number }[] }[])
 
+  /** Build Chart data */
+  const chartEval = await prisma.evaluation.findMany({
+    where: { projectId: id },
+    select: {
+      judgement: true,
+      checkitem: {
+        select: {
+          module: true,
+        },
+      },
+    },
+  })
+
+  const chartData = [...new Set(chartEval.map(e => e.checkitem?.module))].map((module) => {
+    return {
+      "name": module,
+      "OK": chartEval.filter(e => e.checkitem?.module === module && e.judgement === EVALUATION_JUDGEMENT.OK).length,
+      "NG": chartEval.filter(e => e.checkitem?.module === module && e.judgement === EVALUATION_JUDGEMENT.NG).length,
+      "Not Executed": chartEval.filter(e => e.checkitem?.module === module && e.judgement === EVALUATION_JUDGEMENT.NOT_EXECUTED).length,
+    }
+  })
+
   // Return the transformed data with totalCount
   return {
     testcases,
     totalCount,
+    chart: {
+      categories: ["OK", "NG", "Not Executed"],
+      colors: ["Green", "Red", "Gray"],
+      data: chartData || [],
+    },
   }
 })

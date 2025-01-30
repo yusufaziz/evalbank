@@ -19,6 +19,13 @@ const onSubmit = handleSubmit(async (data) => {
     $fetch<Project>(`/api/projects/${useRoute().params.projectId}`, {
       method: "patch",
       body: { ...data, settingIds: convertSelectedSetting(selectedSettings.value).map(s => s.id) },
+    }).then((response) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          navigateTo("/projects")
+          resolve(response)
+        }, 1000) // 1-second delay
+      })
     }),
     {
       loading: "Modifying Project ...",
@@ -26,7 +33,6 @@ const onSubmit = handleSubmit(async (data) => {
       error: () => "Error! Something went wrong during modifying data!",
     },
   )
-  navigateTo("/projects")
 })
 </script>
 

@@ -1,7 +1,16 @@
 <script lang="ts" setup>
-const { data: projectTestcase } = useFetch(`/api/projects/testcases/${useRoute().params.projectId}`)
-const { data: projectInfo } = useFetch(`/api/projects/${useRoute().params.projectId}`)
-const { data: testcases } = useFetch(`/api/testcases?projectId=${useRoute().params.projectId}`)
+import type { IProjectInfo, IProjectTestcase } from "~~/shared/interface/project"
+
+const route = useRoute()
+const projectId = computed(() => route.params.projectId)
+const searchInput = ref("")
+const search = useDebounce(searchInput, 500)
+const query = computed(() => ({
+  search: search.value,
+}))
+const { data: projectTestcase } = useFetch<IProjectTestcase>(`/api/projects/testcases/${projectId.value}`)
+const { data: projectInfo } = useFetch<IProjectInfo>(`/api/projects/${projectId.value}`)
+const { data: testcases } = useFetch(`/api/testcases?projectId=${projectId.value}`, { query })
 
 const tabs = [
   {
@@ -9,13 +18,13 @@ const tabs = [
     icon: "lucide:home",
   },
   {
-    title: "Project Information",
-    icon: "lucide:box",
-  },
-  {
     title: "Evaluation",
     icon: "lucide:panels-top-left",
-    badge: projectTestcase.value?.totalCount || "Calculating ...",
+    badge: projectTestcase.value?.totalCount,
+  },
+  {
+    title: "Project Settings",
+    icon: "lucide:settings",
   },
 ]
 </script>
@@ -43,7 +52,16 @@ const tabs = [
         </UiSheetTrigger>
       </div>
       <UiTabsContent value="Dashboard">
-        <pre>{{ projectTestcase }}</pre>
+        <div v-if="projectTestcase">
+          <UiChartBar
+            :data="projectTestcase?.chart?.data || []"
+            index="name"
+            :categories="projectTestcase?.chart?.categories || []"
+            :rounded-corners="4"
+            type="stacked"
+            :colors="projectTestcase?.chart?.colors || []"
+          />
+        </div>
       </UiTabsContent>
       <UiTabsContent value="Evaluation">
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
@@ -56,17 +74,20 @@ const tabs = [
           </div>
         </UiScrollArea>
       </UiTabsContent>
-      <UiTabsContent value="Project Information">
-        <pre>{{ projectInfo }}</pre>
+      <UiTabsContent value="Project Settings">
+        <TSettingView :settings="projectInfo?.settings || []" />
       </UiTabsContent>
     </UiTabs>
 
     <UiSheetContent
       class="sm:max-w-none md:w-[650px]"
       side="right"
+      title="Testcases List"
+      description="Select the testcases into projects"
     >
       <template #content>
-        <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
+        <UiScrollArea class="h-[calc(100vh-100px)] w-lg p-1 border">
+          <UiInput v-model="searchInput" placeholder="Search" class="max-w-md m-1" />
           <div v-for="(item, index) in testcases" :key="index" class="mb-4">
             <TTestcaseView
               :id="item.id"

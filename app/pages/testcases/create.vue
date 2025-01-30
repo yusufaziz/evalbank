@@ -14,6 +14,13 @@ const onSubmit = handleSubmit(async (data) => {
     $fetch<Testcase>("/api/testcases/", {
       method: "PUT",
       body: { ...data, checkitems: checkitems.value },
+    }).then((response) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          navigateTo("/testcases")
+          resolve(response)
+        }, 1000) // 1-second delay
+      })
     }),
     {
       loading: "Creating Testcase ...",
@@ -21,7 +28,6 @@ const onSubmit = handleSubmit(async (data) => {
       error: () => "Error! Your information could not be sent to our servers. Please try again.",
     },
   )
-  navigateTo("/testcases")
 })
 </script>
 

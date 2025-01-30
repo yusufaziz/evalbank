@@ -16,6 +16,13 @@ const onSubmit = handleSubmit(async (data) => {
     $fetch<Project>("/api/projects", {
       method: "PUT",
       body: { ...data, author: "dummy-author-id", settingIds: convertSelectedSetting(selectedSettings.value).map(s => s.id) },
+    }).then((response) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          navigateTo("/projects")
+          resolve(response)
+        }, 1000) // 1-second delay
+      })
     }),
     {
       loading: "Creating Project ...",
@@ -23,7 +30,6 @@ const onSubmit = handleSubmit(async (data) => {
       error: () => "Error! Your information could not be sent to our servers!",
     },
   )
-  navigateTo("/projects")
 })
 </script>
 

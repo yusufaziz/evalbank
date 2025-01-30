@@ -7,22 +7,40 @@ export default defineEventHandler(async (event) => {
 
   let testcases
 
-  // Step 2: Check if projectId is provided
-  if (projectId) {
-    // Step 3: Fetch testcases NOT associated with the given projectId
-    testcases = await prisma.testcase.findMany({
-      where: {
-        // Exclude testcases linked to the projectId through checkitems and evaluations
-        checkitems: {
-          none: {
-            evaluations: {
-              some: {
-                projectId,
-              },
+  const filters: any = { AND: [
+    {
+      // Exclude testcases linked to the projectId through checkitems and evaluations
+      checkitems: {
+        none: {
+          evaluations: {
+            some: {
+              projectId,
             },
           },
         },
       },
+    },
+  ] }
+
+  if (query.search) {
+    filters.AND.push({
+      OR: [
+        { name: { contains: query.search } },
+        { group: { contains: query.search } },
+        { procedures: { contains: query.search } },
+        { checkitems: { some: { module: { contains: query.search } } } },
+        { checkitems: { some: { expectedTarget: { contains: query.search } } } },
+        { checkitems: { some: { settings: { some: { name: { contains: query.search } } } } } },
+        { checkitems: { some: { settings: { some: { value: { contains: query.search } } } } } },
+      ],
+    })
+  }
+
+  // Step 2: Check if projectId is provided
+  if (projectId) {
+    // Step 3: Fetch testcases NOT associated with the given projectId
+    testcases = await prisma.testcase.findMany({
+      where: filters,
       include: {
         checkitems: true, // Include related checkitems
         attachments: true, // Include related attachments

@@ -4,10 +4,18 @@ export default defineEventHandler(async (event) => {
   const id = event.context.params?.id
   const body = await readBody(event)
 
-  /** TODO: If setting name changes, change all record the has the same name to be new name */
+  const { requiring, ...rest } = body
+  const allSetting = requiring.flatMap((require: any) => require.settings || []).map((setting: any) => setting.id)
   const setting = await prisma.setting.update({
     where: { id },
-    data: body,
+    data: {
+      ...rest,
+      requiring: {
+        set: [],
+        connect: allSetting.map((id: any) => ({ id })),
+      },
+    },
   })
+
   return setting
 })

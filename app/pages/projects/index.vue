@@ -8,6 +8,12 @@ const search = ref("")
 
 const { data: projects } = useFetch<Project[]>("/api/projects")
 
+useEventBus("refresh:projects").on((e) => {
+  if (e === "all") {
+    refreshNuxtData()
+  }
+})
+
 const columns: ColumnDef<Project>[] = [
   { accessorKey: "name", header: "Project Name", enableHiding: true },
   { accessorKey: "modelFY", header: "FY", enableHiding: true },
@@ -28,9 +34,6 @@ const columns: ColumnDef<Project>[] = [
           view: true,
           remove: true,
           edit: true,
-          onNeedRefresh: async () => {
-            await refreshNuxtData()
-          },
         },
       )
     },

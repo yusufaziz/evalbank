@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ICheckitem } from "~~/shared/interface/checkitem"
-import type { IEvaluation } from "~~/shared/interface/evaluation"
-import consola from "consola"
+import type { IEvaluation, IEvaluationPagination } from "~~/shared/interface/evaluation"
 import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 
 const props = defineProps({
@@ -23,7 +22,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["edit", "delete", "needRefresh"])
+const emit = defineEmits(["edit", "delete"])
 const page = ref(1)
 const searchInput = ref("")
 const search = useDebounce(searchInput, 500)
@@ -38,7 +37,7 @@ const query = computed(() => ({
 }))
 
 // Use the reactive query in useFetch
-const { data: evaluation, execute } = useFetch(`/api/evaluations`, {
+const { data: evaluation, execute } = useFetch<IEvaluationPagination>(`/api/evaluations`, {
   query,
   onResponse: (response) => {
     if (page.value > response.response._data.totalPages) {
@@ -52,14 +51,6 @@ onMounted(() => {
   if (props.showEvaluation) {
     execute()
   }
-})
-
-/**
- * @brief Computes the settings tags for display.
- * @output An array of strings representing the settings.
- */
-const settingsTags = computed(() => {
-  return [...new Set(props.checkitem.settings?.map(c => c.name))]
 })
 
 /**
@@ -79,7 +70,6 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
       .then((response) => {
         return new Promise((resolve) => {
           setTimeout(() => {
-            emit("needRefresh")
             resolve(response)
           }, 1000) // 1-second delay
         })
@@ -90,7 +80,7 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
       error: () => "Error! Something went wrong during updating data!",
     },
   )
-  useEventBus("project:info").emit("refresh")
+  useEventBus("refresh:project").emit("all")
 }
 </script>
 
@@ -100,10 +90,10 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
       <div class="flex flex-row gap-1">
         <UiBadge>{{ props.checkitem.module }}</UiBadge>
         <span>{{ props.checkitem.expectedTarget }}</span>
-        <span v-if="showEvaluation">[OK: {{ evaluation?.evaluationCount.OK }}]</span>
-        <span v-if="showEvaluation">[NG: {{ evaluation?.evaluationCount.NG }}]</span>
-        <span v-if="showEvaluation">[Not Executed: {{ evaluation?.evaluationCount.NOT_EXECUTED }}]</span>
-        <span v-if="showEvaluation">[Not Supported: {{ evaluation?.evaluationCount.NOT_SUPPORT }}]</span>
+        <span v-if="showEvaluation">[OK: {{ evaluation?.evaluationCount?.OK }}]</span>
+        <span v-if="showEvaluation">[NG: {{ evaluation?.evaluationCount?.NG }}]</span>
+        <span v-if="showEvaluation">[Not Executed: {{ evaluation?.evaluationCount?.NOT_EXECUTED }}]</span>
+        <span v-if="showEvaluation">[Not Supported: {{ evaluation?.evaluationCount?.NOT_SUPPORT }}]</span>
       </div>
       <div class="flex flex-row gap-2">
         <div v-if="modify" class="flex gap-2">
@@ -116,13 +106,8 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
         </div>
       </div>
     </div>
-    <div v-if="settingsTags.length > 0 && !props.showEvaluation" class="mt-2 flex flex-wrap gap-2">
-      <p v-for="(tag, index) in settingsTags" :key="index" class="grid">
-        <span class="text-sm font-bold border-b-2">{{ tag }}</span>
-        <span class="text-sm">
-          {{ props.checkitem.settings?.filter(f => f.name === tag).map(m => m.value).join(", ") }}
-        </span>
-      </p>
+    <div v-if="!props.showEvaluation" class="mt-2 flex flex-wrap gap-2">
+      <TSettingView :settings="props.checkitem.settings || []" />
     </div>
     <UiScrollArea v-if="props.showEvaluation" class="h-[300px] w-full">
       <div class="flex gap-3 p-2">

@@ -20,9 +20,12 @@ const projectInfoUrl = computed(() => `/api/projects/sidebar/${projectId.value}`
 const { data: projects } = useFetch<Project[]>("/api/projects?limit=20")
 const { data: project } = useFetch<Project>(projectUrl, { watch: [projectId] })
 const { data: info, refresh: refreshInfo } = useFetch<{ name: string, judgement: number, total: number, color: string }[]>(projectInfoUrl, { watch: [projectId] })
-useEventBus("project:info").on((e) => {
-  if (e === "refresh") {
+useEventBus("refresh:project").on((e) => {
+  if (e === "info") {
     refreshInfo()
+  }
+  if (e === "all") {
+    refreshNuxtData()
   }
 })
 </script>

@@ -6,6 +6,17 @@ export interface IEvaluation extends Evaluation {
   settings?: Setting[]
 }
 
+export interface IEvaluationPagination {
+  evaluations: IEvaluation[]
+  evaluationCount?: {
+    OK?: number
+    NG?: number
+    NOT_EXECUTED?: number
+    NOT_SUPPORT?: number
+  }
+  totalEvaluations?: number
+}
+
 export interface IEvaluationItem {
   judgement: typeof EVALUATION_JUDGEMENT.NOT_EXECUTED
   testcaseId: string

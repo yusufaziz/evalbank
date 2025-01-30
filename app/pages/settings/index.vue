@@ -7,6 +7,12 @@ const table = ref<Table<Setting> | null>(null)
 const search = ref("")
 const { data: settings } = useFetch<Setting[]>("/api/settings")
 
+useEventBus("refresh:settings").on((e) => {
+  if (e === "all") {
+    refreshNuxtData()
+  }
+})
+
 const columns: ColumnDef<Setting>[] = [
   { accessorKey: "name", header: "Name", enableHiding: true },
   { accessorKey: "value", header: "Value Name", enableHiding: true },
@@ -23,9 +29,6 @@ const columns: ColumnDef<Setting>[] = [
           endpoint: "settings",
           remove: true,
           edit: true,
-          onNeedRefresh: async () => {
-            await refreshNuxtData()
-          },
         },
       )
     },

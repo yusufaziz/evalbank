@@ -5,9 +5,9 @@ import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 import prisma from "../../plugins/prisma.client"
 
 /**
- * Helper function to compute the cartesian product of arrays.
- * This function generates all possible combinations of elements from the input arrays.
- *
+ * @brief Helper function to compute the cartesian product of arrays.
+ * @details This function generates all possible combinations of elements from the input arrays.
+ * @tparam T - The type of elements in the arrays.
  * @param arrays - An array of arrays, where each inner array represents a group of elements.
  * @returns An array of arrays, where each inner array represents a combination of elements.
  */
@@ -30,16 +30,16 @@ function filterSettings(checkitemSettings: Setting[], projectSettings: Setting[]
 }
 
 /**
- * Regenerates evaluations for a given testcase and project.
- * This function processes each checkitem in the testcase, generates valid combinations of settings,
+ * @brief Regenerates evaluations for a given testcase and project.
+ * @details This function processes each checkitem in the testcase, generates valid combinations of settings,
  * and creates new evaluations for each combination that doesn't already exist.
- *
  * @param testcaseId - The ID of the testcase to regenerate evaluations for.
  * @param projectId - The ID of the project associated with the testcase.
+ * @throws Error if the testcase or project is not found.
  */
 export async function regenerateEvaluations(testcaseId: string, projectId: string) {
   // Fetch all required data in parallel
-  const [testcase, project, exclusionConstraints, existingEvaluations] = await Promise.all([
+  const [testcase, project, existingEvaluations, settings] = await Promise.all([
     prisma.testcase.findUnique({
       where: { id: testcaseId },
       include: { checkitems: { include: { settings: true } } },
@@ -48,21 +48,18 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
       where: { id: projectId },
       include: { settings: true },
     }),
-    prisma.settingConstraints.findMany({ where: { exclusion: true } }),
     prisma.evaluation.findMany({
       where: { projectId, checkitem: { testcaseId }, judgement: EVALUATION_JUDGEMENT.NOT_EXECUTED },
       include: { settings: true },
+    }),
+    prisma.setting.findMany({
+      include: { requiring: true },
     }),
   ])
 
   if (!testcase || !project) {
     throw new Error("Testcase or Project not found")
   }
-
-  // Create a Set of exclusion constraints for fast lookup
-  const exclusionSet = new Set(
-    exclusionConstraints.map(constraint => constraint.value.split("#").sort().join("#")),
-  )
 
   const evaluationItems: IEvaluationItems = {
     new: [],
@@ -88,8 +85,23 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
 
     // Filter combinations to exclude invalid ones based on constraints
     const validCombinations = allCombinations.filter((combination) => {
-      const combinationSettingIds = combination.sort().join("#")
-      return !exclusionSet.has(combinationSettingIds)
+      let isValid = true
+      combination.forEach((id) => {
+        const settingItem = settings.find(setting => setting.id === id)
+        if (settingItem && settingItem.requiring.length > 0) {
+          // Check if any of the requiring settings are in the combination
+          const hasRequiredSetting = settingItem.requiring.some(requiredSetting =>
+            combination.includes(requiredSetting.id),
+          )
+          // const hasProjectSetting = settingItem.requiring.some(requiredSetting =>
+          //   project.settings.map(s => s.id).includes(requiredSetting.id),
+          // )
+          if ((!hasRequiredSetting)) {
+            isValid = false
+          }
+        }
+      })
+      return isValid
     })
 
     // Fetch existing evaluations for the checkitem
@@ -106,7 +118,7 @@ export async function regenerateEvaluations(testcaseId: string, projectId: strin
         )
       })
       .forEach((evaluation) => {
-        if (evaluation.judgement === EVALUATION_JUDGEMENT.NOT_EXECUTED) {
+        if (evaluation.judgement !== EVALUATION_JUDGEMENT.NOT_EXECUTED) {
           evaluationItems.not_supportIds.push(evaluation.id)
         }
         else {

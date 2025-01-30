@@ -7,7 +7,11 @@ const table = ref<Table<ITestcase> | null>(null)
 const search = ref("")
 
 const { data: testcases } = useFetch<ITestcase[]>("/api/testcases")
-
+useEventBus("refresh:testcases").on((e) => {
+  if (e === "all") {
+    refreshNuxtData()
+  }
+})
 const columns: ColumnDef<ITestcase>[] = [
   { accessorKey: "id", header: "ID", enableHiding: true },
   { accessorKey: "name", header: "Name", enableHiding: true },
@@ -36,9 +40,6 @@ const columns: ColumnDef<ITestcase>[] = [
           duplicate: true,
           remove: true,
           edit: true,
-          onNeedRefresh: async () => {
-            await refreshNuxtData()
-          },
         },
       )
     },
