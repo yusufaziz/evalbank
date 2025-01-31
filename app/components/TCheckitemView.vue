@@ -2,6 +2,7 @@
 import type { ICheckitem } from "~~/shared/interface/checkitem"
 import type { IEvaluation, IEvaluationPagination } from "~~/shared/interface/evaluation"
 import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
+import TEvaluationView from "./TEvaluationView.vue"
 
 const props = defineProps({
   checkitem: {
@@ -52,36 +53,6 @@ onMounted(() => {
     execute()
   }
 })
-
-/**
- * @brief Handles the change in judgement for an evaluation.
- * @param evaluation - The evaluation object to update.
- * @param judgement - The new judgement value.
- */
-function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
-  evaluation.judgement = judgement // Update the judgement
-  useSonner.promise(
-    $fetch<ICheckitem>(`/api/evaluations/${evaluation.id}`, {
-      method: "patch",
-      body: {
-        judgement,
-      },
-    })
-      .then((response) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(response)
-          }, 1000) // 1-second delay
-        })
-      }),
-    {
-      loading: "Updating evaluation result",
-      success: () => "Update sucess.",
-      error: () => "Error! Something went wrong during updating data!",
-    },
-  )
-  useEventBus("refresh:project").emit("all")
-}
 </script>
 
 <template>
@@ -117,51 +88,7 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
         </div>
       </div>
       <div class="p-2 text-sm flex flex-wrap gap-3">
-        <div
-          v-for="(e, i) in evaluation?.evaluations" :key="i" class="border rounded-sm p-2" :class="{
-            'border-2': e.judgement !== EVALUATION_JUDGEMENT.NOT_EXECUTED, // Thicker border if not NOT_EXECUTED
-            'border-red-500': e.judgement === EVALUATION_JUDGEMENT.NG, // Red border for NG
-            'border-green-500': e.judgement === EVALUATION_JUDGEMENT.OK, // Green border for OK
-          }"
-        >
-          <div>
-            <div
-              v-for="(settingEval, idxSettingEval) in e.settings"
-              :key="idxSettingEval"
-              class="flex flex-row"
-            >
-              <span class="font-bold">{{ settingEval.name }}</span>
-              <span>: {{ settingEval.value }}</span>
-            </div>
-          </div>
-          <div>
-            <UiToggleGroup class="item-start justify-start pt-2">
-              <UiRadioGroup
-                :model-value="e.judgement?.toString()"
-                @update:model-value="(value) => handleJudgementChange(e, Number(value))"
-              >
-                <div class="flex space-x-2">
-                  <UiRadioGroupItem id="r1" :value="EVALUATION_JUDGEMENT.NOT_SUPPORT.toString()" />
-                  <UiLabel for="r1">
-                    Not Supported
-                  </UiLabel>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <UiRadioGroupItem id="r2" :value="EVALUATION_JUDGEMENT.NG.toString()" />
-                  <UiLabel for="r2">
-                    NG
-                  </UiLabel>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <UiRadioGroupItem id="r3" :value="EVALUATION_JUDGEMENT.OK.toString()" />
-                  <UiLabel for="r3">
-                    OK
-                  </UiLabel>
-                </div>
-              </UiRadioGroup>
-            </UiToggleGroup>
-          </div>
-        </div>
+        <TEvaluationView v-for="(e, i) in evaluation?.evaluations" :key="i" :evaluation="e" />
       </div>
     </UiScrollArea>
   </div>
