@@ -5,8 +5,7 @@ export interface Crumbs {
   link?: string
   disabled?: boolean
   slot?: string
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  click?: Function
+  click?: (event: Event) => void
 }
 const props = withDefaults(
   defineProps<{

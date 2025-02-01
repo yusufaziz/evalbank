@@ -1,28 +1,62 @@
 <script setup lang="ts">
 import type { Setting } from "@prisma/client"
+
 import { populateSelectedSettings } from "~/utils/settings"
 
+/**
+ * @brief Interface representing a selected setting.
+ */
 interface ISelectedSetting {
+  /**
+   * The name of the setting.
+   */
   name: string
+  /**
+   * The array of settings associated with the name.
+   */
   settings: Setting[] | undefined
 }
 
+/**
+ * @brief Component for selecting and managing required settings.
+ * @details This component allows users to select settings from a dropdown, manage their values, and emit changes to the parent component.
+ */
 const props = defineProps<{
+  /**
+   * The initial value of selected settings, provided as an array of ISelectedSetting objects.
+   */
   modelValue: ISelectedSetting[]
 }>()
 
-const emit = defineEmits(["update:modelValue"])
+/**
+ * @brief Emits updated selected settings to the parent component.
+ */
+const emit = defineEmits<{
+  /**
+   * Emitted when the selected settings are updated.
+   * @param event - The event name ("update:modelValue").
+   * @param value - The updated array of selected settings.
+   */
+  (event: "update:modelValue", value: ISelectedSetting[]): void
+}>()
 
+// Fetch all available settings from the API
 const { data: settings } = useFetch<Setting[]>("/api/settings")
+
+// State variables
 const selectedSettings = ref<ISelectedSetting[]>(props.modelValue || [])
 const showAdditional = ref<string | null>(null)
 
 /**
  * @brief Watches for changes in selectedSettings and emits the updated value.
  */
-watch(selectedSettings, () => {
-  emit("update:modelValue", selectedSettings.value)
-}, { deep: true, flush: "post" })
+watch(
+  selectedSettings,
+  () => {
+    emit("update:modelValue", selectedSettings.value)
+  },
+  { deep: true, flush: "post" },
+)
 
 /**
  * @brief Handles the selection of a setting from the dropdown.
@@ -67,8 +101,10 @@ defineExpose({ initializeSelectedSettings })
       Required Settings
     </label>
     <UiScrollArea class="h-[calc(100vh-380px)] w-full rounded-md border p-4">
+      <!-- Render each selected setting -->
       <div v-for="(item, index) in selectedSettings" :key="index" class="mb-4">
         <div class="flex items-center gap-2">
+          <!-- Dropdown for selecting a setting -->
           <UiSelect
             v-model="item.name"
             @update:model-value="handleSettingSelection(index, $event)"
@@ -83,6 +119,8 @@ defineExpose({ initializeSelectedSettings })
               />
             </UiSelectContent>
           </UiSelect>
+
+          <!-- Button to toggle additional settings -->
           <UiButton
             :variant="
               item.settings?.length
@@ -95,6 +133,8 @@ defineExpose({ initializeSelectedSettings })
           >
             <Icon class="size-4" name="lucide:list-collapse" />
           </UiButton>
+
+          <!-- Button to remove the selected setting -->
           <UiButton
             variant="destructive"
             size="icon"
@@ -103,6 +143,8 @@ defineExpose({ initializeSelectedSettings })
             <Icon class="size-4" name="lucide:trash" />
           </UiButton>
         </div>
+
+        <!-- Additional settings listbox -->
         <div v-if="showAdditional && showAdditional === item.name" class="mt-2">
           <UiListbox v-model="item.settings" multiple>
             <UiListboxContent v-if="settings">
@@ -118,6 +160,8 @@ defineExpose({ initializeSelectedSettings })
           </UiListbox>
         </div>
       </div>
+
+      <!-- Button to add a new setting -->
       <UiButton
         variant="outline"
         size="sm"
@@ -129,3 +173,7 @@ defineExpose({ initializeSelectedSettings })
     </UiScrollArea>
   </div>
 </template>
+
+<style scoped>
+/* Scoped styles can be added here if needed */
+</style>

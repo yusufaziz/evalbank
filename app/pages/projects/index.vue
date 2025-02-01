@@ -1,19 +1,29 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/vue-table"
+import { ref } from "vue"
 
+/**
+ * @brief Component for listing all projects.
+ * @details This component displays a table of projects with filtering and column toggling.
+ */
 const tableRef = ref()
 const table = ref<Table<Project> | null>(null)
 const search = ref("")
 
+// Fetch data for projects
 const { data: projects } = useFetch<Project[]>("/api/projects")
 
+// Refresh data when triggered by an event
 useEventBus("refresh:projects").on((e) => {
   if (e === "all") {
     refreshNuxtData()
   }
 })
 
+/**
+ * @brief Column definitions for the projects table.
+ */
 const columns: ColumnDef<Project>[] = [
   { accessorKey: "name", header: "Project Name", enableHiding: true },
   { accessorKey: "modelFY", header: "FY", enableHiding: true },
@@ -44,7 +54,10 @@ const columns: ColumnDef<Project>[] = [
 <template>
   <div>
     <div class="flex flex-col gap-5 md:flex-row md:items-center">
+      <!-- Search Input -->
       <UiInput v-model="search" type="search" placeholder="Search" class="w-full md:w-96" />
+
+      <!-- Column Visibility Dropdown -->
       <UiDropdownMenu>
         <UiDropdownMenuTrigger as-child>
           <UiButton variant="outline">
@@ -53,7 +66,7 @@ const columns: ColumnDef<Project>[] = [
           </UiButton>
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent :side-offset="10" align="start" class="w-[300px] md:w-[200px]">
-          <UiDropdownMenuLabel> Toggle Columns </UiDropdownMenuLabel>
+          <UiDropdownMenuLabel>Toggle Columns</UiDropdownMenuLabel>
           <UiDropdownMenuSeparator />
           <UiDropdownMenuGroup>
             <UiDropdownMenuCheckboxItem
@@ -69,6 +82,7 @@ const columns: ColumnDef<Project>[] = [
       </UiDropdownMenu>
     </div>
 
+    <!-- Projects Table -->
     <UiTanStackTable
       ref="tableRef"
       :search="search"

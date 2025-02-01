@@ -126,7 +126,7 @@ function deleteCheckitem(index: number) {
                       label="Expected Target"
                       class="text-sm"
                     />
-                    <TSettingsSelection v-model="selectedSettings" />
+                    <TSettingSelection v-model="selectedSettings" />
                   </fieldset>
                 </form>
               </div>

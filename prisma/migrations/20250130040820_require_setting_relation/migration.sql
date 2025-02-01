@@ -6,10 +6,10 @@
 
 */
 -- AlterTable
-ALTER TABLE `setting` DROP COLUMN `constrains`;
+ALTER TABLE `Setting` DROP COLUMN `constrains`;
 
 -- DropTable
-DROP TABLE `settingconstraints`;
+DROP TABLE `SettingConstraints`;
 
 -- CreateTable
 CREATE TABLE `_requireSettings` (

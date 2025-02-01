@@ -1,19 +1,23 @@
 <script lang="ts" setup>
 import type { ICheckitem } from "~~/shared/interface/checkitem"
 import type { ITestcase } from "~~/shared/interface/testcase"
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
 import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 
+/**
+ * @brief Component for modifying an existing testcase.
+ * @details This component provides a form for updating testcase details and associated checkitems.
+ */
 const testcaseId = useRoute().params.testcaseId
 
 // Fetch the existing testcase
-const { data: testcase } = await useFetch<ITestcase>(
-  `/api/testcases/${testcaseId}`,
-)
+const { data: testcase } = await useFetch<ITestcase>(`/api/testcases/${testcaseId}`)
 
 // Create a reactive array for checkitems
 const checkitems = ref<ICheckitem[]>(testcase.value?.checkitems || [])
 
-// Initialize the form
+// Form setup with validation
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
   initialValues: {
@@ -21,7 +25,10 @@ const { handleSubmit, isSubmitting } = useForm({
   },
 })
 
-// Handle form submission
+/**
+ * @brief Handles form submission to modify an existing testcase.
+ * @param data - The validated form data.
+ */
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
     $fetch<ITestcase>(`/api/testcases/${testcaseId}/`, {
@@ -32,7 +39,7 @@ const onSubmit = handleSubmit(async (data) => {
         setTimeout(() => {
           navigateTo("/testcases")
           resolve(response)
-        }, 1000) // 1-second delay
+        }, 1000) // Simulate a 1-second delay
       })
     }),
     {
@@ -56,7 +63,7 @@ const onSubmit = handleSubmit(async (data) => {
               label="Procedures"
               name="procedures"
               :rows="5"
-              hint="Separate each step of procedure with new line."
+              hint="Separate each step of procedure with a new line."
             />
             <UiDivider label="Checkitems" />
             <TAddCheckitem v-model="checkitems" />

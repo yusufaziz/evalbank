@@ -1,18 +1,29 @@
 <script lang="ts" setup>
 import type { Setting } from "@prisma/client"
 import type { ColumnDef, Table } from "@tanstack/vue-table"
+import { ref } from "vue"
 
+/**
+ * @brief Component for listing all settings.
+ * @details This component displays a table of settings with filtering and column toggling.
+ */
 const tableRef = ref()
 const table = ref<Table<Setting> | null>(null)
 const search = ref("")
+
+// Fetch data for settings
 const { data: settings } = useFetch<Setting[]>("/api/settings")
 
+// Refresh data when triggered by an event
 useEventBus("refresh:settings").on((e) => {
   if (e === "all") {
     refreshNuxtData()
   }
 })
 
+/**
+ * @brief Column definitions for the settings table.
+ */
 const columns: ColumnDef<Setting>[] = [
   { accessorKey: "name", header: "Name", enableHiding: true },
   { accessorKey: "value", header: "Value Name", enableHiding: true },
@@ -39,7 +50,10 @@ const columns: ColumnDef<Setting>[] = [
 <template>
   <div>
     <div class="flex flex-col gap-5 md:flex-row md:items-center">
+      <!-- Search Input -->
       <UiInput v-model="search" type="search" placeholder="Search" class="w-full md:w-96" />
+
+      <!-- Column Visibility Dropdown -->
       <UiDropdownMenu>
         <UiDropdownMenuTrigger as-child>
           <UiButton variant="outline">
@@ -48,7 +62,7 @@ const columns: ColumnDef<Setting>[] = [
           </UiButton>
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent :side-offset="10" align="start" class="w-[300px] md:w-[200px]">
-          <UiDropdownMenuLabel> Toggle Columns </UiDropdownMenuLabel>
+          <UiDropdownMenuLabel>Toggle Columns</UiDropdownMenuLabel>
           <UiDropdownMenuSeparator />
           <UiDropdownMenuGroup>
             <UiDropdownMenuCheckboxItem
@@ -64,6 +78,7 @@ const columns: ColumnDef<Setting>[] = [
       </UiDropdownMenu>
     </div>
 
+    <!-- Settings Table -->
     <UiTanStackTable
       ref="tableRef"
       :search="search"

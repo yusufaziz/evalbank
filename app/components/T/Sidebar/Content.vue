@@ -1,16 +1,32 @@
 <script setup lang="ts">
+/**
+ * @brief Component for rendering the sidebar content.
+ * @details This component displays navigation menus for projects, test cases, and settings, along with project-specific actions.
+ */
 const props = defineProps({
+  /**
+   * The current state of the sidebar (e.g., expanded or collapsed).
+   */
   state: {
     type: String,
     required: true,
   },
+  /**
+   * Whether the sidebar is displayed on a mobile device.
+   */
   isMobile: {
     type: Boolean,
     required: true,
   },
 })
+
+// Determine if a project ID is present in the route query
 const route = useRoute()
 const isHasProject = !!route.query.projectId
+
+/**
+ * @brief Navigation menu items for the main sections.
+ */
 const navMain = [
   {
     title: "Projects",
@@ -59,6 +75,10 @@ const navMain = [
     ],
   },
 ]
+
+/**
+ * @brief Example project data for demonstration purposes.
+ */
 const projectsData = [
   {
     name: "Design Engineering",
@@ -119,7 +139,6 @@ const projectsData = [
             </UiDropdownMenuContent>
           </UiDropdownMenu>
         </UiSidebarMenuItem>
-
         <UiSidebarMenuItem>
           <UiSidebarMenuButton class="text-sidebar-foreground/70">
             <Icon name="lucide:ellipsis-vertical" class="rotate-90 text-sidebar-foreground/70" />
@@ -128,7 +147,8 @@ const projectsData = [
         </UiSidebarMenuItem>
       </UiSidebarMenu>
     </UiSidebarGroup>
-    <!-- Main -->
+
+    <!-- Main Navigation -->
     <UiSidebarGroup>
       <UiSidebarGroupLabel label="Testpoint" />
       <UiSidebarMenu>
@@ -143,7 +163,6 @@ const projectsData = [
             <UiCollapsibleTrigger as-child>
               <UiSidebarMenuButton :tooltip="item.title">
                 <Icon mode="svg" :name="item.icon" />
-
                 <span>{{ item.title }}</span>
                 <Icon
                   mode="svg"
@@ -170,3 +189,7 @@ const projectsData = [
     </UiSidebarGroup>
   </UiSidebarContent>
 </template>
+
+<style scoped>
+/* Scoped styles can be added here if needed */
+</style>

@@ -1,14 +1,24 @@
 <script lang="ts" setup>
 import type { Checkitem, Testcase } from "@prisma/client"
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
 import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 
-// Create a reactive array for checkitems
+/**
+ * @brief Component for creating a new testcase.
+ * @details This component provides a form for entering testcase details and associated checkitems.
+ */
 const checkitems = ref<Checkitem[]>([])
 
+// Form setup with validation
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
 })
 
+/**
+ * @brief Handles form submission to create a new testcase.
+ * @param data - The validated form data.
+ */
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
     $fetch<Testcase>("/api/testcases/", {
@@ -19,7 +29,7 @@ const onSubmit = handleSubmit(async (data) => {
         setTimeout(() => {
           navigateTo("/testcases")
           resolve(response)
-        }, 1000) // 1-second delay
+        }, 1000) // Simulate a 1-second delay
       })
     }),
     {
@@ -33,7 +43,7 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <form @submit="onSubmit">
-    <UiCard title="Create testcase">
+    <UiCard title="Create Testcase">
       <template #content>
         <UiCardContent>
           <fieldset :disabled="isSubmitting" class="space-y-5">
@@ -43,7 +53,7 @@ const onSubmit = handleSubmit(async (data) => {
               label="Procedures"
               name="procedures"
               :rows="3"
-              hint="Separate each step of procedure with new line."
+              hint="Separate each step of procedure with a new line."
             />
             <UiDivider label="Checkitems" />
             <TAddCheckitem v-model="checkitems" />

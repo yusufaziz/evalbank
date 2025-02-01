@@ -1,4 +1,15 @@
-// Add here because button styles are used in several components
+/**
+ * @brief Defines shared button styles for consistent UI components.
+ *
+ * @module sharedStyles
+ */
+import { tv } from "tailwind-variants"
+
+/**
+ * @brief Creates reusable button styles with variants and sizes.
+ *
+ * @returns {Function} A Tailwind Variants function for generating button styles.
+ */
 export const buttonStyles = tv({
   base: "group inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   variants: {

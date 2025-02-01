@@ -7,8 +7,9 @@ interface ISelectedSetting {
 
 /**
  * @brief Transforms an array of settings into the selectedSettings format.
+ *
  * @param settingsArray - An array of Setting objects.
- * @returns An array of ISelectedSetting objects grouped by setting name.
+ * @returns {ISelectedSetting[]} An array of ISelectedSetting objects grouped by setting name.
  */
 export function populateSelectedSettings(settingsArray: Setting[]): ISelectedSetting[] {
   return settingsArray.reduce((acc, setting) => {
@@ -25,8 +26,9 @@ export function populateSelectedSettings(settingsArray: Setting[]): ISelectedSet
 
 /**
  * @brief Transforms an array of ISelectedSetting objects into a flat array of Setting objects.
+ *
  * @param selectedSettingsArray - An array of ISelectedSetting objects.
- * @returns An array of Setting objects.
+ * @returns {Setting[]} A flat array of Setting objects.
  */
 export function convertSelectedSetting(selectedSettingsArray: ISelectedSetting[]): Setting[] {
   return selectedSettingsArray.flatMap(item => item.settings || [])

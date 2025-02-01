@@ -1,15 +1,27 @@
 <script lang="ts" setup>
-import type { Setting } from "@prisma/client"
-import type { ISelectedSetting } from "~~/shared/interface/setting"
+import type { ISelectedSetting, Setting } from "@prisma/client"
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
 import { zodSettingSchema } from "~~/shared/schema/setting"
 import { populateSelectedSettings } from "~/utils/settings"
 
+/**
+ * @brief Component for modifying an existing setting.
+ * @details This component provides a form for updating setting details and associated requirements.
+ */
 const requiring = ref<ISelectedSetting[]>([])
-const { data: setting } = await useFetch<Setting>(`/api/settings/${useRoute().params.settingId}`, {
-  onResponse: (response) => {
-    requiring.value = populateSelectedSettings(response.response._data.requiring)
+
+// Fetch the setting data
+const { data: setting } = await useFetch<Setting>(
+  `/api/settings/${useRoute().params.settingId}`,
+  {
+    onResponse: (response) => {
+      requiring.value = populateSelectedSettings(response.response._data.requiring)
+    },
   },
-})
+)
+
+// Form setup with validation
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodSettingSchema),
   initialValues: {
@@ -17,6 +29,10 @@ const { handleSubmit, isSubmitting } = useForm({
   },
 })
 
+/**
+ * @brief Handles form submission to modify an existing setting.
+ * @param data - The validated form data.
+ */
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
     $fetch<Setting>(`/api/settings/${useRoute().params.settingId}/`, {
@@ -27,11 +43,11 @@ const onSubmit = handleSubmit(async (data) => {
         setTimeout(() => {
           navigateTo("/settings")
           resolve(response)
-        }, 1000) // 1-second delay
+        }, 1000) // Simulate a 1-second delay
       })
     }),
     {
-      loading: "MOdify Settings ...",
+      loading: "Modifying Settings ...",
       success: () => "Settings information has been updated.",
       error: () => "Error! Your information could not be sent to our servers!",
     },
@@ -47,7 +63,7 @@ const onSubmit = handleSubmit(async (data) => {
           <fieldset :disabled="isSubmitting" class="space-y-5">
             <UiVeeInput label="Setting Name" name="name" />
             <UiVeeInput label="Setting Value" name="value" />
-            <TSettingsSelection v-model="requiring" />
+            <TSettingSelection v-model="requiring" />
           </fieldset>
         </UiCardContent>
       </template>

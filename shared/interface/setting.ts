@@ -1,11 +1,17 @@
 import type { Setting } from "@prisma/client"
 
+/**
+ * @brief Interface representing grouped settings by name.
+ */
 export interface IGroupedSettings {
-  name: string
-  value: string[]
+  name: string // Name of the setting group
+  value: string[] // Values within the group
 }
 
+/**
+ * @brief Interface representing a selected setting with its related settings.
+ */
 export interface ISelectedSetting {
-  name: string
-  settings: Setting[] | undefined
+  name: string // Name of the setting
+  settings: Setting[] | undefined // Related settings
 }

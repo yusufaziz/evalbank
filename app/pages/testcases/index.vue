@@ -2,30 +2,46 @@
 import type { ColumnDef, Table } from "@tanstack/vue-table"
 import type { ITestcase } from "~~/shared/interface/testcase"
 
+/**
+ * @brief Component for listing all testcases.
+ * @details This component displays a table of testcases with filtering and column toggling.
+ */
 const tableRef = ref()
 const table = ref<Table<ITestcase> | null>(null)
 const search = ref("")
 
+// Fetch data for testcases
 const { data: testcases } = useFetch<ITestcase[]>("/api/testcases")
+
+// Refresh data when triggered by an event
 useEventBus("refresh:testcases").on((e) => {
   if (e === "all") {
     refreshNuxtData()
   }
 })
+
+/**
+ * @brief Column definitions for the testcases table.
+ */
 const columns: ColumnDef<ITestcase>[] = [
   { accessorKey: "id", header: "ID", enableHiding: true },
   { accessorKey: "name", header: "Name", enableHiding: true },
-  { accessorKey: "procedures", header: "Testcase", enableHiding: true, cell: ({ row }) => {
-    return h(
-      resolveComponent("TTestcaseView"),
-      {
-        id: row.original.id,
-        name: row.original.name,
-        checkitems: row.original.checkitems,
-        procedures: row.original.procedures,
-      },
-    )
-  } },
+  {
+    accessorKey: "procedures",
+    header: "Testcase",
+    enableHiding: true,
+    cell: ({ row }) => {
+      return h(
+        resolveComponent("TTestcaseView"),
+        {
+          id: row.original.id,
+          name: row.original.name,
+          checkitems: row.original.checkitems,
+          procedures: row.original.procedures,
+        },
+      )
+    },
+  },
   {
     accessorKey: "actions",
     header: "",
@@ -50,7 +66,10 @@ const columns: ColumnDef<ITestcase>[] = [
 <template>
   <div>
     <div class="flex flex-col gap-5 md:flex-row md:items-center">
+      <!-- Search Input -->
       <UiInput v-model="search" type="search" placeholder="Search" class="w-full md:w-96" />
+
+      <!-- Column Visibility Dropdown -->
       <UiDropdownMenu>
         <UiDropdownMenuTrigger as-child>
           <UiButton variant="outline">
@@ -59,7 +78,7 @@ const columns: ColumnDef<ITestcase>[] = [
           </UiButton>
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent :side-offset="10" align="start" class="w-[300px] md:w-[200px]">
-          <UiDropdownMenuLabel> Toggle Columns </UiDropdownMenuLabel>
+          <UiDropdownMenuLabel>Toggle Columns</UiDropdownMenuLabel>
           <UiDropdownMenuSeparator />
           <UiDropdownMenuGroup>
             <UiDropdownMenuCheckboxItem
@@ -75,6 +94,7 @@ const columns: ColumnDef<ITestcase>[] = [
       </UiDropdownMenu>
     </div>
 
+    <!-- Testcases Table -->
     <UiTanStackTable
       ref="tableRef"
       :search="search"

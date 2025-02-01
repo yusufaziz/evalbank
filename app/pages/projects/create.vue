@@ -1,32 +1,46 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
 import type { ISelectedSetting } from "~~/shared/interface/setting"
+import { toTypedSchema } from "@vee-validate/zod"
 import consola from "consola"
+import { useForm } from "vee-validate"
 import { zodProjectSchema } from "~~/shared/schema/project"
 
+/**
+ * @brief Component for creating a new project.
+ * @details This component provides a form for entering project details and selecting settings.
+ */
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodProjectSchema),
 })
 
 const selectedSettings = ref<ISelectedSetting[]>([])
 
+/**
+ * @brief Handles form submission to create a new project.
+ * @param data - The validated form data.
+ */
 const onSubmit = handleSubmit(async (data) => {
   consola.log(data)
   await useSonner.promise(
     $fetch<Project>("/api/projects", {
       method: "PUT",
-      body: { ...data, author: "dummy-author-id", settingIds: convertSelectedSetting(selectedSettings.value).map(s => s.id) },
+      body: {
+        ...data,
+        author: "dummy-author-id",
+        settingIds: convertSelectedSetting(selectedSettings.value).map(s => s.id),
+      },
     }).then((response) => {
       return new Promise((resolve) => {
         setTimeout(() => {
           navigateTo("/projects")
           resolve(response)
-        }, 1000) // 1-second delay
+        }, 1000) // Simulate a 1-second delay
       })
     }),
     {
       loading: "Creating Project ...",
-      success: () => "Project has been added into database.",
+      success: () => "Project has been added to the database.",
       error: () => "Error! Your information could not be sent to our servers!",
     },
   )
@@ -35,7 +49,7 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <form @submit="onSubmit">
-    <UiCard title="Create project">
+    <UiCard title="Create Project">
       <template #content>
         <UiCardContent>
           <fieldset :disabled="isSubmitting" class="space-y-5">
@@ -49,7 +63,7 @@ const onSubmit = handleSubmit(async (data) => {
               <UiVeeInput label="Model Series" name="modelSeries" />
               <UiVeeInput label="Model Name" name="modelName" />
             </div>
-            <TSettingsSelection v-model="selectedSettings" />
+            <TSettingSelection v-model="selectedSettings" />
           </fieldset>
         </UiCardContent>
       </template>

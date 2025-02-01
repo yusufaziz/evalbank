@@ -1,36 +1,55 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
-import type { IProject } from "~~/shared/interface/project"
-import type { ISelectedSetting } from "~~/shared/interface/setting"
+import type { IProject, ISelectedSetting } from "~~/shared/interface/project"
+import { toTypedSchema } from "@vee-validate/zod"
+import { useForm } from "vee-validate"
 import { zodProjectSchema } from "~~/shared/schema/project"
+import { populateSelectedSettings } from "~/utils/settings"
 
-const { data: project } = await useFetch<Partial<IProject>>(`/api/projects/${useRoute().params.projectId}/`)
+/**
+ * @brief Component for modifying an existing project.
+ * @details This component provides a form for updating project details and associated settings.
+ */
+const { data: project } = await useFetch<Partial<IProject>>(
+  `/api/projects/${useRoute().params.projectId}/`,
+)
+
+// Initialize selected settings
 const selectedSettings = ref<ISelectedSetting[]>([])
-
 selectedSettings.value = populateSelectedSettings(project.value?.settings || [])
+
+// Form setup with validation
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodProjectSchema),
   initialValues: {
     ...project.value,
   },
 })
+
+/**
+ * @brief Handles form submission to modify an existing project.
+ * @param data - The validated form data.
+ */
 const onSubmit = handleSubmit(async (data) => {
   useSonner.promise(
     $fetch<Project>(`/api/projects/${useRoute().params.projectId}`, {
       method: "patch",
-      body: { ...data, settingIds: convertSelectedSetting(selectedSettings.value).map(s => s.id) },
+      body: {
+        ...data,
+        settingIds: convertSelectedSetting(selectedSettings.value).map(s => s.id),
+      },
     }).then((response) => {
       return new Promise((resolve) => {
         setTimeout(() => {
           navigateTo("/projects")
           resolve(response)
-        }, 1000) // 1-second delay
+        }, 1000) // Simulate a 1-second delay
       })
     }),
     {
       loading: "Modifying Project ...",
       success: () => "Project information has been modified.",
-      error: () => "Error! Something went wrong during modifying data!",
+      error: () => "Error! Something went wrong during modification!",
     },
   )
 })
@@ -52,7 +71,7 @@ const onSubmit = handleSubmit(async (data) => {
               <UiVeeInput label="Model Series" name="modelSeries" />
               <UiVeeInput label="Model Name" name="modelName" />
             </div>
-            <TSettingsSelection v-model="selectedSettings" />
+            <TSettingSelection v-model="selectedSettings" />
           </fieldset>
         </UiCardContent>
       </template>

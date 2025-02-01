@@ -1,17 +1,30 @@
 <script lang="ts" setup>
 import type { IProjectInfo, IProjectTestcase } from "~~/shared/interface/project"
 
+/**
+ * @brief Component for displaying project details and associated test cases.
+ * @details This component provides tabs for Dashboard, Evaluation, and Project Settings.
+ */
 const route = useRoute()
 const projectId = computed(() => route.params.projectId)
+
+// Search functionality
 const searchInput = ref("")
 const search = useDebounce(searchInput, 500)
 const query = computed(() => ({
   search: search.value,
 }))
-const { data: projectTestcase } = useFetch<IProjectTestcase>(`/api/projects/testcases/${projectId.value}`)
+
+// Fetch data for the project and its test cases
+const { data: projectTestcase } = useFetch<IProjectTestcase>(
+  `/api/projects/testcases/${projectId.value}`,
+)
 const { data: projectInfo } = useFetch<IProjectInfo>(`/api/projects/${projectId.value}`)
 const { data: testcases } = useFetch(`/api/testcases?projectId=${projectId.value}`, { query })
 
+/**
+ * @brief Tabs configuration for the project page.
+ */
 const tabs = [
   {
     title: "Dashboard",
@@ -48,9 +61,11 @@ const tabs = [
           </UiTabsTrigger>
         </UiTabsList>
         <UiSheetTrigger as-child>
-          <UiButton>Add Testcast to Project</UiButton>
+          <UiButton>Add Testcase to Project</UiButton>
         </UiSheetTrigger>
       </div>
+
+      <!-- Dashboard Tab -->
       <UiTabsContent value="Dashboard">
         <div v-if="projectTestcase">
           <UiChartBar
@@ -63,6 +78,8 @@ const tabs = [
           />
         </div>
       </UiTabsContent>
+
+      <!-- Evaluation Tab -->
       <UiTabsContent value="Evaluation">
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
           <div v-for="(item, index) in projectTestcase?.testcases" :key="index" class="mb-4">
@@ -74,11 +91,14 @@ const tabs = [
           </div>
         </UiScrollArea>
       </UiTabsContent>
+
+      <!-- Project Settings Tab -->
       <UiTabsContent value="Project Settings">
         <TSettingView :settings="projectInfo?.settings || []" />
       </UiTabsContent>
     </UiTabs>
 
+    <!-- Sheet Content for Adding Testcases -->
     <UiSheetContent
       class="sm:max-w-none md:w-[650px]"
       side="right"

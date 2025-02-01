@@ -25,3 +25,6 @@ logs
 
 # Database
 *dev.db*
+
+# Generated files
+*combined*.txt

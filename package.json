@@ -69,6 +69,7 @@
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
+    "sass-embedded": "^1.83.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "ui-thing": "^0.1.50",

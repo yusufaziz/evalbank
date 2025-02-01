@@ -1,58 +1,77 @@
 <script setup lang="ts">
-import type { ICheckitem } from "~~/shared/interface/checkitem"
-import type { IEvaluation } from "~~/shared/interface/evaluation"
+import type { ICheckitem, IEvaluation } from "~~/shared/interface/evaluation"
 import consola from "consola"
+
 import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 
+/**
+ * @brief Component for displaying and updating an evaluation.
+ * @details This component allows users to view evaluation details, update judgements, and upload files.
+ */
 const props = defineProps<{
+  /**
+   * The evaluation object to display and update.
+   */
   evaluation: IEvaluation
 }>()
+
 /**
  * @brief Handles the change in judgement for an evaluation.
  * @param evaluation - The evaluation object to update.
  * @param judgement - The new judgement value.
  */
 function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
-  evaluation.judgement = judgement // Update the judgement
+  evaluation.judgement = judgement // Update the judgement locally
+
   useSonner.promise(
     $fetch<ICheckitem>(`/api/evaluations/${evaluation.id}`, {
       method: "patch",
       body: {
         judgement,
       },
-    })
-      .then((response) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            useEventBus("refresh:project").emit("all")
-            resolve(response)
-          }, 1000) // 1-second delay
-        })
-      }),
+    }).then((response) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          // Emit an event to refresh project data
+          useEventBus("refresh:project").emit("all")
+          resolve(response)
+        }, 1000) // Simulate a 1-second delay
+      })
+    }),
     {
-      loading: "Updating evaluation result",
-      success: () => "Update sucess.",
-      error: () => "Error! Something went wrong during updating data!",
+      loading: "Updating evaluation result...",
+      success: () => "Update successful.",
+      error: () => "Error! Something went wrong during the update!",
     },
   )
 }
+
+// State variable for uploaded files
 const files = ref<File[]>([])
-watch(files, () => {
-  consola.log("new files added", files.value)
-  files.value = []
-}, { deep: true })
+
+// Watch for changes in uploaded files
+watch(
+  files,
+  () => {
+    consola.log("New files added:", files.value)
+    files.value = [] // Clear the files after logging
+  },
+  { deep: true },
+)
 </script>
 
 <template>
   <UiDropfile class="max-w-sm" :open-on-click="false" @dropped="files = $event">
     <template #message>
       <div
-        class="p-2 w-full" :class="{
+        class="p-2 w-full"
+        :class="{
           'border-2 rounded-sm': props.evaluation.judgement !== EVALUATION_JUDGEMENT.NOT_EXECUTED, // Thicker border if not NOT_EXECUTED
           'border-red-500': props.evaluation.judgement === EVALUATION_JUDGEMENT.NG, // Red border for NG
           'border-green-500': props.evaluation.judgement === EVALUATION_JUDGEMENT.OK, // Green border for OK
         }"
       >
+        <!-- Display settings -->
         <div>
           <div
             v-for="(settingEval, idxSettingEval) in props.evaluation.settings"
@@ -63,6 +82,8 @@ watch(files, () => {
             <span>: {{ settingEval.value }}</span>
           </div>
         </div>
+
+        <!-- Judgement radio buttons -->
         <div>
           <UiToggleGroup class="item-start justify-start pt-2">
             <UiRadioGroup
@@ -94,3 +115,7 @@ watch(files, () => {
     </template>
   </UiDropfile>
 </template>
+
+<style scoped>
+/* Scoped styles can be added here if needed */
+</style>

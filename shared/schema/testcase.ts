@@ -1,5 +1,8 @@
 import { z } from "zod"
 
+/**
+ * @brief Schema for validating test case data.
+ */
 export const zodTestcaseSchema = z.object({
   name: z.string({ required_error: "Required" }).min(3, { message: "Min 3 characters" }),
   group: z.string({ required_error: "Required" }).min(3, { message: "Min 3 characters" }),

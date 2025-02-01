@@ -3,7 +3,7 @@ import type { BulletLegendItemInterface } from "@unovis/ts"
 import { UiChartTooltip } from "#components"
 import { omit } from "@unovis/ts"
 import { VisTooltip } from "@unovis/vue"
-import { createApp } from "vue"
+import { h, render } from "vue"
 
 const props = withDefaults(
   defineProps<{
@@ -32,9 +32,8 @@ function template(d: any, i: number, elements: (HTMLElement | SVGElement)[]) {
         return { ...legendReference, value: props.valueFormatter(value) }
       })
       const TooltipComponent = props.customTooltip ?? UiChartTooltip
-      createApp(TooltipComponent, { title: d[props.index], data: omittedData }).mount(
-        componentDiv,
-      )
+      const vnode = h(TooltipComponent, { title: d[props.index], data: omittedData })
+      render(vnode, componentDiv)
       wm.set(d, componentDiv.innerHTML)
       return componentDiv.innerHTML
     }
@@ -52,9 +51,8 @@ function template(d: any, i: number, elements: (HTMLElement | SVGElement)[]) {
       ]
       const componentDiv = document.createElement("div")
       const TooltipComponent = props.customTooltip ?? UiChartTooltip
-      createApp(TooltipComponent, { title: d[props.index], data: omittedData }).mount(
-        componentDiv,
-      )
+      const vnode = h(TooltipComponent, { title: d[props.index], data: omittedData })
+      render(vnode, componentDiv)
       wm.set(d, componentDiv.innerHTML)
       return componentDiv.innerHTML
     }
