@@ -1,5 +1,7 @@
+import fs from "node:fs/promises"
+import path from "node:path"
+import process from "node:process"
 import consola from "consola" // Use consola for structured logging
-import { defineEventHandler, readBody } from "h3"
 import prisma from "../../../plugins/prisma.client"
 
 /**
@@ -22,21 +24,59 @@ export default defineEventHandler(async (event): Promise<object | { message: str
     }
 
     // Read and validate the request body
-    const body = await readBody(event)
-    if (!body || typeof body !== "object" || Object.keys(body).length === 0) {
+    const formData = await readMultipartFormData(event)
+    if (!formData || formData.length === 0) {
       throw new Error("Invalid request body: Body must be a non-empty object.")
     }
 
     consola.info(`Attempting to update evaluation with ID: ${id}`)
 
-    // Update the evaluation in the database
-    const evaluation = await prisma.evaluation.update({
+    const files = formData.filter(item => item.name?.includes("files"))
+    const updateDataRaw = formData.filter(item => item.name === "data")
+    let updateData = {}
+    if (updateDataRaw.length > 0) {
+      const stringData = updateDataRaw[0].data.toString()
+      consola.log(stringData)
+      consola.log(JSON.parse(stringData))
+      updateData = JSON.parse(stringData)
+    }
+
+    // Process the files and save them to prisma.attachment
+    const attachments = await Promise.all(
+      files.map(async (file) => {
+        const { filename, data } = file
+        if (!filename) {
+          throw new Error("File must have a filename.")
+        }
+        const attachment = await prisma.attachment.create({
+          data: {
+            filename,
+            evaluations: { connect: { id } },
+          },
+        })
+        // Save the file to the public/attachment folder with the attachment ID as the filename
+        const attachmentPath = path.join(process.cwd(), "public", "attachments", attachment.id)
+        consola.log(`Saving attachment to: ${attachmentPath}`)
+        await fs.writeFile(attachmentPath, data)
+        return attachment
+      }),
+    )
+
+    consola.log(`Updating evaluation with data: ${JSON.parse(updateData.toString())}`)
+    consola.log(`Attachment: ${JSON.stringify(attachments)}`)
+
+    const updatedEvaluation = await prisma.evaluation.update({
       where: { id },
-      data: body,
+      data: {
+        ...JSON.parse(updateData.toString()),
+        attachments: {
+          connect: attachments.map(attachment => ({ id: attachment.id })),
+        },
+      },
     })
 
     consola.success(`Successfully updated evaluation with ID: ${id}`)
-    return evaluation
+    return updatedEvaluation
   }
   catch (error) {
     // Log the error using consola

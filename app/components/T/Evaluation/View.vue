@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { ICheckitem, IEvaluation } from "~~/shared/interface/evaluation"
-import consola from "consola"
+import type { ICheckitem } from "~~/shared/interface/checkitem"
+import type { IEvaluation } from "~~/shared/interface/evaluation"
 
+import consola from "consola"
 import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 
 /**
@@ -22,13 +23,13 @@ const props = defineProps<{
  */
 function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
   evaluation.judgement = judgement // Update the judgement locally
+  const formData = new FormData()
+  formData.append("data", JSON.stringify({ judgement })) // Prepare the form data
 
   useSonner.promise(
     $fetch<ICheckitem>(`/api/evaluations/${evaluation.id}`, {
       method: "patch",
-      body: {
-        judgement,
-      },
+      body: formData,
     }).then((response) => {
       return new Promise((resolve) => {
         setTimeout(() => {
@@ -46,22 +47,42 @@ function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
   )
 }
 
-// State variable for uploaded files
-const files = ref<File[]>([])
+function handleFileDrop(evaluation: IEvaluation, files: File[]) {
+  if (files.length === 0) {
+    consola.warn("No files to upload.")
+    return
+  }
 
-// Watch for changes in uploaded files
-watch(
-  files,
-  () => {
-    consola.log("New files added:", files.value)
-    files.value = [] // Clear the files after logging
-  },
-  { deep: true },
-)
+  const formData = new FormData()
+  files.forEach((file, index) => {
+    formData.append(`files[${index}]`, file)
+  })
+
+  consola.info("Files dropped:", files)
+  useSonner.promise(
+    $fetch<ICheckitem>(`/api/evaluations/${evaluation.id}`, {
+      method: "patch",
+      body: formData,
+    }).then((response) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          // Emit an event to refresh project data
+          useEventBus("refresh:project").emit("all")
+          resolve(response)
+        }, 1000) // Simulate a 1-second delay
+      })
+    }),
+    {
+      loading: "Uploading files...",
+      success: () => "Upload successful.",
+      error: () => "Error! Something went wrong during the uploading!",
+    },
+  )
+}
 </script>
 
 <template>
-  <UiDropfile class="max-w-sm" :open-on-click="false" @dropped="files = $event">
+  <UiDropfile class="max-w-sm" :open-on-click="false" @dropped="(files) => handleFileDrop(props.evaluation, files)">
     <template #message>
       <div
         class="p-2 w-full"
@@ -76,10 +97,12 @@ watch(
           <div
             v-for="(settingEval, idxSettingEval) in props.evaluation.settings"
             :key="idxSettingEval"
-            class="flex flex-row"
+            class="flex flex-row "
           >
-            <span class="font-bold">{{ settingEval.name }}</span>
-            <span>: {{ settingEval.value }}</span>
+            <span class="font-bold text-nowrap">{{ settingEval.name }}</span>
+            <p class="truncate hover:text-pretty  min-w-0">
+              : {{ settingEval.value }}
+            </p>
           </div>
         </div>
 

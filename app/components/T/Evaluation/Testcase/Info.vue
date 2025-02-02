@@ -17,11 +17,11 @@ const props = defineProps<{
       </UiButton>
     </UiHoverCardTrigger>
     <UiHoverCardContent class="w-80">
-      <div class="flex justify-between space-x-4">
-        <span>[OK: {{ props.evaluationCount?.OK }}]</span>
-        <span>[NG: {{ props.evaluationCount?.NG }}]</span>
-        <span>[Not Executed: {{ props.evaluationCount?.NOT_EXECUTED }}]</span>
-        <span>[Not Supported: {{ props.evaluationCount?.NOT_SUPPORT }}]</span>
+      <div class="grid">
+        <span>OK: {{ props.evaluationCount?.OK }}</span>
+        <span>NG: {{ props.evaluationCount?.NG }}</span>
+        <span>Not Executed: {{ props.evaluationCount?.NOT_EXECUTED }}</span>
+        <span>Not Supported: {{ props.evaluationCount?.NOT_SUPPORT }}</span>
       </div>
     </UiHoverCardContent>
   </UiHoverCard>

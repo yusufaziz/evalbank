@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Project } from "@prisma/client"
+import consola from "consola"
 
 /**
  * @brief Component for displaying project information in the sidebar.
@@ -44,6 +45,10 @@ useEventBus("refresh:project").on((e) => {
     refreshNuxtData()
   }
 })
+function valueFormatter(tick: number | Date) {
+  consola.log(tick)
+  return typeof tick === "number" ? `${tick.toString()} item` : "-"
+}
 </script>
 
 <template>
@@ -119,6 +124,7 @@ useEventBus("refresh:project").on((e) => {
         category="total"
         :data="info || []"
         type="pie"
+        :value-formatter="valueFormatter"
         :colors="info?.map((i) => i.color)"
       />
     </div>
