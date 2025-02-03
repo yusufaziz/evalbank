@@ -28,3 +28,6 @@ logs
 
 # Generated files
 *combined*.txt
+
+# Attahments
+public/attachments/*

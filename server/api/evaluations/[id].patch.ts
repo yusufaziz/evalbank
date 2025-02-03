@@ -2,6 +2,7 @@ import fs from "node:fs/promises"
 import path from "node:path"
 import process from "node:process"
 import consola from "consola" // Use consola for structured logging
+import { saveAttachment } from "~~/server/utils/saveFile"
 import prisma from "../../../plugins/prisma.client"
 
 /**
@@ -33,13 +34,6 @@ export default defineEventHandler(async (event): Promise<object | { message: str
 
     const files = formData.filter(item => item.name?.includes("files"))
     const updateDataRaw = formData.filter(item => item.name === "data")
-    let updateData = {}
-    if (updateDataRaw.length > 0) {
-      const stringData = updateDataRaw[0].data.toString()
-      consola.log(stringData)
-      consola.log(JSON.parse(stringData))
-      updateData = JSON.parse(stringData)
-    }
 
     // Process the files and save them to prisma.attachment
     const attachments = await Promise.all(
@@ -54,21 +48,17 @@ export default defineEventHandler(async (event): Promise<object | { message: str
             evaluations: { connect: { id } },
           },
         })
-        // Save the file to the public/attachment folder with the attachment ID as the filename
-        const attachmentPath = path.join(process.cwd(), "public", "attachments", attachment.id)
-        consola.log(`Saving attachment to: ${attachmentPath}`)
-        await fs.writeFile(attachmentPath, data)
+        await saveAttachment(data, attachment.id, filename.split(".").pop() || "")
         return attachment
       }),
     )
 
-    consola.log(`Updating evaluation with data: ${JSON.parse(updateData.toString())}`)
     consola.log(`Attachment: ${JSON.stringify(attachments)}`)
 
     const updatedEvaluation = await prisma.evaluation.update({
       where: { id },
       data: {
-        ...JSON.parse(updateData.toString()),
+        ...(updateDataRaw.length > 0 ? JSON.parse(updateDataRaw[0].data.toString()) : {}),
         attachments: {
           connect: attachments.map(attachment => ({ id: attachment.id })),
         },

@@ -4,7 +4,10 @@
   "private": true,
   "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf",
   "scripts": {
-    "build": "nuxt build",
+    "clean": "nuxi cleanup",
+    "clean:node": "rmdir /s /q node_modules",
+    "clean:all:install": "pnpm clean:all && pnpm install",
+    "build": "nuxi build --dotenv .env",
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -15,7 +18,12 @@
     "format": "prettier . --write --list-different",
     "lint:fix": "eslint . --fix",
     "lint:fix:format": "pnpm format && pnpm lint:fix",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "start": "dotenv -e .env -- node .output/server/index.mjs",
+    "start:pm2": "pm2 start ecosystem.config.cjs",
+    "prisma:generate": "pnpm prisma generate",
+    "deploy:latest": "git pull && pnpm install && pm2 stop testpoint & pnpm clean && pnpm build && pnpm start:pm2",
+    "deploy:release": "git checkout release && pnpm deploy:latest"
   },
   "dependencies": {
     "@antfu/eslint-config": "^3.14.0",
@@ -62,6 +70,7 @@
     "@nuxt/eslint": "^0.7.5",
     "@vueuse/core": "^12.4.0",
     "babel-eslint": "^10.1.0",
+    "dotenv": "^16.4.7",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-format": "^1.0.1",

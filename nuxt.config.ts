@@ -48,6 +48,8 @@ export default defineNuxtConfig({
     public: {
       APP_TITLE: process.env.APP_TITLE ? process.env.APP_TITLE : `Evalbank`,
       APP_DESCRIPTION: process.env.APP_DESCRIPTION ? process.env.APP_DESCRIPTION : `Effective evaluation.`,
+      APP_URL: process.env.APP_URL ? process.env.APP_URL : ``,
+      OAUTH_URL: process.env.OAUTH_URL ? process.env.OAUTH_URL : ``,
     },
   },
 
