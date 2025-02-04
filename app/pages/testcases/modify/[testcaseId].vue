@@ -66,7 +66,7 @@ const onSubmit = handleSubmit(async (data) => {
               hint="Separate each step of procedure with a new line."
             />
             <UiDivider label="Checkitems" />
-            <TAddCheckitem v-model="checkitems" />
+            <TCheckitemAdd v-model="checkitems" />
           </fieldset>
         </UiCardContent>
       </template>

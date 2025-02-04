@@ -20,14 +20,18 @@ const props = defineProps({
   },
 })
 
-/**
- * @brief User data object containing name, email, and avatar URL.
- */
-const userData = {
-  name: "breezy",
-  email: "m@example.com",
-  avatar: "https://behonbaker.com/icon.png",
-}
+const auth = useCookie<string>(useRuntimeConfig().public.AUTH_COOKIE) || ""
+const userData = auth.value.split("|")
+const userName = userData[1]
+const userEmail = userData[3]
+const avatar = computed(() => {
+  const words = userName?.split(" ") || []
+  // Extract the first character of each word
+  const firstChars = words.map(word => word.charAt(0).toUpperCase())
+  // Join the first characters and limit to a maximum of 2 characters
+  const result = firstChars.slice(0, 2).join("")
+  return result
+})
 </script>
 
 <template>
@@ -44,13 +48,13 @@ const userData = {
               <!-- Avatar -->
               <UiAvatar class="size-8 rounded-lg">
                 <UiAvatarFallback class="rounded-lg">
-                  BB
+                  {{ avatar }}
                 </UiAvatarFallback>
               </UiAvatar>
               <!-- User Information -->
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ userData.name }}</span>
-                <span class="truncate text-xs">{{ userData.email }}</span>
+                <span class="truncate font-semibold">{{ userName }}</span>
+                <span class="truncate text-xs">{{ userEmail }}</span>
               </div>
               <!-- Chevron Icon -->
               <Icon name="lucide:chevrons-up-down" class="ml-auto size-4" />
@@ -68,23 +72,16 @@ const userData = {
             <UiDropdownMenuLabel class="p-0 font-normal">
               <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <UiAvatar class="size-8 rounded-lg">
-                  <UiAvatarImage :src="userData.avatar" :alt="userData.name" />
                   <UiAvatarFallback class="rounded-lg">
-                    BB
+                    {{ avatar }}
                   </UiAvatarFallback>
                 </UiAvatar>
                 <div class="grid flex-1 text-left text-sm leading-tight">
-                  <span class="truncate font-semibold">{{ userData.name }}</span>
-                  <span class="truncate text-xs">{{ userData.email }}</span>
+                  <span class="truncate font-semibold">{{ userName }}</span>
+                  <span class="truncate text-xs">{{ userEmail }}</span>
                 </div>
               </div>
             </UiDropdownMenuLabel>
-            <UiDropdownMenuSeparator />
-
-            <!-- Upgrade Section -->
-            <UiDropdownMenuGroup>
-              <UiDropdownMenuItem icon="lucide:sparkles" title="Upgrade to Pro" />
-            </UiDropdownMenuGroup>
             <UiDropdownMenuSeparator />
 
             <!-- Theme and Settings Section -->
@@ -99,8 +96,6 @@ const userData = {
                 title="Dark Theme"
                 @click="useColorMode().preference = 'dark'"
               />
-              <UiDropdownMenuItem icon="lucide:settings-2" title="Settings" />
-              <UiDropdownMenuItem icon="lucide:bell" title="Notifications" />
             </UiDropdownMenuGroup>
             <UiDropdownMenuSeparator />
 

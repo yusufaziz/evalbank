@@ -109,9 +109,9 @@ function onDuplicate() {
 
 <template>
   <div class="flex flex-auto gap-2">
-    <!-- Duplicate Button -->
-    <UiButton v-if="props.duplicate" size="icon" variant="outline" @click="onDuplicate">
-      <Icon class="size-4" name="lucide:copy" />
+    <!-- Edit Button -->
+    <UiButton v-if="props.edit" size="icon" variant="outline" @click="navigateTo(`/${props.endpoint}/modify/${props.id}`)">
+      <Icon class="size-4" name="lucide:pencil" />
     </UiButton>
 
     <!-- View Button -->
@@ -119,14 +119,14 @@ function onDuplicate() {
       <Icon class="size-4" name="lucide:eye" />
     </UiButton>
 
-    <!-- Edit Button -->
-    <UiButton v-if="props.edit" size="icon" variant="shine" @click="navigateTo(`/${props.endpoint}/modify/${props.id}`)">
-      <Icon class="size-4" name="lucide:pencil" />
-    </UiButton>
-
     <!-- Delete Button -->
     <UiButton v-if="props.remove" size="icon" variant="destructive" @click="onDelete">
       <Icon class="size-4" name="lucide:trash" />
+    </UiButton>
+
+    <!-- Duplicate Button -->
+    <UiButton v-if="props.duplicate" size="icon" variant="outline" @click="onDuplicate">
+      <Icon class="size-4" name="lucide:copy" />
     </UiButton>
   </div>
 </template>

@@ -49,7 +49,9 @@ export default defineNuxtConfig({
       APP_TITLE: process.env.APP_TITLE ? process.env.APP_TITLE : `Evalbank`,
       APP_DESCRIPTION: process.env.APP_DESCRIPTION ? process.env.APP_DESCRIPTION : `Effective evaluation.`,
       APP_URL: process.env.APP_URL ? process.env.APP_URL : ``,
-      OAUTH_URL: process.env.OAUTH_URL ? process.env.OAUTH_URL : ``,
+      OAUTH_AUTHORIZE_URL: process.env.OAUTH_AUTHORIZE_URL ? process.env.OAUTH_AUTHORIZE_URL : ``,
+      OAUTH_PROFILE_URL: process.env.OAUTH_PROFILE_URL ? process.env.OAUTH_PROFILE_URL : ``,
+      AUTH_COOKIE: process.env.AUTH_COOKIE ? process.env.AUTH_COOKIE : `auth`,
     },
   },
 
