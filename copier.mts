@@ -1,5 +1,6 @@
 import * as fs from "node:fs"
 import * as path from "node:path"
+import process from "node:process"
 import { consola } from "consola"
 import ignore from "ignore"
 
@@ -83,7 +84,7 @@ function ensureDirSync(dirPath: string): void {
 }
 
 // Example usage
-const sourceDir = path.join(__dirname, ".")
-const destinationDir = path.join(__dirname, "../testpoint2")
+const sourceDir = path.join(process.cwd(), ".")
+const destinationDir = path.join(process.cwd(), "../testpoint_local")
 
 copyFolderExcludingGitignore(sourceDir, destinationDir)
