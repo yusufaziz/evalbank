@@ -8,9 +8,9 @@
     />
     <div class="container relative z-[1] flex flex-col items-center justify-center text-center">
       <p class="mb-5 font-bold tracking-tight text-primary">
-        We are preparing you to login
+        Preparing to login into system.
       </p>
-      <h1 class="text-4xl font-bold tracking-tight lg:text-5xl">
+      <h1 class="font-bold tracking-tight">
         <slot />
       </h1>
     </div>

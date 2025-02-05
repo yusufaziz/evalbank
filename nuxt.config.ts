@@ -51,7 +51,7 @@ export default defineNuxtConfig({
       APP_URL: process.env.APP_URL ? process.env.APP_URL : ``,
       OAUTH_AUTHORIZE_URL: process.env.OAUTH_AUTHORIZE_URL ? process.env.OAUTH_AUTHORIZE_URL : ``,
       OAUTH_PROFILE_URL: process.env.OAUTH_PROFILE_URL ? process.env.OAUTH_PROFILE_URL : ``,
-      AUTH_COOKIE: process.env.AUTH_COOKIE ? process.env.AUTH_COOKIE : `auth`,
+      AUTH_COOKIE: process.env.AUTH_COOKIE ? process.env.AUTH_COOKIE : ``,
     },
   },
 

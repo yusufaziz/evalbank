@@ -19,19 +19,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-const auth = useCookie<string>(useRuntimeConfig().public.AUTH_COOKIE) || ""
-const userData = auth.value.split("|")
-const userName = userData[1]
-const userEmail = userData[3]
-const avatar = computed(() => {
-  const words = userName?.split(" ") || []
-  // Extract the first character of each word
-  const firstChars = words.map(word => word.charAt(0).toUpperCase())
-  // Join the first characters and limit to a maximum of 2 characters
-  const result = firstChars.slice(0, 2).join("")
-  return result
-})
 </script>
 
 <template>
@@ -48,13 +35,13 @@ const avatar = computed(() => {
               <!-- Avatar -->
               <UiAvatar class="size-8 rounded-lg">
                 <UiAvatarFallback class="rounded-lg">
-                  {{ avatar }}
+                  {{ useAuth().avatar }}
                 </UiAvatarFallback>
               </UiAvatar>
               <!-- User Information -->
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ userName }}</span>
-                <span class="truncate text-xs">{{ userEmail }}</span>
+                <span class="truncate font-semibold">{{ useAuth().username }}</span>
+                <span class="truncate text-xs">{{ useAuth().email }}</span>
               </div>
               <!-- Chevron Icon -->
               <Icon name="lucide:chevrons-up-down" class="ml-auto size-4" />
@@ -73,12 +60,12 @@ const avatar = computed(() => {
               <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <UiAvatar class="size-8 rounded-lg">
                   <UiAvatarFallback class="rounded-lg">
-                    {{ avatar }}
+                    {{ useAuth().avatar }}
                   </UiAvatarFallback>
                 </UiAvatar>
                 <div class="grid flex-1 text-left text-sm leading-tight">
-                  <span class="truncate font-semibold">{{ userName }}</span>
-                  <span class="truncate text-xs">{{ userEmail }}</span>
+                  <span class="truncate font-semibold">{{ useAuth().username }}</span>
+                  <span class="truncate text-xs">{{ useAuth().email }}</span>
                 </div>
               </div>
             </UiDropdownMenuLabel>
