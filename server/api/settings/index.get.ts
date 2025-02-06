@@ -59,6 +59,11 @@ export default defineEventHandler(async (event): Promise<object[]> => {
     consola.info("Fetching all settings ordered by name")
 
     const settings = await prisma.setting.findMany({
+      select: {
+        id: true,
+        name: true,
+        value: true,
+      },
       orderBy: { name: "asc" },
     })
 

@@ -104,11 +104,11 @@ onMounted(() => {
       <div class="flex flex-row gap-2">
         <div v-if="modify" class="flex gap-2">
           <!-- Edit Button -->
-          <UiButton variant="outline" size="icon-xs" @click="emit('edit', props.checkitem)">
+          <UiButton variant="outline" size="icon-sm" @click="emit('edit', props.checkitem)">
             <Icon name="lucide:pencil" />
           </UiButton>
           <!-- Delete Button -->
-          <UiButton variant="destructive" size="icon-xs" @click="emit('delete', props.checkitem)">
+          <UiButton variant="destructive" size="icon-sm" @click="emit('delete', props.checkitem)">
             <Icon name="lucide:trash" />
           </UiButton>
         </div>
