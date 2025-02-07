@@ -26,7 +26,9 @@ export default defineEventHandler(async (event): Promise<object | { message: str
     const project = await prisma.project.findUnique({
       where: { id },
       include: {
-        settings: true,
+        settings: {
+          select: { id: true, name: true, value: true },
+        },
         attachments: true,
       },
     })

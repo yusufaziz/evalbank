@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process"
 import * as fs from "node:fs"
 import * as path from "node:path"
 import process from "node:process"
@@ -31,6 +32,9 @@ async function copyFolderExcludingGitignore(srcDir: string, destDir: string): Pr
     await copyDirectory(srcDir, destDir, ig)
 
     consola.log("Folder copied successfully!")
+
+    // Commit changes in the destination directory
+    await commitChangesInDestination(destDir, srcDir)
   }
   catch (error) {
     consola.error("Error copying folder:", error)
@@ -80,6 +84,33 @@ async function copyDirectory(src: string, dest: string, ig: any): Promise<void> 
 function ensureDirSync(dirPath: string): void {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true })
+  }
+}
+
+/**
+ * Commits changes in the destination directory using the latest commit message from the source directory.
+ *
+ * @param destDir - The destination directory where changes need to be committed.
+ * @param srcDir - The source directory to fetch the latest commit message.
+ */
+async function commitChangesInDestination(destDir: string, srcDir: string): Promise<void> {
+  try {
+    // Get the latest commit message from the source directory
+    const latestCommitMessage = execSync("git log -1 --pretty=%B", { cwd: srcDir }).toString().trim()
+
+    // Stage all changes in the destination directory
+    execSync("git add .", { cwd: destDir })
+
+    // Commit the changes with the latest commit message
+    execSync(`git commit -m "${latestCommitMessage}"`, { cwd: destDir })
+
+    // Push the changes to origin
+    execSync(`git push`, { cwd: destDir })
+
+    consola.log("Changes committed successfully in the destination directory!")
+  }
+  catch (error) {
+    consola.error("Error committing changes in the destination directory:", error)
   }
 }
 

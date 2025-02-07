@@ -15,3 +15,9 @@ export interface ISelectedSetting {
   name: string // Name of the setting
   settings: Setting[] | undefined // Related settings
 }
+
+export interface ISetting {
+  id: string
+  name: string
+  value: string
+}

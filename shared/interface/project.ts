@@ -1,5 +1,6 @@
 import type { Attachment, Evaluation, Project, Setting } from "@prisma/client"
 import type { IChart } from "./chart"
+import type { ISetting } from "./setting"
 import type { ITestcase } from "./testcase"
 
 /**
@@ -8,7 +9,7 @@ import type { ITestcase } from "./testcase"
 export interface IProject extends Project {
   evaluations?: Evaluation[] // Related evaluations
   attachments?: Attachment[] // Related attachments
-  settings?: Setting[] // Related settings
+  settings?: ISetting[] // Related settings
 }
 
 /**

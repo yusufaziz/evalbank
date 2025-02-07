@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Setting } from "@prisma/client"
+import type { ISetting } from "~~/shared/interface/setting"
 
 /**
  * @brief Component for displaying settings grouped by name.
@@ -10,6 +11,10 @@ const props = defineProps<{
    * An array of settings to display.
    */
   settings: Setting[]
+  /**
+   * An boolean to check whether unsupported setting need to be displayed or not
+   */
+  showUnsupported: boolean
 }>()
 
 /**
@@ -19,6 +24,7 @@ const props = defineProps<{
 const settingsTags = computed(() => {
   return [...new Set(props.settings?.map(c => c.name))]
 })
+const { data: settings } = useFetch<ISetting>(`/api/settings`)
 </script>
 
 <template>

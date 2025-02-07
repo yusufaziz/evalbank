@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { IProjectInfo, IProjectTestcase } from "~~/shared/interface/project"
+import type { ISetting } from "~~/shared/interface/setting"
 
 /**
  * @brief Component for displaying project details and associated test cases.
@@ -21,6 +22,10 @@ const { data: projectTestcase } = useFetch<IProjectTestcase>(
 )
 const { data: projectInfo } = useFetch<IProjectInfo>(`/api/projects/${projectId.value}`)
 const { data: testcases } = useFetch(`/api/testcases?projectId=${projectId.value}`, { query })
+const { data: settings } = useFetch<ISetting[]>(`/api/settings`)
+const unsetting = computed(() => {
+  return settings.value?.filter(s => !projectInfo.value?.settings?.some(ps => ps.id === s.id))
+})
 
 /**
  * @brief Tabs configuration for the project page.
@@ -60,6 +65,9 @@ const tabs = [
             </UiBadge>
           </UiTabsTrigger>
         </UiTabsList>
+        <UiButton size="icon" variant="outline" @click="navigateTo(`/projects/modify/${projectId}`)">
+          <Icon class="size-4" name="lucide:pencil" />
+        </UiButton>
         <UiSheetTrigger as-child>
           <UiButton>Add Testcase to Project</UiButton>
         </UiSheetTrigger>
@@ -94,7 +102,15 @@ const tabs = [
 
       <!-- Project Settings Tab -->
       <UiTabsContent value="Project Settings">
-        <TSettingView :settings="projectInfo?.settings || []" />
+        Project Settings
+        <UiScrollArea class="h-[calc(40vh-50px)] w-lg p-1">
+          <TSettingView :settings="projectInfo?.settings || []" />
+        </UiScrollArea>
+        <UiDivider />
+        Project Unsupported Settings
+        <UiScrollArea class="h-[calc(40vh-50px)] w-lg p-1">
+          <TSettingView :settings="unsetting" />
+        </UiScrollArea>
       </UiTabsContent>
     </UiTabs>
 

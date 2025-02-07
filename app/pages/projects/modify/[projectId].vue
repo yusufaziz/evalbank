@@ -41,7 +41,7 @@ const onSubmit = handleSubmit(async (data) => {
     }).then((response) => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          navigateTo("/projects")
+          useRouter().back()
           resolve(response)
         }, 1000) // Simulate a 1-second delay
       })
