@@ -16,18 +16,30 @@ const props = defineProps<{
   evaluation: IEvaluation
 }>()
 
+const remarks = ref<string | null>(props.evaluation.remarks || null)
+const judgement = ref<number | null>(props.evaluation.judgement || null)
+
 /**
  * @brief Handles the change in judgement for an evaluation.
  * @param evaluation - The evaluation object to update.
  * @param judgement - The new judgement value.
+ * @param remarks - Optional remarks for the evaluation.
  */
-function handleJudgementChange(evaluation: IEvaluation, judgement: number) {
-  evaluation.judgement = judgement // Update the judgement locally
+function handleJudgementChange() {
   const formData = new FormData()
-  formData.append("data", JSON.stringify({ judgement })) // Prepare the form data
+  const data: { judgement: number, remarks?: string } = { judgement: judgement.value || 0 }
+
+  consola.info("Judgement:", judgement)
+  consola.info("Remarks:", remarks)
+
+  if (remarks.value && remarks.value.trim() !== "") {
+    data.remarks = remarks.value.trim()
+  }
+
+  formData.append("data", JSON.stringify(data)) // Prepare the form data
 
   useSonner.promise(
-    $fetch<ICheckitem>(`/api/evaluations/${evaluation.id}`, {
+    $fetch<ICheckitem>(`/api/evaluations/${props.evaluation.id}`, {
       method: "patch",
       body: formData,
     }).then((response) => {
@@ -110,8 +122,9 @@ function handleFileDrop(evaluation: IEvaluation, files: File[]) {
         <div>
           <UiToggleGroup class="item-start justify-start pt-2">
             <UiRadioGroup
-              :model-value="props.evaluation.judgement?.toString()"
-              @update:model-value="(value) => handleJudgementChange(props.evaluation, Number(value))"
+              :model-value="judgement?.toString()"
+              class="flex flex-row gap-5"
+              @update:model-value="(value) => { if (judgement) judgement = parseInt(value); handleJudgementChange() }"
             >
               <div class="flex space-x-2">
                 <UiRadioGroupItem id="r1" :value="EVALUATION_JUDGEMENT.NOT_SUPPORT.toString()" />
@@ -133,6 +146,16 @@ function handleFileDrop(evaluation: IEvaluation, files: File[]) {
               </div>
             </UiRadioGroup>
           </UiToggleGroup>
+          <div class="flex items-center gap-2 pt-2">
+            <UiInput
+              v-model="remarks"
+              type="text"
+              placeholder="Add remarks"
+            />
+            <UiButton @click="handleJudgementChange()">
+              Save
+            </UiButton>
+          </div>
         </div>
       </div>
     </template>
