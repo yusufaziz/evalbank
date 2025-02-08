@@ -45,6 +45,7 @@ const tabs = [
     icon: "lucide:settings",
   },
 ]
+const showUnsupported = ref(false)
 </script>
 
 <template>
@@ -103,13 +104,14 @@ const tabs = [
       <!-- Project Settings Tab -->
       <UiTabsContent value="Project Settings">
         Project Settings
-        <UiScrollArea class="h-[calc(40vh-50px)] w-lg p-1">
-          <TSettingView :settings="projectInfo?.settings || []" />
-        </UiScrollArea>
-        <UiDivider />
-        Project Unsupported Settings
-        <UiScrollArea class="h-[calc(40vh-50px)] w-lg p-1">
-          <TSettingView :settings="unsetting" />
+        <div class="flex items-center space-x-2">
+          <UiSwitch id="displaySetting" v-model:checked="showUnsupported" />
+          <UiLabel for="showUnsupported">
+            Display All Settings
+          </UiLabel>
+        </div>
+        <UiScrollArea class="h-[calc(90vh-50px)] w-lg p-1">
+          <TSettingView v-model:show-unsupported="showUnsupported" :settings="projectInfo?.settings || []" />
         </UiScrollArea>
       </UiTabsContent>
     </UiTabs>

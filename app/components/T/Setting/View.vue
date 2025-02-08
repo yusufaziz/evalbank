@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Setting } from "@prisma/client"
 import type { ISetting } from "~~/shared/interface/setting"
 
 /**
@@ -10,32 +9,66 @@ const props = defineProps<{
   /**
    * An array of settings to display.
    */
-  settings: Setting[]
-  /**
-   * An boolean to check whether unsupported setting need to be displayed or not
-   */
-  showUnsupported: boolean
+  settings: ISetting[]
 }>()
+
+const showUnsupported = defineModel("showUnsupported", {
+  type: Boolean,
+  default: false,
+})
+
+const { data: settings } = useFetch<ISetting[]>(`/api/settings`)
 
 /**
  * @brief Computes the unique names of settings for display.
- * @returns An array of unique setting names.
+ * @returns A sorted array of unique setting names.
  */
 const settingsTags = computed(() => {
-  return [...new Set(props.settings?.map(c => c.name))]
+  if (showUnsupported.value) {
+    return [...new Set(settings.value?.map(c => c.name))].sort()
+  }
+  else {
+    return [...new Set(props.settings?.map(c => c.name))].sort()
+  }
 })
-const { data: settings } = useFetch<ISetting>(`/api/settings`)
+
+/**
+ * @brief Retrieves the settings associated with a given name.
+ * @param name - The name of the setting.
+ * @returns A sorted array of settings associated with the name.
+ */
+function getSettingName(name: string) {
+  if (showUnsupported.value) {
+    return settings.value?.filter(f => f.name === name).map(m => m.value).sort() ?? []
+  }
+  else {
+    return props.settings.filter(f => f.name === name).map(m => m.value).sort() ?? []
+  }
+}
+
+/**
+ * @brief Checks if a setting is supported.
+ * @param name - The name of the setting.
+ * @param value - The value of the setting.
+ * @returns True if the setting is supported, false otherwise.
+ */
+function isSettingSupported(name: string, value: string) {
+  if (showUnsupported.value) {
+    return props.settings.some(s => s.name === name && s.value === value)
+  }
+  else {
+    return true
+  }
+}
 </script>
 
 <template>
-  <div class="mt-2 flex flex-wrap gap-2">
+  <div class="flex flex-grow-0 place-items-start gap-3">
     <!-- Render a tag for each unique setting name -->
-    <p v-for="(tag, index) in settingsTags" :key="index" class="grid gap-2 w-md break-words text-sm text-wrap">
+    <div v-for="(tag, index) in settingsTags" :key="index" class="grid w-md break-words text-sm text-wrap">
       <span class="font-bold border-b-2">{{ tag }}</span>
-      <span>
-        {{ props.settings?.filter((f) => f.name === tag).map((m) => m.value).join(", ") }}
-      </span>
-    </p>
+      <span v-for="(setting, sIdx) in getSettingName(tag)" :key="sIdx" :class="{ 'text-red-500': !isSettingSupported(tag, setting) }">{{ setting }}</span>
+    </div>
   </div>
 </template>
 
