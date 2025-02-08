@@ -46,6 +46,7 @@ const { data: settings } = useFetch<Setting[]>("/api/settings")
 // State variables
 const selectedSettings = ref<ISelectedSetting[]>(props.modelValue || [])
 const showAdditional = ref<string | null>(null)
+const settingSearch = ref<string>("")
 
 /**
  * @brief Watches for changes in selectedSettings and emits the updated value.
@@ -111,11 +112,17 @@ defineExpose({ initializeSelectedSettings })
           >
             <UiSelectTrigger placeholder="Select a Setting" />
             <UiSelectContent>
+              <div class="flex items-center gap-2 mb-2">
+                <UiInput v-model="settingSearch" type="text" placeholder="Search settings" />
+              </div>
               <UiSelectItem
-                v-for="(settingName, i) in [...new Set(settings?.map((f) => f.name))]"
+                v-for="(settingName, i) in [...new Set(settings?.map((f) => f.name))].filter((f) =>
+                  f.toLowerCase().includes(settingSearch.toLowerCase()),
+                )"
                 :key="i"
                 :value="settingName"
                 :text="settingName"
+                :style="{ display: selectedSettings.some((s) => s.name === settingName) ? 'none' : 'block' }"
               />
             </UiSelectContent>
           </UiSelect>
@@ -148,6 +155,15 @@ defineExpose({ initializeSelectedSettings })
         <div v-if="showAdditional && showAdditional === item.name" class="mt-2">
           <UiListbox v-model="item.settings" multiple>
             <UiListboxContent v-if="settings">
+              <div class="flex items-center gap-2 mb-2">
+                <UiInput v-model="settingSearch" type="text" placeholder="Search settings" />
+                <UiButton variant="outline" size="sm" @click="item.settings = settings.filter((f) => f.name === item.name)">
+                  Select All
+                </UiButton>
+                <UiButton variant="outline" size="sm" @click="item.settings = []">
+                  Clear All
+                </UiButton>
+              </div>
               <UiListboxItem
                 v-for="(setting, i) in settings.filter((f) => f.name === item.name)"
                 :key="i"
