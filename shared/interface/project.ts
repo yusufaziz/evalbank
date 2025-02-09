@@ -32,14 +32,16 @@ interface IProjectTestcaseCheckitems {
   count: number // Count of evaluations for the check item
 }
 
+export interface IProjectTestcaseSub {
+  testcaseId?: string // ID of the test case
+  checkitems: IProjectTestcaseCheckitems[] // Related check items
+}
+
 /**
  * @brief Interface representing test case data within a project.
  */
 export interface IProjectTestcase {
-  testcases: {
-    testcaseId: string // ID of the test case
-    checkitems: IProjectTestcaseCheckitems[] // Related check items
-  }
+  testcases: IProjectTestcaseSub[]
   totalCount?: number // Total count of evaluations
   chart: IChart // Chart data for the test case
 }

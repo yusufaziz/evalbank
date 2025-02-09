@@ -118,6 +118,23 @@ function onUnSyncdata() {
             </span>
           </UiButton>
         </UiCollapsibleTrigger>
+        <!-- UiCollapsibleTrigger -->
+        as-child
+        <UiButton
+          variant="ghost"
+          size="sm"
+          class="w-9 p-0"
+        >
+          <Icon
+            name="lucide:chevrons-up-down"
+            class="h-4 w-4"
+          />
+          <span
+            class="sr-only"
+          >
+            Toggle
+          </span>
+        </UiButton>
 
         <!-- Sync Button -->
         <UiButton

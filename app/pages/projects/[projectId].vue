@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import type { IChartData } from "~~/shared/interface/chart"
 import type { IProjectInfo, IProjectTestcase } from "~~/shared/interface/project"
+import type { ITestcase } from "~~/shared/interface/testcase"
 
 /**
  * @brief Component for displaying project details and associated test cases.
@@ -20,7 +22,7 @@ const { data: projectTestcase } = useFetch<IProjectTestcase>(
   `/api/projects/testcases/${projectId.value}`,
 )
 const { data: projectInfo } = useFetch<IProjectInfo>(`/api/projects/${projectId.value}`)
-const { data: testcases } = useFetch(`/api/testcases?projectId=${projectId.value}`, { query })
+const { data: testcases } = useFetch<ITestcase[]>(`/api/testcases?projectId=${projectId.value}`, { query })
 
 /**
  * @brief Tabs configuration for the project page.
@@ -49,18 +51,31 @@ const tabs = [
         <UiTabsList>
           <UiTabsTrigger
             v-for="t in tabs"
+
             :key="t.title"
+
             :value="t.title"
             class="flex items-center gap-2"
           >
-            <Icon :name="t.icon" class="-ms-0.5 me-1.5 size-4 shrink-0 opacity-60" />
+            <Icon
+
+              :name="t.icon"
+              class="-ms-0.5 me-1.5 size-4 shrink-0 opacity-60"
+            />
             {{ t.title }}
-            <UiBadge v-if="t.badge" class="px-2">
+            <UiBadge
+              v-if="t.badge"
+              class="px-2"
+            >
               {{ t.badge }}
             </UiBadge>
           </UiTabsTrigger>
         </UiTabsList>
-        <UiButton size="icon" variant="outline" @click="navigateTo(`/projects/modify/${projectId}`)">
+        <UiButton
+          size="icon"
+          variant="outline"
+          @click="navigateTo(`/projects/modify/${projectId}`)"
+        >
           <Icon class="size-4" name="lucide:pencil" />
         </UiButton>
         <UiSheetTrigger as-child>
@@ -76,7 +91,7 @@ const tabs = [
           <UiChartBar
             :data="projectTestcase?.chart?.data || []"
             index="name"
-            :categories="projectTestcase?.chart?.categories || []"
+            :categories="(projectTestcase?.chart?.categories as (keyof IChartData)[]) || []"
             :rounded-corners="4"
             type="stacked"
             :colors="projectTestcase?.chart?.colors || []"
@@ -87,9 +102,12 @@ const tabs = [
       <!-- Evaluation Tab -->
       <UiTabsContent value="Evaluation">
         <UiScrollArea class="h-[calc(100vh-50px)] w-lg p-1">
-          <div v-for="(item, index) in projectTestcase?.testcases" :key="index" class="mb-4">
+          <div
+            v-for="(item, index) in projectTestcase?.testcases"
+            :key="index" class="mb-4"
+          >
             <TTestcaseView
-              :id="item.testcaseId"
+              :id="item.testcaseId || ''"
               :unsync-btn="true"
               @need-refresh="async () => { await refreshNuxtData() }"
             />
@@ -101,7 +119,10 @@ const tabs = [
       <UiTabsContent value="Project Settings">
         Project Settings
         <UiScrollArea class="h-[calc(90vh-50px)] w-lg p-1">
-          <TSettingView :show-control="true" :settings="projectInfo?.settings || []" />
+          <TSettingView
+            :show-control="true"
+            :settings="projectInfo?.settings || []"
+          />
         </UiScrollArea>
       </UiTabsContent>
     </UiTabs>
@@ -120,7 +141,10 @@ const tabs = [
             placeholder="Search"
             class="max-w-md m-1"
           />
-          <div v-for="(item, index) in testcases" :key="index" class="mb-4">
+          <div
+            v-for="(item, index) in testcases"
+            :key="index" class="mb-4"
+          >
             <TTestcaseView
               :id="item.id"
               :sync-btn="true"

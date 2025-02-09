@@ -102,17 +102,32 @@ onMounted(() => {
           <span>
             {{ props.checkitem.expectedTarget }}
           </span>
-          <TEvaluationTestcaseInfo v-if="showEvaluation" :evaluation-count="evaluation?.evaluationCount" />
+          <TEvaluationTestcaseInfo
+            v-if="showEvaluation"
+            :evaluation-count="evaluation?.evaluationCount"
+          />
         </div>
       </div>
       <div class="flex flex-row gap-2">
         <div v-if="modify" class="flex gap-2">
           <!-- Edit Button -->
-          <UiButton variant="outline" size="icon-sm" @click="emit('edit', props.checkitem)">
+          <UiButton
+            variant="outline"
+            size="icon-sm"
+            @click="emit('edit', props.checkitem)"
+          >
+            <!-- Edit Button -->
+            variant="outline"
+            size="icon-sm"
+            @click="emit('edit', props.checkitem)"
             <Icon name="lucide:pencil" />
           </UiButton>
           <!-- Delete Button -->
-          <UiButton variant="destructive" size="icon-sm" @click="emit('delete', props.checkitem)">
+          <UiButton
+            variant="destructive"
+            size="icon-sm"
+            @click="emit('delete', props.checkitem)"
+          >
             <Icon name="lucide:trash" />
           </UiButton>
         </div>
@@ -120,16 +135,26 @@ onMounted(() => {
     </div>
 
     <!-- Settings Section -->
-    <div v-if="!props.showEvaluation" class="mt-2 flex flex-wrap gap-2">
+    <div
+      v-if="!props.showEvaluation"
+      class="mt-2 flex flex-wrap gap-2"
+    >
       <TSettingView :settings="props.checkitem.settings || []" />
     </div>
 
     <!-- Evaluations Section -->
-    <UiScrollArea v-if="props.showEvaluation" class="h-[300px] w-full">
+    <UiScrollArea
+      v-if="props.showEvaluation"
+      class="h-[300px] w-full"
+    >
       <div class="flex gap-3 p-2">
         <div class="flex w-full justify-between">
           <!-- Search Input -->
-          <UiInput v-model="searchInput" placeholder="Search" class="max-w-md" />
+          <UiInput
+            v-model="searchInput"
+            placeholder="Search"
+            class="max-w-md"
+          />
           <!-- Pagination -->
           <UiPagination
             v-model:page="page"

@@ -100,7 +100,17 @@ function deleteCheckitem(index: number) {
     </div>
 
     <div>
-      <UiSheet should-scale-background class="pt-2" :open="isSheetOpen" @update:open="isSheetOpen = $event;">
+      <UiSheet
+        should-scale-background
+        class="pt-2"
+        :open="isSheetOpen"
+        @update:open="isSheetOpen = $event"
+      >
+        <!-- UiSheet -->
+        should-scale-background
+        class="pt-2"
+        :open="isSheetOpen"
+        @update:open="isSheetOpen = $event"
         <UiSheetTrigger as-child>
           <UiButton variant="outline" @click="initializeCheckitem()">
             Add New Checkitem

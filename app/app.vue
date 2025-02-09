@@ -12,12 +12,15 @@ export default {
   <div>
     <!-- Accessibility announcer for route changes -->
     <NuxtRouteAnnouncer />
+
     <!-- Loading indicator for asynchronous operations -->
     <NuxtLoadingIndicator />
+
     <!-- Layout wrapper for consistent page structure -->
     <NuxtLayout>
       <!-- Dynamic page content -->
       <NuxtPage />
+
       <!-- Notification component for user feedback -->
       <UiVueSonner />
     </NuxtLayout>

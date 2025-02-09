@@ -88,7 +88,15 @@ function handleFileDrop(evaluation: IEvaluation, files: File[]) {
 </script>
 
 <template>
-  <UiDropfile class="max-w-sm" :open-on-click="false" @dropped="(files) => handleFileDrop(props.evaluation, files)">
+  <UiDropfile
+    class="max-w-sm"
+    :open-on-click="false"
+    @dropped="(files) => handleFileDrop(props.evaluation, files)"
+  >
+    <!-- UiDropfile -->
+    class="max-w-sm"
+    :open-on-click="false"
+    @dropped="(files) => handleFileDrop(props.evaluation, files)"
     <template #message>
       <div
         class="p-2 w-full"
@@ -103,12 +111,12 @@ function handleFileDrop(evaluation: IEvaluation, files: File[]) {
           <div
             v-for="(settingEval, idxSettingEval) in (props.evaluation.settings ? [...props.evaluation.settings].sort((a, b) => a.name.localeCompare(b.name)) : [])"
             :key="idxSettingEval"
-            class="flex flex-row "
+            class="flex flex-row"
           >
             <span class="font-bold text-nowrap">
               {{ settingEval.name }}
             </span>
-            <p class="truncate hover:text-pretty  min-w-0">
+            <p class="truncate hover:text-pretty min-w-0">
               : {{ settingEval.value }}
             </p>
           </div>

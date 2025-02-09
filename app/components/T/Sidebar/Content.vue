@@ -113,6 +113,19 @@ const projectsData = [
               </span>
             </NuxtLink>
           </UiSidebarMenuButton>
+          <!-- UiSidebarMenuButton -->
+          as-child
+          <NuxtLink
+            :href="item.url"
+          >
+            <Icon
+              mode="svg"
+              :name="item.icon"
+            />
+            <span>
+              {{ item.name }}
+            </span>
+          </NuxtLink>
           <UiDropdownMenu>
             <UiDropdownMenuTrigger as-child>
               <UiSidebarMenuAction show-on-hover>

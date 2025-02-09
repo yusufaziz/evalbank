@@ -102,14 +102,19 @@ function isSettingSupported(name: string, value: string) {
     </div>
     <div class="flex flex-row flex-wrap flex-grow place-items-stretch gap-3 p-2">
       <!-- Render a tag for each unique setting name -->
-      <div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-2">
-        <div v-for="(name, index) in settingsName" :key="index" class="break-inside-avoid p-2 mb-4 bg-white rounded shadow">
+      <div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-2 max-w-[calc(100vw)]">
+        <div v-for="(name, index) in settingsName" :key="index" class="break-inside-avoid p-1 mb-4 bg-white rounded shadow">
           <div class="flex flex-row justify-between gap-2 items-center border-b-2 pb-1">
             <span class="font-bold">
               {{ name }}
             </span>
             <!-- Edit Button -->
-            <UiButton v-if="showActionButton" size="icon" variant="outline" @click="navigateTo(`/settings/create?name=${name}`)">
+            <UiButton
+              v-if="showActionButton"
+              size="icon"
+              variant="outline"
+              @click="navigateTo(`/settings/create?name=${name}`)"
+            >
               <Icon class="size-4" name="lucide:plus" />
             </UiButton>
           </div>
