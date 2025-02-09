@@ -107,7 +107,7 @@ function handleFileDrop(evaluation: IEvaluation, files: File[]) {
         <!-- Display settings -->
         <div>
           <div
-            v-for="(settingEval, idxSettingEval) in props.evaluation.settings"
+            v-for="(settingEval, idxSettingEval) in (props.evaluation.settings ? [...props.evaluation.settings].sort((a, b) => a.name.localeCompare(b.name)) : [])"
             :key="idxSettingEval"
             class="flex flex-row "
           >
@@ -151,6 +151,7 @@ function handleFileDrop(evaluation: IEvaluation, files: File[]) {
               v-model="remarks"
               type="text"
               placeholder="Add remarks"
+              @keydown.enter="handleJudgementChange()"
             />
             <UiButton @click="handleJudgementChange()">
               Save

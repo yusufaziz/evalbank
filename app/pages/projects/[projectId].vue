@@ -22,10 +22,6 @@ const { data: projectTestcase } = useFetch<IProjectTestcase>(
 )
 const { data: projectInfo } = useFetch<IProjectInfo>(`/api/projects/${projectId.value}`)
 const { data: testcases } = useFetch(`/api/testcases?projectId=${projectId.value}`, { query })
-const { data: settings } = useFetch<ISetting[]>(`/api/settings`)
-const unsetting = computed(() => {
-  return settings.value?.filter(s => !projectInfo.value?.settings?.some(ps => ps.id === s.id))
-})
 
 /**
  * @brief Tabs configuration for the project page.
@@ -45,7 +41,6 @@ const tabs = [
     icon: "lucide:settings",
   },
 ]
-const showUnsupported = ref(false)
 </script>
 
 <template>
@@ -104,14 +99,8 @@ const showUnsupported = ref(false)
       <!-- Project Settings Tab -->
       <UiTabsContent value="Project Settings">
         Project Settings
-        <div class="flex items-center space-x-2">
-          <UiSwitch id="displaySetting" v-model:checked="showUnsupported" />
-          <UiLabel for="showUnsupported">
-            Display All Settings
-          </UiLabel>
-        </div>
         <UiScrollArea class="h-[calc(90vh-50px)] w-lg p-1">
-          <TSettingView v-model:show-unsupported="showUnsupported" :settings="projectInfo?.settings || []" />
+          <TSettingView :show-control="true" :settings="projectInfo?.settings || []" />
         </UiScrollArea>
       </UiTabsContent>
     </UiTabs>

@@ -19,6 +19,13 @@ const nameDebounce = useDebounce(nameModel, 500)
 const checkHintUrl = computed(() => `/api/settings/checkname?name=${nameDebounce.value}`)
 const { data: nameHint } = useFetch<string>(checkHintUrl)
 
+onMounted(() => {
+  const name = useRoute().query.name?.toString()
+  if (name) {
+    nameModel.value = name
+  }
+})
+
 /**
  * @brief Handles form submission to create a new setting.
  * @param data - The validated form data.
