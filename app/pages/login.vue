@@ -31,5 +31,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <span>{{ status }}</span>
+  <span>
+    {{ status }}
+  </span>
 </template>

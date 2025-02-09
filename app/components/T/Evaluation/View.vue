@@ -19,12 +19,6 @@ const props = defineProps<{
 const remarks = ref<string | null>(props.evaluation.remarks || null)
 const judgement = ref<number | null>(props.evaluation.judgement || null)
 
-/**
- * @brief Handles the change in judgement for an evaluation.
- * @param evaluation - The evaluation object to update.
- * @param judgement - The new judgement value.
- * @param remarks - Optional remarks for the evaluation.
- */
 function handleJudgementChange() {
   const formData = new FormData()
   const data: { judgement: number, remarks?: string } = { judgement: judgement.value || 0 }
@@ -111,7 +105,9 @@ function handleFileDrop(evaluation: IEvaluation, files: File[]) {
             :key="idxSettingEval"
             class="flex flex-row "
           >
-            <span class="font-bold text-nowrap">{{ settingEval.name }}</span>
+            <span class="font-bold text-nowrap">
+              {{ settingEval.name }}
+            </span>
             <p class="truncate hover:text-pretty  min-w-0">
               : {{ settingEval.value }}
             </p>

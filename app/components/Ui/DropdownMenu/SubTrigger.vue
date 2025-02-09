@@ -31,7 +31,9 @@ const styles = tv({
   <DropdownMenuSubTrigger v-bind="forwarded" :class="styles({ inset, class: props.class })">
     <slot>
       <Icon v-if="icon" :name="icon" class="h-4 w-4" />
-      <span v-if="title">{{ title }}</span>
+      <span v-if="title">
+        {{ title }}
+      </span>
     </slot>
     <Icon
       class="ml-auto h-4 w-4 text-muted-foreground"

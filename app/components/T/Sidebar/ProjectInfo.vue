@@ -64,7 +64,9 @@ function valueFormatter(tick: number | Date) {
             >
               <!-- Project Information -->
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ project?.name }}</span>
+                <span class="truncate font-semibold">
+                  {{ project?.name }}
+                </span>
                 <span class="truncate text-xs">
                   FY{{ project?.modelFY }} {{ project?.modelSeries }}-{{ project?.modelName }}
                 </span>

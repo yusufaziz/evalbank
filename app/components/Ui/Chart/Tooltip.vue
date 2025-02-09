@@ -29,9 +29,13 @@ defineProps<{
               />
             </svg>
           </span>
-          <span>{{ item.name }}</span>
+          <span>
+            {{ item.name }}
+          </span>
         </div>
-        <span class="ml-4 font-semibold">{{ item.value }}</span>
+        <span class="ml-4 font-semibold">
+          {{ item.value }}
+        </span>
       </div>
     </UiCardContent>
   </UiCard>

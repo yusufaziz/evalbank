@@ -96,8 +96,12 @@ onMounted(() => {
     <div class="flex items-center justify-between">
       <div class="flex flex-row gap-1">
         <div class="flex flex-row gap-1 items-center">
-          <UiBadge>{{ props.checkitem.module }}</UiBadge>
-          <span>{{ props.checkitem.expectedTarget }}</span>
+          <UiBadge>
+            {{ props.checkitem.module }}
+          </UiBadge>
+          <span>
+            {{ props.checkitem.expectedTarget }}
+          </span>
           <TEvaluationTestcaseInfo v-if="showEvaluation" :evaluation-count="evaluation?.evaluationCount" />
         </div>
       </div>

@@ -40,7 +40,9 @@ const styles = tv({
         <Icon v-if="icon" :name="icon" class="h-4 w-4" />
       </slot>
       <slot name="title">
-        <span v-if="title">{{ title }}</span>
+        <span v-if="title">
+          {{ title }}
+        </span>
       </slot>
     </slot>
     <slot name="shortcut">

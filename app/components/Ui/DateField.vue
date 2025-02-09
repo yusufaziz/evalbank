@@ -36,7 +36,9 @@ const styles = tv({
         class="inline-flex items-center justify-center text-muted-foreground"
       >
         <Icon v-if="separatorIcon" :name="separatorIcon" class="text-muted-foreground" />
-        <span v-else-if="separator" class="mx-1 text-muted-foreground">{{ separator }}</span>
+        <span v-else-if="separator" class="mx-1 text-muted-foreground">
+          {{ separator }}
+        </span>
       </DateFieldInput>
       <DateFieldInput
         v-else

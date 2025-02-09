@@ -42,7 +42,11 @@ const { errorMessage, value, handleBlur } = useField(() => props.name || inputId
       class="mb-2"
       :class="[disabled && 'text-muted-foreground', errorMessage && 'text-destructive']"
     >
-      <span>{{ label }} <span v-if="required" class="text-destructive">*</span></span>
+      <span>
+        {{ label }} <span v-if="required" class="text-destructive">
+          *
+        </span>
+      </span>
     </UiLabel>
     <div class="relative">
       <slot name="icon">

@@ -26,7 +26,9 @@ const styles = tv({
   <PopoverClose v-bind="forwarded" :class="styles({ class: props.class })">
     <slot>
       <Icon :name="icon" class="h-4 w-4" />
-      <span class="sr-only">{{ srText }}</span>
+      <span class="sr-only">
+        {{ srText }}
+      </span>
     </slot>
   </PopoverClose>
 </template>

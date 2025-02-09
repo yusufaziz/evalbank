@@ -113,7 +113,9 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
       }"
     >
       <VisuallyHidden>
-        <UiSheetTitle>Mobile Sidebar</UiSheetTitle>
+        <UiSheetTitle>
+          Mobile Sidebar
+        </UiSheetTitle>
         <UiSheetDescription>
           This is the mobile sidebar. You can use this to navigate the site.
         </UiSheetDescription>

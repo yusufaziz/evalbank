@@ -40,8 +40,12 @@ const props = defineProps({
               </UiAvatar>
               <!-- User Information -->
               <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">{{ useAuth().username }}</span>
-                <span class="truncate text-xs">{{ useAuth().email }}</span>
+                <span class="truncate font-semibold">
+                  {{ useAuth().username }}
+                </span>
+                <span class="truncate text-xs">
+                  {{ useAuth().email }}
+                </span>
               </div>
               <!-- Chevron Icon -->
               <Icon name="lucide:chevrons-up-down" class="ml-auto size-4" />
@@ -64,8 +68,12 @@ const props = defineProps({
                   </UiAvatarFallback>
                 </UiAvatar>
                 <div class="grid flex-1 text-left text-sm leading-tight">
-                  <span class="truncate font-semibold">{{ useAuth().username }}</span>
-                  <span class="truncate text-xs">{{ useAuth().email }}</span>
+                  <span class="truncate font-semibold">
+                    {{ useAuth().username }}
+                  </span>
+                  <span class="truncate text-xs">
+                    {{ useAuth().email }}
+                  </span>
                 </div>
               </div>
             </UiDropdownMenuLabel>

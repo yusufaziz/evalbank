@@ -18,6 +18,8 @@ const styles = tv({
 
 <template>
   <DialogTitle :class="styles({ class: props.class })" v-bind="forwarded">
-    <slot>{{ title }}</slot>
+    <slot>
+      {{ title }}
+    </slot>
   </DialogTitle>
 </template>

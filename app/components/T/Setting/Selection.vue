@@ -170,7 +170,9 @@ defineExpose({ initializeSelectedSettings })
                 :value="setting"
                 :text="setting?.value"
               >
-                <span>{{ setting?.value }}</span>
+                <span>
+                  {{ setting?.value }}
+                </span>
               </UiListboxItem>
             </UiListboxContent>
           </UiListbox>

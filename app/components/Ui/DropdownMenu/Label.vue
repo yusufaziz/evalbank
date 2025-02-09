@@ -20,6 +20,8 @@ const styles = tv({
 
 <template>
   <DropdownMenuLabel :class="styles({ inset, class: props.class })" v-bind="forwarded">
-    <slot>{{ label }}</slot>
+    <slot>
+      {{ label }}
+    </slot>
   </DropdownMenuLabel>
 </template>

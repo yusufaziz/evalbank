@@ -1,4 +1,4 @@
-import type { Attachment, Evaluation, Project, Setting } from "@prisma/client"
+import type { Attachment, Evaluation, Project } from "@prisma/client"
 import type { IChart } from "./chart"
 import type { ISetting } from "./setting"
 import type { ITestcase } from "./testcase"

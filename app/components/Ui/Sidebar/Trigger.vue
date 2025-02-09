@@ -44,7 +44,9 @@ const { toggleSidebar, state } = useSidebar()
   >
     <slot v-bind="{ state }">
       <Icon v-if="icon" :name="icon" />
-      <span class="sr-only">{{ label }}</span>
+      <span class="sr-only">
+        {{ label }}
+      </span>
     </slot>
   </UiButton>
 </template>

@@ -93,7 +93,9 @@ const forwarded = useForwardProps(
       <Icon v-if="loading" class="size-4 shrink-0" :name="loadingIcon" />
     </slot>
     <slot>
-      <span v-if="text">{{ text }}</span>
+      <span v-if="text">
+        {{ text }}
+      </span>
     </slot>
     <slot name="iconRight">
       <div

@@ -29,6 +29,8 @@ const styles = tv({
         <Icon v-else name="lucide:check" class="h-2 w-2" />
       </UiDropdownMenuItemIndicator>
     </span>
-    <slot>{{ title }}</slot>
+    <slot>
+      {{ title }}
+    </slot>
   </DropdownMenuRadioItem>
 </template>

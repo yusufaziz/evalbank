@@ -73,12 +73,16 @@ const columns: ColumnDef<ITestcase>[] = [
       <UiDropdownMenu>
         <UiDropdownMenuTrigger as-child>
           <UiButton variant="outline">
-            <span>View</span>
+            <span>
+              View
+            </span>
             <Icon name="lucide:chevron-down" class="h-4 w-4" />
           </UiButton>
         </UiDropdownMenuTrigger>
         <UiDropdownMenuContent :side-offset="10" align="start" class="w-[300px] md:w-[200px]">
-          <UiDropdownMenuLabel>Toggle Columns</UiDropdownMenuLabel>
+          <UiDropdownMenuLabel>
+            Toggle Columns
+          </UiDropdownMenuLabel>
           <UiDropdownMenuSeparator />
           <UiDropdownMenuGroup>
             <UiDropdownMenuCheckboxItem
@@ -87,7 +91,9 @@ const columns: ColumnDef<ITestcase>[] = [
               :checked="column.getIsVisible()"
               @update:checked="tableRef?.toggleColumnVisibility(column)"
             >
-              <span class="text-sm capitalize">{{ column?.id }}</span>
+              <span class="text-sm capitalize">
+                {{ column?.id }}
+              </span>
             </UiDropdownMenuCheckboxItem>
           </UiDropdownMenuGroup>
         </UiDropdownMenuContent>
@@ -107,7 +113,9 @@ const columns: ColumnDef<ITestcase>[] = [
       <template #empty>
         <div class="flex w-full flex-col items-center justify-center gap-5 py-5">
           <Icon name="lucide:database" class="h-12 w-12 text-muted-foreground" />
-          <span class="mt-2">No data available.</span>
+          <span class="mt-2">
+            No data available.
+          </span>
         </div>
       </template>
     </UiTanStackTable>

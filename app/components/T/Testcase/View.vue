@@ -113,7 +113,9 @@ function onUnSyncdata() {
         <UiCollapsibleTrigger as-child>
           <UiButton variant="ghost" size="sm" class="w-9 p-0">
             <Icon name="lucide:chevrons-up-down" class="h-4 w-4" />
-            <span class="sr-only">Toggle</span>
+            <span class="sr-only">
+              Toggle
+            </span>
           </UiButton>
         </UiCollapsibleTrigger>
 
@@ -125,7 +127,9 @@ function onUnSyncdata() {
           @click="onSyncdata"
         >
           <Icon name="lucide:plus" class="h-4 w-4" />
-          <span class="sr-only">Add</span>
+          <span class="sr-only">
+            Add
+          </span>
         </UiButton>
 
         <!-- Unsync Button -->
@@ -136,7 +140,9 @@ function onUnSyncdata() {
           @click="onUnSyncdata"
         >
           <Icon name="lucide:trash" class="h-4 w-4" />
-          <span class="sr-only">Delete</span>
+          <span class="sr-only">
+            Delete
+          </span>
         </UiButton>
       </div>
     </div>

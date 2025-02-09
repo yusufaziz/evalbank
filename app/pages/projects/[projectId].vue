@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import type { IProjectInfo, IProjectTestcase } from "~~/shared/interface/project"
-import type { ISetting } from "~~/shared/interface/setting"
 
 /**
  * @brief Component for displaying project details and associated test cases.
@@ -65,7 +64,9 @@ const tabs = [
           <Icon class="size-4" name="lucide:pencil" />
         </UiButton>
         <UiSheetTrigger as-child>
-          <UiButton>Add Testcase to Project</UiButton>
+          <UiButton>
+            Add Testcase to Project
+          </UiButton>
         </UiSheetTrigger>
       </div>
 
@@ -114,7 +115,11 @@ const tabs = [
     >
       <template #content>
         <UiScrollArea class="h-[calc(100vh-100px)] w-lg p-1 border">
-          <UiInput v-model="searchInput" placeholder="Search" class="max-w-md m-1" />
+          <UiInput
+            v-model="searchInput"
+            placeholder="Search"
+            class="max-w-md m-1"
+          />
           <div v-for="(item, index) in testcases" :key="index" class="mb-4">
             <TTestcaseView
               :id="item.id"

@@ -30,6 +30,8 @@ const props = defineProps<
     :as-child="asChild"
     :class="sideBarGroupLabelStyles({ class: props.class })"
   >
-    <slot>{{ props.label }}</slot>
+    <slot>
+      {{ props.label }}
+    </slot>
   </Primitive>
 </template>

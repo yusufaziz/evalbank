@@ -28,7 +28,9 @@ const styles = tv({
   <DialogClose :class="styles({ class: props.class })" v-bind="forwarded">
     <slot>
       <Icon :name="icon" class="h-4 w-4" />
-      <span class="sr-only">{{ srText }}</span>
+      <span class="sr-only">
+        {{ srText }}
+      </span>
     </slot>
   </DialogClose>
 </template>

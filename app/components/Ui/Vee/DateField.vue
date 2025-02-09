@@ -34,7 +34,11 @@ const { errorMessage, value } = useField(() => props.name || inputId, props.rule
       :hint="labelHint"
       class="mb-2" :class="[disabled && 'text-muted-foreground', errorMessage && 'text-destructive']"
     >
-      <span>{{ label }} <span v-if="required" class="text-destructive">*</span></span>
+      <span>
+        {{ label }} <span v-if="required" class="text-destructive">
+          *
+        </span>
+      </span>
     </UiLabel>
     <UiDateField v-bind="{ ...$attrs, ...props }" v-model="value" />
     <TransitionSlide group tag="div">

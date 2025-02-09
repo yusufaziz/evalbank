@@ -24,7 +24,9 @@ const styles = tv({
       <UiSelectItemIndicator :icon="icon" />
     </span>
     <UiSelectItemText>
-      <slot>{{ text }}</slot>
+      <slot>
+        {{ text }}
+      </slot>
     </UiSelectItemText>
   </SelectItem>
 </template>

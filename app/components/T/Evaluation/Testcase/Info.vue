@@ -18,10 +18,18 @@ const props = defineProps<{
     </UiHoverCardTrigger>
     <UiHoverCardContent class="w-80">
       <div class="grid">
-        <span>OK: {{ props.evaluationCount?.OK }}</span>
-        <span>NG: {{ props.evaluationCount?.NG }}</span>
-        <span>Not Executed: {{ props.evaluationCount?.NOT_EXECUTED }}</span>
-        <span>Not Supported: {{ props.evaluationCount?.NOT_SUPPORT }}</span>
+        <span>
+          OK: {{ props.evaluationCount?.OK }}
+        </span>
+        <span>
+          NG: {{ props.evaluationCount?.NG }}
+        </span>
+        <span>
+          Not Executed: {{ props.evaluationCount?.NOT_EXECUTED }}
+        </span>
+        <span>
+          Not Supported: {{ props.evaluationCount?.NOT_SUPPORT }}
+        </span>
       </div>
     </UiHoverCardContent>
   </UiHoverCard>

@@ -28,7 +28,11 @@ const { errorMessage, value, handleBlur } = useField(() => props.name || inputId
 <template>
   <div class="w-full">
     <UiLabel v-if="label" :for="inputId" class="mb-2" :class="[errorMessage && 'text-destructive']">
-      <span>{{ label }} <span v-if="required" class="text-destructive">*</span></span>
+      <span>
+        {{ label }} <span v-if="required" class="text-destructive">
+          *
+        </span>
+      </span>
     </UiLabel>
     <div class="relative">
       <slot name="icon">

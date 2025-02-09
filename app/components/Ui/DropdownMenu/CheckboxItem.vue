@@ -26,7 +26,9 @@ const styles = tv({
       <UiDropdownMenuItemIndicator icon="lucide:check" />
     </span>
     <slot>
-      <span v-if="title">{{ title }}</span>
+      <span v-if="title">
+        {{ title }}
+      </span>
     </slot>
     <slot name="shortcut">
       <UiDropdownMenuShortcut v-if="shortcut">

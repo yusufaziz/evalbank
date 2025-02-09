@@ -108,14 +108,18 @@ const projectsData = [
           <UiSidebarMenuButton as-child>
             <NuxtLink :href="item.url">
               <Icon mode="svg" :name="item.icon" />
-              <span>{{ item.name }}</span>
+              <span>
+                {{ item.name }}
+              </span>
             </NuxtLink>
           </UiSidebarMenuButton>
           <UiDropdownMenu>
             <UiDropdownMenuTrigger as-child>
               <UiSidebarMenuAction show-on-hover>
                 <Icon mode="svg" name="lucide:ellipsis-vertical" class="rotate-90" />
-                <span class="sr-only">More</span>
+                <span class="sr-only">
+                  More
+                </span>
               </UiSidebarMenuAction>
             </UiDropdownMenuTrigger>
             <UiDropdownMenuContent
@@ -125,16 +129,22 @@ const projectsData = [
             >
               <UiDropdownMenuItem>
                 <Icon mode="svg" name="lucide:folder" class="text-muted-foreground" />
-                <span>View Project</span>
+                <span>
+                  View Project
+                </span>
               </UiDropdownMenuItem>
               <UiDropdownMenuItem>
                 <Icon name="lucide:forward" class="text-muted-foreground" />
-                <span>Share Project</span>
+                <span>
+                  Share Project
+                </span>
               </UiDropdownMenuItem>
               <UiDropdownMenuSeparator />
               <UiDropdownMenuItem>
                 <Icon name="lucide:trash-2" class="text-muted-foreground" />
-                <span>Delete Project</span>
+                <span>
+                  Delete Project
+                </span>
               </UiDropdownMenuItem>
             </UiDropdownMenuContent>
           </UiDropdownMenu>
@@ -142,7 +152,9 @@ const projectsData = [
         <UiSidebarMenuItem>
           <UiSidebarMenuButton class="text-sidebar-foreground/70">
             <Icon name="lucide:ellipsis-vertical" class="rotate-90 text-sidebar-foreground/70" />
-            <span>More</span>
+            <span>
+              More
+            </span>
           </UiSidebarMenuButton>
         </UiSidebarMenuItem>
       </UiSidebarMenu>
@@ -163,7 +175,9 @@ const projectsData = [
             <UiCollapsibleTrigger as-child>
               <UiSidebarMenuButton :tooltip="item.title">
                 <Icon mode="svg" :name="item.icon" />
-                <span>{{ item.title }}</span>
+                <span>
+                  {{ item.title }}
+                </span>
                 <Icon
                   mode="svg"
                   name="lucide:chevron-right"
@@ -177,7 +191,9 @@ const projectsData = [
                 <UiSidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
                   <UiSidebarMenuSubButton as-child>
                     <NuxtLink :href="subItem.url">
-                      <span>{{ subItem.title }}</span>
+                      <span>
+                        {{ subItem.title }}
+                      </span>
                     </NuxtLink>
                   </UiSidebarMenuSubButton>
                 </UiSidebarMenuSubItem>
