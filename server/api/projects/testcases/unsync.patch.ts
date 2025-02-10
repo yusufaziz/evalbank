@@ -1,6 +1,6 @@
 import consola from "consola" // Use consola for structured logging
 import { defineEventHandler, readBody } from "h3"
-import prisma from "../../../plugins/prisma.client"
+import prisma from "../../../../plugins/prisma.client"
 
 /**
  * @brief Removes evaluations for a specific project and test case.

@@ -47,7 +47,7 @@ function onSyncdata() {
   const projectId = useRoute().params.projectId
 
   useSonner.promise(
-    $fetch<any>("/api/projects/sync", {
+    $fetch<any>("/api/projects/testcases/sync", {
       method: "patch",
       body: {
         projectId,
@@ -57,7 +57,7 @@ function onSyncdata() {
       return new Promise((resolve) => {
         setTimeout(() => {
           // Emit an event to refresh project data
-          useEventBus("refresh:project").emit("all")
+          useEventBus("refresh:projects").emit("all")
           resolve(response)
         }, 1000) // Simulate a 1-second delay
       })
@@ -77,7 +77,7 @@ function onUnSyncdata() {
   const projectId = useRoute().params.projectId
 
   useSonner.promise(
-    $fetch<any>("/api/projects/unsync", {
+    $fetch<any>("/api/projects/testcases/unsync", {
       method: "patch",
       body: {
         projectId,
@@ -87,7 +87,7 @@ function onUnSyncdata() {
       return new Promise((resolve) => {
         setTimeout(() => {
           // Emit an event to refresh project data
-          useEventBus("refresh:project").emit("all")
+          useEventBus("refresh:projects").emit("all")
           resolve(response)
         }, 1000) // Simulate a 1-second delay
       })
@@ -118,23 +118,6 @@ function onUnSyncdata() {
             </span>
           </UiButton>
         </UiCollapsibleTrigger>
-        <!-- UiCollapsibleTrigger -->
-        as-child
-        <UiButton
-          variant="ghost"
-          size="sm"
-          class="w-9 p-0"
-        >
-          <Icon
-            name="lucide:chevrons-up-down"
-            class="h-4 w-4"
-          />
-          <span
-            class="sr-only"
-          >
-            Toggle
-          </span>
-        </UiButton>
 
         <!-- Sync Button -->
         <UiButton
@@ -144,9 +127,6 @@ function onUnSyncdata() {
           @click="onSyncdata"
         >
           <Icon name="lucide:plus" class="h-4 w-4" />
-          <span class="sr-only">
-            Add
-          </span>
         </UiButton>
 
         <!-- Unsync Button -->

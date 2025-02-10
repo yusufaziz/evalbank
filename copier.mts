@@ -95,14 +95,23 @@ function ensureDirSync(dirPath: string): void {
  */
 async function commitChangesInDestination(destDir: string, srcDir: string): Promise<void> {
   try {
-    // Get the latest commit message from the source directory
-    const latestCommitMessage = execSync("git log -1 --pretty=%B", { cwd: srcDir }).toString().trim()
+    let commitmessage = "latest commit"
+    if (process.argv.length > 2) {
+      // Get commit message from command line if the parameter exist
+      commitmessage = process.argv[3] || "latest commit"
+    }
+    else {
+      // Get the latest commit message from the source directory
+      commitmessage = execSync("git log -1 --pretty=%B", { cwd: srcDir }).toString().trim()
+    }
+
+    consola.info("File will be commited with message: ", commitmessage)
 
     // Stage all changes in the destination directory
     execSync("git add .", { cwd: destDir })
 
     // Commit the changes with the latest commit message
-    execSync(`git commit -m "${latestCommitMessage}"`, { cwd: destDir })
+    execSync(`git commit -m "${commitmessage}"`, { cwd: destDir })
 
     // Push the changes to origin
     execSync(`git push`, { cwd: destDir })

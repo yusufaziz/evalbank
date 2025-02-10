@@ -40,7 +40,7 @@ function handleJudgementChange() {
       return new Promise((resolve) => {
         setTimeout(() => {
           // Emit an event to refresh project data
-          useEventBus("refresh:project").emit("all")
+          useEventBus("refresh:projects").emit("all")
           resolve(response)
         }, 1000) // Simulate a 1-second delay
       })
@@ -73,7 +73,7 @@ function handleFileDrop(evaluation: IEvaluation, files: File[]) {
       return new Promise((resolve) => {
         setTimeout(() => {
           // Emit an event to refresh project data
-          useEventBus("refresh:project").emit("all")
+          useEventBus("refresh:projects").emit("all")
           resolve(response)
         }, 1000) // Simulate a 1-second delay
       })

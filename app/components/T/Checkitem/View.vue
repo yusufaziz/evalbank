@@ -116,10 +116,6 @@ onMounted(() => {
             size="icon-sm"
             @click="emit('edit', props.checkitem)"
           >
-            <!-- Edit Button -->
-            variant="outline"
-            size="icon-sm"
-            @click="emit('edit', props.checkitem)"
             <Icon name="lucide:pencil" />
           </UiButton>
           <!-- Delete Button -->

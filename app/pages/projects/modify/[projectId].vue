@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Project } from "@prisma/client"
-import type { IProject, ISelectedSetting } from "~~/shared/interface/project"
+import type { IProject } from "~~/shared/interface/project"
+import type { ISelectedSetting } from "~~/shared/interface/setting"
 import { toTypedSchema } from "@vee-validate/zod"
 import { useForm } from "vee-validate"
 import { zodProjectSchema } from "~~/shared/schema/project"

@@ -113,8 +113,6 @@ const projectsData = [
               </span>
             </NuxtLink>
           </UiSidebarMenuButton>
-          <!-- UiSidebarMenuButton -->
-          as-child
           <NuxtLink
             :href="item.url"
           >

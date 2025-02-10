@@ -106,11 +106,6 @@ function deleteCheckitem(index: number) {
         :open="isSheetOpen"
         @update:open="isSheetOpen = $event"
       >
-        <!-- UiSheet -->
-        should-scale-background
-        class="pt-2"
-        :open="isSheetOpen"
-        @update:open="isSheetOpen = $event"
         <UiSheetTrigger as-child>
           <UiButton variant="outline" @click="initializeCheckitem()">
             Add New Checkitem
@@ -124,8 +119,13 @@ function deleteCheckitem(index: number) {
           <template #content>
             <div class="mx-auto w-full rounded-t-lg p-4 pb-10">
               <div class="relative">
-                <form id="formCheckitem" @submit.prevent="editedIndex >= 0 ? updateCheckitem() : addNewCheckitem()">
-                  <fieldset class="grid gap-3">
+                <form
+                  id="formCheckitem"
+                  @submit.prevent="editedIndex >= 0 ? updateCheckitem() : addNewCheckitem()"
+                >
+                  <fieldset
+                    class="grid gap-3"
+                  >
                     <UiVeeInput
                       v-model="newCheckitem.module"
                       label="Module"
@@ -136,7 +136,9 @@ function deleteCheckitem(index: number) {
                       label="Expected Target"
                       class="text-sm"
                     />
-                    <TSettingSelection v-model="selectedSettings" />
+                    <TSettingSelection
+                      v-model="selectedSettings"
+                    />
                   </fieldset>
                 </form>
               </div>
@@ -156,7 +158,11 @@ function deleteCheckitem(index: number) {
                 </UiButton>
               </UiSheetClose>
               <UiSheetClose as-child>
-                <UiButton type="submit" class="text-sm" form="formCheckitem">
+                <UiButton
+                  type="submit"
+                  class="text-sm"
+                  form="formCheckitem"
+                >
                   {{ editedIndex >= 0 ? "Update" : "Add" }}
                 </UiButton>
               </UiSheetClose>

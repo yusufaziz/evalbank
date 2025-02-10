@@ -110,9 +110,6 @@ defineExpose({ initializeSelectedSettings })
             v-model="item.name"
             @update:model-value="handleSettingSelection(index, $event)"
           >
-            <!-- UiSelect -->
-            v-model="item.name"
-            @update:model-value="handleSettingSelection(index, $event)"
             <UiSelectTrigger placeholder="Select a Setting" />
             <UiSelectContent>
               <div class="flex items-center gap-2 mb-2">

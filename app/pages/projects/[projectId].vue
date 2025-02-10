@@ -2,6 +2,7 @@
 import type { IChartData } from "~~/shared/interface/chart"
 import type { IProjectInfo, IProjectTestcase } from "~~/shared/interface/project"
 import type { ITestcase } from "~~/shared/interface/testcase"
+import consola from "consola"
 
 /**
  * @brief Component for displaying project details and associated test cases.
@@ -23,6 +24,16 @@ const { data: projectTestcase } = useFetch<IProjectTestcase>(
 )
 const { data: projectInfo } = useFetch<IProjectInfo>(`/api/projects/${projectId.value}`)
 const { data: testcases } = useFetch<ITestcase[]>(`/api/testcases?projectId=${projectId.value}`, { query })
+
+useEventBus("refresh:projects").on((e) => {
+  if (e === "all") {
+    refreshNuxtData()
+  }
+})
+
+const projectSetting = computed(() => {
+  return projectInfo.value?.settings
+})
 
 /**
  * @brief Tabs configuration for the project page.
@@ -51,14 +62,11 @@ const tabs = [
         <UiTabsList>
           <UiTabsTrigger
             v-for="t in tabs"
-
             :key="t.title"
-
             :value="t.title"
             class="flex items-center gap-2"
           >
             <Icon
-
               :name="t.icon"
               class="-ms-0.5 me-1.5 size-4 shrink-0 opacity-60"
             />
@@ -117,11 +125,11 @@ const tabs = [
 
       <!-- Project Settings Tab -->
       <UiTabsContent value="Project Settings">
-        Project Settings
         <UiScrollArea class="h-[calc(90vh-50px)] w-lg p-1">
           <TSettingView
             :show-control="true"
-            :settings="projectInfo?.settings || []"
+            :show-sync-project-id="projectInfo?.id"
+            :settings="projectSetting || []"
           />
         </UiScrollArea>
       </UiTabsContent>

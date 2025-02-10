@@ -37,7 +37,7 @@ const { data: info, refresh: refreshInfo } = useFetch<
 >(projectInfoUrl, { watch: [projectId] })
 
 // Event bus listener for refreshing project data
-useEventBus("refresh:project").on((e) => {
+useEventBus("refresh:projects").on((e) => {
   if (e === "info") {
     refreshInfo()
   }

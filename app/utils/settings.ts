@@ -1,8 +1,8 @@
-import type { Setting } from "@prisma/client"
+import type { ISetting } from "~~/shared/interface/setting"
 
 interface ISelectedSetting {
   name: string
-  settings: Setting[] | undefined
+  settings: ISetting[] | undefined
 }
 
 /**
@@ -11,7 +11,7 @@ interface ISelectedSetting {
  * @param settingsArray - An array of Setting objects.
  * @returns {ISelectedSetting[]} An array of ISelectedSetting objects grouped by setting name.
  */
-export function populateSelectedSettings(settingsArray: Setting[]): ISelectedSetting[] {
+export function populateSelectedSettings(settingsArray: ISetting[]): ISelectedSetting[] {
   return settingsArray.reduce((acc, setting) => {
     const existing = acc.find(item => item.name === setting.name)
     if (existing) {
@@ -30,6 +30,6 @@ export function populateSelectedSettings(settingsArray: Setting[]): ISelectedSet
  * @param selectedSettingsArray - An array of ISelectedSetting objects.
  * @returns {Setting[]} A flat array of Setting objects.
  */
-export function convertSelectedSetting(selectedSettingsArray: ISelectedSetting[]): Setting[] {
+export function convertSelectedSetting(selectedSettingsArray: ISelectedSetting[]): ISetting[] {
   return selectedSettingsArray.flatMap(item => item.settings || [])
 }
