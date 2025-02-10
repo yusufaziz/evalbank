@@ -208,7 +208,7 @@ function onSettingSync(settingId: string, isSupported: boolean) {
             :class="{ 'text-red-500': !isSettingSupported(name, setting.value) }"
           >
             <div class="flex-grow text-sm truncate" @click="onSettingSync(setting.id, isSettingSupported(name, setting.value))">
-              <span v-if="isModified(setting.id)">
+              <span v-if="props.showSyncProjectId && isModified(setting.id)">
                 *
               </span>
               {{ setting.value }}

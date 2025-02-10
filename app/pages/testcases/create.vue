@@ -11,8 +11,20 @@ import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 const checkitems = ref<Checkitem[]>([])
 
 // Form setup with validation
-const { handleSubmit, isSubmitting } = useForm({
+const { handleSubmit, isSubmitting, values } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
+})
+
+// Name input and debounce for hint
+const proceduresModel = ref("")
+const proceduresDebounce = useDebounce(proceduresModel, 500)
+const requestBody = computed(() => ({
+  procedures: proceduresDebounce.value,
+}))
+const { data: similarTestcase } = useFetch<Partial<Testcase>[]>(`/api/testcases/similarity`, {
+  method: "POST",
+  body: requestBody,
+  watch: [proceduresDebounce],
 })
 
 /**
@@ -50,11 +62,21 @@ const onSubmit = handleSubmit(async (data) => {
             <UiVeeInput label="Group" name="group" />
             <UiVeeInput label="Name" name="name" />
             <UiVeeTextarea
+              v-model="proceduresModel"
               label="Procedures"
-              name="procedures"
               :rows="3"
               hint="Separate each step of procedure with a new line."
             />
+            <UiScrollArea v-if="similarTestcase?.length > 0" class="h-[calc(100vh-50px)] w-lg p-1">
+              <div
+                v-for="(item, index) in similarTestcase"
+                :key="index" class="mb-4"
+              >
+                <TTestcaseView
+                  :id="item.id || ''"
+                />
+              </div>
+            </UiScrollArea>
             <UiDivider label="Checkitems" />
             <TCheckitemAdd v-model="checkitems" />
           </fieldset>

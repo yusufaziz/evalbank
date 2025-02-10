@@ -28,7 +28,7 @@ export default defineEventHandler(async (event): Promise<object> => {
     consola.info(`Attempting to create setting(s) with name: ${name}`)
 
     if (typeof value === "string" && value.includes("\n")) {
-      const values = value.split("\n")
+      const values = value.split("\n").filter(f => f)
 
       const settings = await prisma.setting.createMany({
         data: values.map((v: string) => ({ name, value: v })),
