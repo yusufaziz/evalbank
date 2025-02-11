@@ -62,7 +62,10 @@ const onSubmit = handleSubmit(async (data) => {
       <template #content>
         <UiCardContent>
           <fieldset :disabled="isSubmitting" class="space-y-5">
-            <UiVeeInput label="Project Name" name="name" />
+            <div class="flex flex-row gap-2">
+              <UiVeeInput label="Project Name" name="name" />
+              <UiVeeInput :label="useRuntimeConfig().public.REDMINE_LABEL" name="redmineProject" />
+            </div>
             <div class="flex flex-row gap-2">
               <UiVeeNumberField :min="20" :max="50" label="Model FY" name="modelFY">
                 <UiNumberFieldInput placeholder="20" />

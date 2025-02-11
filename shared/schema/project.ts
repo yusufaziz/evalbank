@@ -7,6 +7,7 @@ export const zodProjectSchema = z.object({
   name: z.string({ required_error: "Required" }).min(3, { message: "Min 3 characters" }),
   modelSeries: z.string({ required_error: "Required" }).min(3, { message: "Min 3 characters" }),
   modelName: z.string({ required_error: "Required" }).min(3, { message: "Min 3 characters" }),
+  redmineProject: z.string().optional(),
   modelFY: z
     .number({
       coerce: true,

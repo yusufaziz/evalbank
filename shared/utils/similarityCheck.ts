@@ -79,10 +79,9 @@ export function getTop5SimilarParagraphs(
     // Sort by similarity score in descending order
     consola.log(similarityScores)
     similarityScores.sort((a, b) => b.similarity - a.similarity)
-
     // Get the top 5 most similar test cases
-    const top5SimilarTestCases = similarityScores.slice(0, 5).map(item => item.testCase)
-
+    const top5SimilarTestCases = similarityScores.sort((a, b) => b.similarity - a.similarity).slice(0, 5).map(item => item.testCase)
+    consola.log(top5SimilarTestCases)
     return top5SimilarTestCases
   }
   catch (error) {

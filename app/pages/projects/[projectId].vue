@@ -53,12 +53,35 @@ const tabs = [
     icon: "lucide:settings",
   },
 ]
+async function generatePdf() {
+  try {
+    // Fetch the PDF from the server
+    const pdfBlob: any = await $fetch(`/api/projects/report/${projectId.value}`, {
+      responseType: "blob", // Important for handling binary data
+    })
+
+    // Create a download link for the PDF
+    const url = window.URL.createObjectURL(new Blob([pdfBlob]))
+    const link = document.createElement("a")
+    link.href = url
+    link.setAttribute("download", `Report Project : ${projectId.value}.pdf`)
+    document.body.appendChild(link)
+    link.click()
+
+    // Clean up
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+  catch (error) {
+    console.error("Error downloading PDF:", error)
+  }
+}
 </script>
 
 <template>
   <UiSheet should-scale-background>
     <UiTabs default-value="Dashboard">
-      <div class="flex gap-5">
+      <div class="flex gap-2">
         <UiTabsList>
           <UiTabsTrigger
             v-for="t in tabs"
@@ -80,21 +103,36 @@ const tabs = [
           </UiTabsTrigger>
         </UiTabsList>
         <UiButton
-          size="icon"
           variant="outline"
           @click="navigateTo(`/projects/modify/${projectId}`)"
         >
-          <Icon class="size-4" name="lucide:pencil" />
+          <Icon class="size-4" name="lucide:pencil" /> Modify
+        </UiButton>
+        <UiButton
+          v-if="useRuntimeConfig().public.SUPPORT_REDMINE"
+          variant="outline"
+        >
+          <Icon class="size-4" name="lucide:refresh-ccw" /> SOT
+        </UiButton>
+        <UiButton
+          v-if="useRuntimeConfig().public.SUPPORT_EXPORT_PDF"
+          variant="outline"
+          @click="generatePdf()"
+        >
+          <Icon class="size-4" name="lucide:save" /> PDF
         </UiButton>
         <UiSheetTrigger as-child>
           <UiButton>
-            Add Testcase to Project
+            <Icon class="size-4" name="lucide:file-symlink" /> Connect Testcase
           </UiButton>
         </UiSheetTrigger>
       </div>
 
       <!-- Dashboard Tab -->
       <UiTabsContent value="Dashboard">
+        <div v-if="useRuntimeConfig().public.SUPPORT_REDMINE">
+          <Icon class="size-3" name="lucide:link" /> Linked to {{ useRuntimeConfig().public.REDMINE_LABEL }} with project name : {{ projectInfo?.redmineProject }}
+        </div>
         <div v-if="projectTestcase">
           <UiChartBar
             :data="projectTestcase?.chart?.data || []"

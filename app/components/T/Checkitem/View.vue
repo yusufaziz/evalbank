@@ -141,7 +141,7 @@ onMounted(() => {
     <!-- Evaluations Section -->
     <UiScrollArea
       v-if="props.showEvaluation"
-      class="h-[300px] w-full"
+      class="w-full"
     >
       <div class="flex gap-3 p-2">
         <div class="flex w-full justify-between">

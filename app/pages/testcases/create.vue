@@ -11,7 +11,7 @@ import { zodTestcaseSchema } from "~~/shared/schema/testcase"
 const checkitems = ref<Checkitem[]>([])
 
 // Form setup with validation
-const { handleSubmit, isSubmitting, values } = useForm({
+const { handleSubmit, isSubmitting } = useForm({
   validationSchema: toTypedSchema(zodTestcaseSchema),
 })
 
@@ -21,7 +21,7 @@ const proceduresDebounce = useDebounce(proceduresModel, 500)
 const requestBody = computed(() => ({
   procedures: proceduresDebounce.value,
 }))
-const { data: similarTestcase } = useFetch<Partial<Testcase>[]>(`/api/testcases/similarity`, {
+const { data: similarTestcase, status: similarityStatus } = useFetch<Partial<Testcase>[]>(`/api/testcases/similarity`, {
   method: "POST",
   body: requestBody,
   watch: [proceduresDebounce],
@@ -67,7 +67,8 @@ const onSubmit = handleSubmit(async (data) => {
               :rows="3"
               hint="Separate each step of procedure with a new line."
             />
-            <UiScrollArea v-if="similarTestcase?.length > 0" class="h-[calc(100vh-50px)] w-lg p-1">
+            <UiDivider v-if="similarTestcase?.length > 0" label="Similar Testcases" />
+            <UiScrollArea v-if="similarityStatus === 'success' && similarTestcase?.length > 0" class="h-50 w-lg p-1">
               <div
                 v-for="(item, index) in similarTestcase"
                 :key="index" class="mb-4"

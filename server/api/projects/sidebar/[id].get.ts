@@ -40,13 +40,13 @@ export default defineEventHandler(async (event): Promise<Array<any>> => {
       },
       {
         name: "NG",
-        colour: "red",
+        color: "red",
         judgement: EVALUATION_JUDGEMENT.NG,
         total: evaluations.filter(f => f.judgement === EVALUATION_JUDGEMENT.NG).length,
       },
       {
         name: "Not Support",
-        colour: "gray",
+        color: "gray",
         judgement: EVALUATION_JUDGEMENT.NOT_SUPPORT,
         total: evaluations.filter(f => f.judgement === EVALUATION_JUDGEMENT.NOT_SUPPORT).length,
       },

@@ -53,6 +53,7 @@
     "nuxt-seo-utils": "^6.0.8",
     "pinia": "^2.3.0",
     "prisma": "^6.2.1",
+    "puppeteer": "^24.2.0",
     "radix-vue": "^1.9.12",
     "string-similarity": "^4.0.4",
     "tailwind-variants": "^0.3.0",

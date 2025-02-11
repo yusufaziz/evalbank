@@ -52,6 +52,11 @@ export default defineNuxtConfig({
       OAUTH_AUTHORIZE_URL: process.env.OAUTH_AUTHORIZE_URL ? process.env.OAUTH_AUTHORIZE_URL : ``,
       OAUTH_PROFILE_URL: process.env.OAUTH_PROFILE_URL ? process.env.OAUTH_PROFILE_URL : ``,
       AUTH_COOKIE: process.env.AUTH_COOKIE ? process.env.AUTH_COOKIE : ``,
+      REDMINE_URL: process.env.REDMINE_URL ? process.env.REDMINE_URL : ``,
+      REDMINE_TOKEN: process.env.REDMINE_TOKEN ? process.env.REDMINE_TOKEN : ``,
+      REDMINE_LABEL: process.env.REDMINE_LABEL ? process.env.REDMINE_LABEL : ``,
+      SUPPORT_REDMINE: process.env.REDMINE_TOKEN && process.env.REDMINE_URL && process.env.REDMINE_LABEL,
+      SUPPORT_EXPORT_PDF: !!process.env.SUPPORT_EXPORT_PDF,
     },
   },
 
