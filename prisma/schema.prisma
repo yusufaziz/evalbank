@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// Represents a project in the system.
 model Project {
   id             String       @id @default("")
   name           String
@@ -18,11 +19,14 @@ model Project {
   modifier       String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  settings       Setting[]
-  evaluations    Evaluation[]
-  attachments    Attachment[]
+
+  // Relations
+  settings       Setting[]    @relation("ProjectSettings")
+  evaluations    Evaluation[] @relation("ProjectEvaluations")
+  attachments    Attachment[] @relation("ProjectAttachments")
 }
 
+/// Represents a test case in the system.
 model Testcase {
   id           String       @id @default("")
   name         String
@@ -33,26 +37,32 @@ model Testcase {
   modifier     String?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
-  checkitems   Checkitem[]
-  attachments  Attachment[]
-  evaluations  Evaluation[]
+
+  // Relations
+  checkitems   Checkitem[]    @relation("TestcaseCheckitems")
+  attachments  Attachment[]   @relation("TestcaseAttachments")
+  evaluations  Evaluation[]   @relation("TestcaseEvaluations")
 }
 
+/// Represents a check item in the system.
 model Checkitem {
   id             String       @id @default("")
   module         String
   expectedTarget String
-  settings       Setting[]
   testcaseId     String?
-  testcase       Testcase?    @relation(fields: [testcaseId], references: [id])
   author         String?
   modifier       String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  evaluations    Evaluation[]
-  attachments    Attachment[]
+
+  // Relations
+  testcase       Testcase?    @relation("TestcaseCheckitems", fields: [testcaseId], references: [id])
+  settings       Setting[]    @relation("CheckitemSettings")
+  evaluations    Evaluation[] @relation("CheckitemEvaluations")
+  attachments    Attachment[] @relation("CheckitemAttachments")
 }
 
+/// Represents a setting in the system.
 model Setting {
   id          String       @id @default("")
   name        String
@@ -61,33 +71,41 @@ model Setting {
   modifier    String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  checkitems  Checkitem[]
-  evaluatons  Evaluation[]
-  projects    Project[]
-  attachments Attachment[]
-  requiring   Setting[]    @relation("requireSettings")
-  requiredBy  Setting[]    @relation("requireSettings")
+
+  // Relations
+  checkitems  Checkitem[]    @relation("CheckitemSettings")
+  evaluatons  Evaluation[]   @relation("EvaluationSettings")
+  projects    Project[]      @relation("ProjectSettings")
+  attachments Attachment[]   @relation("SettingAttachments")
+
+  // Self-referential relations
+  requiring   Setting[]      @relation("RequiredBySettings")
+  requiredBy  Setting[]      @relation("RequiredBySettings")
 }
 
+/// Represents an evaluation in the system.
 model Evaluation {
   id          String       @id @default("")
   judgement   Int
   redmineId   String?
   remarks     String?
   projectId   String?
-  project     Project?     @relation(fields: [projectId], references: [id])
   testcaseId  String?
-  testcase    Testcase?    @relation(fields: [testcaseId], references: [id])
   checkitemId String?
-  checkitem   Checkitem?   @relation(fields: [checkitemId], references: [id])
   author      String?
   modifier    String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  settings    Setting[]
-  attachments Attachment[]
+
+  // Relations
+  project     Project?      @relation("ProjectEvaluations", fields: [projectId], references: [id])
+  testcase    Testcase?     @relation("TestcaseEvaluations", fields: [testcaseId], references: [id])
+  checkitem   Checkitem?    @relation("CheckitemEvaluations", fields: [checkitemId], references: [id])
+  settings    Setting[]     @relation("EvaluationSettings")
+  attachments Attachment[]  @relation("EvaluationAttachments")
 }
 
+/// Represents an attachment in the system.
 model Attachment {
   id          String       @id @default("")
   filename    String
@@ -95,9 +113,11 @@ model Attachment {
   modifier    String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  settings    Setting[]
-  evaluations Evaluation[]
-  checkitems  Checkitem[]
-  testcases   Testcase[]
-  projects    Project[]
+
+  // Relations
+  settings    Setting[]     @relation("SettingAttachments")
+  evaluations Evaluation[]  @relation("EvaluationAttachments")
+  checkitems  Checkitem[]   @relation("CheckitemAttachments")
+  testcases   Testcase[]    @relation("TestcaseAttachments")
+  projects    Project[]     @relation("ProjectAttachments")
 }

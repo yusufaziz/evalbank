@@ -54,27 +54,28 @@ const tabs = [
   },
 ]
 async function generatePdf() {
-  try {
-    // Fetch the PDF from the server
-    const pdfBlob: any = await $fetch(`/api/projects/report/${projectId.value}`, {
+  useSonner.promise(
+    $fetch(`/api/projects/report/${projectId.value}`, {
       responseType: "blob", // Important for handling binary data
-    })
+    }).then((pdfBlob: any) => {
+      // Create a download link for the PDF
+      const url = window.URL.createObjectURL(new Blob([pdfBlob]))
+      const link = document.createElement("a")
+      link.href = url
+      link.setAttribute("download", `Report Project : ${projectId.value}.pdf`)
+      document.body.appendChild(link)
+      link.click()
 
-    // Create a download link for the PDF
-    const url = window.URL.createObjectURL(new Blob([pdfBlob]))
-    const link = document.createElement("a")
-    link.href = url
-    link.setAttribute("download", `Report Project : ${projectId.value}.pdf`)
-    document.body.appendChild(link)
-    link.click()
-
-    // Clean up
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  }
-  catch (error) {
-    console.error("Error downloading PDF:", error)
-  }
+      // Clean up
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    }),
+    {
+      loading: "Generating report...",
+      success: () => "Report has been created.",
+      error: () => "Error! Something went wrong during preparing report!",
+    },
+  )
 }
 </script>
 

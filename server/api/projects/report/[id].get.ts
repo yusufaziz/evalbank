@@ -1,48 +1,42 @@
 import { Readable } from "node:stream"
+import consola from "consola"
 import { defineEventHandler } from "h3"
 import puppeteer from "puppeteer"
+import prisma from "~~/plugins/prisma.client"
+import { reportStyle } from "~~/server/utils/reportBuilder/style"
 
 export default defineEventHandler(async (event) => {
   try {
+    // Extract the project ID from the URL parameters
+    const id = event.context.params?.id
+
+    // Validate the ID
+    if (!id || typeof id !== "string") {
+      throw new Error("Invalid project ID: ID must be provided as a string.")
+    }
+
+    consola.info(`Attempting to create report for project with ID: ${id}`)
+
     // Launch a headless browser
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
+    const project = await prisma.project.findFirst({
+      where: { id },
+      include: {
+        settings: true,
+        evaluations: true,
+      },
+    })
 
     const htmlContent = `
         <html>
             <head>
-            <style>
-                body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
-                }
-                h1 {
-                color: #333;
-                }
-                table {
-                width: 100%;
-                border-collapse: collapse;
-                page-break-inside: auto; /* Allow table to split across pages */
-                }
-                th, td {
-                border: 1px solid #000;
-                padding: 8px;
-                text-align: left;
-                }
-                thead {
-                display: table-header-group; /* Repeat header on each page */
-                }
-                tbody {
-                display: table-row-group;
-                }
-                tr {
-                page-break-inside: avoid; /* Prevent rows from splitting across pages */
-                }
-            </style>
+            ${reportStyle}
             </head>
             <body>
-            <h1>Table with Repeated Headers</h1>
+            <h1>${useRuntimeConfig().public.APP_TITLE} Generated Report</h1>
+            <h2>Project: ${project?.name}</h2>
+            <div style="page-break-before: always;"></div>
             <table>
                 <thead>
                 <tr>
@@ -73,7 +67,7 @@ export default defineEventHandler(async (event) => {
     // Generate the PDF
     const pdfBuffer = await page.pdf({
       format: "A4",
-      margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
+      margin: { top: "5mm", right: "5mm", bottom: "5mm", left: "5mm" },
       printBackground: true, // Ensure images and backgrounds are rendered
     })
 
