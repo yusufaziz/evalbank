@@ -1,6 +1,3 @@
-import type { Evaluation, Testcase } from "@prisma/client"
-import type { ICheckitem } from "~~/shared/interface/checkitem"
-import type { ITestcase } from "~~/shared/interface/testcase"
 import { Readable } from "node:stream"
 import consola from "consola"
 import { defineEventHandler } from "h3"
