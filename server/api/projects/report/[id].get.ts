@@ -1,3 +1,6 @@
+import type { Evaluation, Testcase } from "@prisma/client"
+import type { ICheckitem } from "~~/shared/interface/checkitem"
+import type { ITestcase } from "~~/shared/interface/testcase"
 import { Readable } from "node:stream"
 import consola from "consola"
 import { defineEventHandler } from "h3"
@@ -10,6 +13,8 @@ export default defineEventHandler(async (event) => {
     // Extract the project ID from the URL parameters
     const id = event.context.params?.id
 
+    const query = getQuery(event)
+
     // Validate the ID
     if (!id || typeof id !== "string") {
       throw new Error("Invalid project ID: ID must be provided as a string.")
@@ -17,17 +22,30 @@ export default defineEventHandler(async (event) => {
 
     consola.info(`Attempting to create report for project with ID: ${id}`)
 
-    // Launch a headless browser
-    const browser = await puppeteer.launch()
-    const page = await browser.newPage()
+    const testcases = await prisma.testcase.findMany({
+      where: {
+        evaluations: {
+          some: {
+            projectId: id,
+          },
+        },
+      },
+      include: {
+        checkitems: {
+          include: {
+            evaluations: {
+              include: { settings: true },
+            },
+          },
+        },
+      },
+    })
     const project = await prisma.project.findFirst({
       where: { id },
       include: {
         settings: true,
-        evaluations: true,
       },
     })
-
     const htmlContent = `
         <html>
             <head>
@@ -35,29 +53,64 @@ export default defineEventHandler(async (event) => {
             </head>
             <body>
             <h1>${useRuntimeConfig().public.APP_TITLE} Generated Report</h1>
-            <h2>Project: ${project?.name}</h2>
+            <div>
+            <h3>Project: ${project?.name}</h3>
+            <h3>Model: FY${project?.modelFY} ${project?.modelSeries}-${project?.modelName}</h3>
+            <h3>Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</h3>
+            </div>
             <div style="page-break-before: always;"></div>
-            <table>
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                ${Array.from({ length: 50 }, (_, i) => `
+            ${
+              testcases.map((testcase, _i) => {
+                return `<h4>Testcase: ${testcase?.name}</h4>
+                <h4>Procedures:</h4>
+                <p>${testcase?.procedures.split("\n").join("<br/>")}</p>
+                <h4>Evaluation Result:</h4>
+                ${
+                  testcase.checkitems.map((checkitem, _ic) => {
+                    return `
+                        <h5>
+                        Checkitem Expected Target: ${checkitem.expectedTarget}<br/>
+                        Module : ${checkitem.module}
+                        </h5>
+                <table>
+                    <thead>
                     <tr>
-                    <td>${i + 1}</td>
-                    <td>Item ${i + 1}</td>
-                    <td>This is a description for item ${i + 1}.</td>
+                        <th>Settings</th>
+                        <th>Judgement</th>
+                        <th>Remarks</th>
                     </tr>
-                `).join("")}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    ${
+                      checkitem.evaluations.map((evaluation, _ie) => {
+                        return `
+                        <tr>
+                        <td>${evaluation.settings.map(s => `${s.name}: ${s.value}<br/>`).join("")}</td>
+                        <td>${evaluation.judgement}</td>
+                        <td>${evaluation.remarks}</td>
+                        </tr>
+                        `
+                      }).join("")
+                    }
+                    </tbody>
+                </table>
+                    `
+                  })
+                }
+                
+                <div style="page-break-before: always;"></div>
+                `
+              }).join("")
+            }
             </body>
         </html>
         `
+    if (query.skipdownload) {
+      return htmlContent
+    }
+    // Launch a headless browser
+    const browser = await puppeteer.launch()
+    const page = await browser.newPage()
 
     // Set the HTML content to the page
     await page.setContent(htmlContent, {

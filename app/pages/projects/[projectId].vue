@@ -62,7 +62,7 @@ async function generatePdf() {
       const url = window.URL.createObjectURL(new Blob([pdfBlob]))
       const link = document.createElement("a")
       link.href = url
-      link.setAttribute("download", `Report Project : ${projectId.value}.pdf`)
+      link.setAttribute("download", `Report Project FY${projectInfo.value?.modelFY} ${projectInfo.value?.modelSeries}-${projectInfo.value?.modelName} ${projectInfo.value?.name}.pdf`)
       document.body.appendChild(link)
       link.click()
 
