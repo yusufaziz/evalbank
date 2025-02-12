@@ -27,4 +27,14 @@ tbody {
 tr {
     page-break-inside: avoid; /* Prevent rows from splitting across pages */
 }
+.report-cover {
+    font-size: large;
+    font-weight: bold;
+    align-items: center;
+    justify-content: center;
+}
+.report-cover span {
+    display: block;
+    margin-bottom: 3px;
+}
 </style>`

@@ -1,9 +1,12 @@
+import type { Project } from "@prisma/client"
 import { Readable } from "node:stream"
 import consola from "consola"
 import { defineEventHandler } from "h3"
 import puppeteer from "puppeteer"
 import prisma from "~~/plugins/prisma.client"
+import { generateCover } from "~~/server/utils/reportBuilder/cover"
 import { reportStyle } from "~~/server/utils/reportBuilder/style"
+import { generateEvaluationTable, generateTable } from "~~/server/utils/reportBuilder/table"
 
 export default defineEventHandler(async (event) => {
   try {
@@ -49,12 +52,7 @@ export default defineEventHandler(async (event) => {
             ${reportStyle}
             </head>
             <body>
-            <h1>${useRuntimeConfig().public.APP_TITLE} Generated Report</h1>
-            <div>
-            <h3>Project: ${project?.name}</h3>
-            <h3>Model: FY${project?.modelFY} ${project?.modelSeries}-${project?.modelName}</h3>
-            <h3>Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</h3>
-            </div>
+            ${generateCover(project as Project)}
             <div style="page-break-before: always;"></div>
             ${
               testcases.map((testcase, _i) => {
@@ -69,28 +67,7 @@ export default defineEventHandler(async (event) => {
                         Checkitem Expected Target: ${checkitem.expectedTarget}<br/>
                         Module : ${checkitem.module}
                         </h5>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Settings</th>
-                        <th>Judgement</th>
-                        <th>Remarks</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    ${
-                      checkitem.evaluations.map((evaluation, _ie) => {
-                        return `
-                        <tr>
-                        <td>${evaluation.settings.map(s => `${s.name}: ${s.value}<br/>`).join("")}</td>
-                        <td>${evaluation.judgement}</td>
-                        <td>${evaluation.remarks}</td>
-                        </tr>
-                        `
-                      }).join("")
-                    }
-                    </tbody>
-                </table>
+                        ${generateEvaluationTable(checkitem.evaluations)}
                     `
                   })
                 }
