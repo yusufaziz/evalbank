@@ -27,13 +27,13 @@ tbody {
 tr {
     page-break-inside: avoid; /* Prevent rows from splitting across pages */
 }
-.report-cover {
+.report-cover, .report-summary {
     font-size: large;
     font-weight: bold;
     align-items: center;
     justify-content: center;
 }
-.report-cover span {
+.report-cover span, .report-summary span {
     display: block;
     margin-bottom: 3px;
 }

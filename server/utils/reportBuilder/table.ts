@@ -1,4 +1,6 @@
 import type { IEvaluation } from "~~/shared/interface/evaluation"
+import consola from "consola"
+import { EVALUATION_JUDGEMENT } from "~~/shared/enum"
 
 export interface IReportTableParam {
   headers: string
@@ -31,6 +33,52 @@ export function generateTable(param: IReportTableParam[], datas: any[]) {
     </tbody>
     </table>
 `
+}
+function buildSummaryRow(title: string, evaluations: IEvaluation[]) {
+  consola.log("Evaluation", title, evaluations.length)
+  return `
+  <tr>
+      <td rowspan=4>${title}</td>
+      <td>OK</td>
+      <td>${evaluations.filter(f => f.judgement === EVALUATION_JUDGEMENT.OK).length}</td>
+    </tr>
+    <tr>
+      <td>NG</td>
+      <td>${evaluations.filter(f => f.judgement === EVALUATION_JUDGEMENT.NG).length}</td>
+    </tr>
+    <tr>
+      <td>Not Support</td>
+      <td>${evaluations.filter(f => f.judgement === EVALUATION_JUDGEMENT.NOT_SUPPORT).length}</td>
+    </tr>
+    <tr>
+      <td>Not Executed</td>
+      <td>${evaluations.filter(f => f.judgement === EVALUATION_JUDGEMENT.NOT_EXECUTED).length}</td>
+    </tr>
+    `
+}
+export function generateEvaluationSummary(evaluations: IEvaluation[]) {
+  const modules = [...new Set(evaluations.flatMap(f => f.checkitem?.module))]
+  consola.log(evaluations)
+  consola.log(modules)
+  return `
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Judgement</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+      ${buildSummaryRow("Total", evaluations)}
+      ${modules.map((m) => {
+        const filteredEvaluations = evaluations.filter(f => f.checkitem?.module.startsWith(m as string))
+        consola.log(m, evaluations.length, filteredEvaluations.length)
+        return buildSummaryRow(m as string, filteredEvaluations)
+      }).join("")}
+      </tbody>
+      </table>
+  `
 }
 export function generateEvaluationTable(evaluations: IEvaluation[]) {
   const settingCount = evaluations.at(1)?.settings?.length

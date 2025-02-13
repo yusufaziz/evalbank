@@ -1,11 +1,15 @@
 import type { Evaluation, Setting } from "@prisma/client"
 import type { TaskPayload } from "nitropack/types"
 import type { EVALUATION_JUDGEMENT } from "../enum"
+import type { ICheckitem } from "./checkitem"
+import type { ITestcase } from "./testcase"
 
 /**
  * @brief Extended interface for an evaluation, including related settings.
  */
 export interface IEvaluation extends Evaluation {
+  checkitem?: ICheckitem
+  testcase?: ITestcase
   settings?: Setting[] // Related settings
 }
 

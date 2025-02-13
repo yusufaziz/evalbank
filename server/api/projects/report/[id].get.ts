@@ -4,7 +4,7 @@ import consola from "consola"
 import { defineEventHandler } from "h3"
 import puppeteer from "puppeteer"
 import prisma from "~~/plugins/prisma.client"
-import { generateCover } from "~~/server/utils/reportBuilder/cover"
+import { generateCover, generateSummary } from "~~/server/utils/reportBuilder/cover"
 import { reportStyle } from "~~/server/utils/reportBuilder/style"
 import { generateEvaluationTable, generateTable } from "~~/server/utils/reportBuilder/table"
 
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
         checkitems: {
           include: {
             evaluations: {
-              include: { settings: true },
+              include: { settings: true, testcase: { select: { group: true } }, checkitem: { select: { module: true } } },
             },
           },
         },
@@ -52,8 +52,8 @@ export default defineEventHandler(async (event) => {
             ${reportStyle}
             </head>
             <body>
-            ${generateCover(project as Project)}
-            <div style="page-break-before: always;"></div>
+            ${generateCover(project as Project, testcases.flatMap(f => f.checkitems.flatMap(c => c.evaluations)))}
+            <div style="page-break-before: always;"></div>s
             ${
               testcases.map((testcase, _i) => {
                 return `<h4>Testcase: ${testcase?.name}</h4>
